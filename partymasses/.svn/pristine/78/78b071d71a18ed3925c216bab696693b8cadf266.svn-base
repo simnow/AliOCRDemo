@@ -1,0 +1,29 @@
+package com.partymasses.modules.service;
+
+import java.util.List;
+import com.partymasses.modules.dao.mybatis.entity.NewsWithBLOBs;
+import com.partymasses.modules.dao.mybatis.entity.User;
+import com.partymasses.support.message.Message;
+
+public interface NewService {
+
+	public int insertNews(NewsWithBLOBs news);
+	
+	public Message updateNewsById(NewsWithBLOBs news);
+	
+	public Message deleteNewsById(int id, User user);
+	
+	public List<NewsWithBLOBs> findNewsListByUnitId(int unitId);
+	
+	public NewsWithBLOBs findNewsById(int newsId);
+
+	List<NewsWithBLOBs> findNewList();
+
+	Boolean insertCount(int newsId,int type);
+
+
+	public Boolean insertRecordAndCount(int newsId, User user);
+
+	public List<NewsWithBLOBs> findNewList(int pageNo, int pageSize, String type);
+
+}

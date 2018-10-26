@@ -1,0 +1,139 @@
+package cn.caecc.erp.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import cn.caecc.erp.modules.dao.mybatis.entity.ConferenceRoom;
+import cn.caecc.erp.modules.service.ConferenceRoomService;
+import cn.caecc.erp.support.message.Message;
+
+
+@Controller
+@RequestMapping(value="api/conferenceroom")
+public class ConferenceRoomController {
+	@Autowired
+	private ConferenceRoomService crService;
+	
+	/** 
+	* FunName: addConferenceRoom
+	* Description : 添加房间
+	* @param：ConferenceRoom
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-05-29
+	*/ 
+	@RequestMapping(method=RequestMethod.POST)
+	@ResponseBody
+	public Message addConferenceRoom(ConferenceRoom conferenceRoom){
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			int ret = crService.addConferenceRoom(conferenceRoom);
+			if (ret > 0) {
+				message.setSuccess(true);
+			} else {
+				message.setMsg("添加失败");
+			}
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+	/** 
+	* FunName: deleteConferenceRoom
+	* Description : 删除房间
+	* @param：int
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-05-29
+	*/ 
+	public Message deleteConferenceRoom(int id){
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			int ret = crService.deleteConferenceRoom(id);
+			if (ret > 0) {
+				message.setSuccess(true);
+			} else {
+				message.setMsg("删除失败");
+			}
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+	/** 
+	* FunName: upDateConferenceRoom
+	* Description : 修改房间信息
+	* @param：conferenceRoom
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-05-29
+	*/ 
+	@RequestMapping(method=RequestMethod.PUT)
+	@ResponseBody
+	public Message updateConferenceRoom(ConferenceRoom conferenceRoom){
+		
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			int ret = crService.updateConferenceRoom(conferenceRoom);
+			if (ret > 0) {
+				message.setSuccess(true);
+			} else {
+				message.setMsg("更新失败");
+			}
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+	/** 
+	* FunName:  getCrByNameAddress
+	* Description : 通过房间名和房间号查重
+	* @param：string
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-05-29
+	*/ 
+	@RequestMapping(value="/crinfo",method=RequestMethod.GET)
+	@ResponseBody
+	public Message queryCrByNameAddress(@RequestParam(value="name",required=false) String name,
+		@RequestParam(value="address",required=false) String address){
+		
+		boolean isexist=crService.queryCrbyNameAddress(name, address);
+		if(!isexist){
+				return new Message(false,"存在");
+		}
+		return new Message();
+	}
+	/** 
+	* FunName:  getCrByNameAddress
+	* Description : 通过房间名和房间号查重
+	* @param：string
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-05-29
+	*/ 
+	@RequestMapping(value="/list",method=RequestMethod.GET)
+	@ResponseBody
+	public Message getCrPageList(){
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			
+			List<ConferenceRoom> list = crService.getCrList();
+			message.setObj(list);
+			message.setSuccess(true);
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+}

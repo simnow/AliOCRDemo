@@ -1,0 +1,359 @@
+package cn.caecc.erp.modules.service.serviceImpl;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import cn.caecc.erp.modules.dao.ex.dto.MaterialActivitiApplyDto;
+import cn.caecc.erp.modules.dao.ex.dto.MaterialActivitiApplyExDto;
+import cn.caecc.erp.modules.dao.ex.dto.MaterialGoodsRelationshipActivitiApplyDto;
+import cn.caecc.erp.modules.dao.ex.mapper.MaterialActivitiApplyExMapper;
+import cn.caecc.erp.modules.dao.mybatis.entity.Department;
+import cn.caecc.erp.modules.dao.mybatis.entity.MaterialActivitiApply;
+import cn.caecc.erp.modules.dao.mybatis.entity.MaterialGoodsRelationshipActivitiApply;
+import cn.caecc.erp.modules.dao.mybatis.mapper.DepartmentMapper;
+import cn.caecc.erp.modules.dao.mybatis.mapper.MaterialActivitiApplyMapper;
+import cn.caecc.erp.modules.service.MaterialActivitiApplyService;
+import cn.caecc.erp.modules.service.MaterialGoodsRelationshipActivitiApplyService;
+import cn.caecc.erp.modules.service.WellinfoService;
+import cn.caecc.erp.support.constant.Contants;
+import cn.caecc.erp.support.exception.CommonException;
+import cn.caecc.erp.support.workflow.service.WorkflowService;
+
+@Service
+public class MaterialActivitiApplyServiceImpl implements MaterialActivitiApplyService {
+
+	@Autowired
+	private MaterialActivitiApplyMapper materialActivitiApplyMapper;
+	@Autowired
+	private MaterialActivitiApplyExMapper materialActivitiApplyExMapper;
+	@Autowired
+	private WorkflowService workflowService;
+	@Autowired
+	private MaterialGoodsRelationshipActivitiApplyService mgrActivitiApplyService;
+	@Autowired
+	private DepartmentMapper departMentMapper;
+	@Autowired
+	private WellinfoService wellinfoService;
+
+	/**
+	 * 新建
+	 */
+	@Override
+	public MaterialActivitiApplyExDto create(MaterialActivitiApplyExDto materialActivitiApplyExDto) {
+		if (materialActivitiApplyExDto == null || materialActivitiApplyExDto.getList() == null
+				|| materialActivitiApplyExDto.getList().size() == 0) {
+			throw new CommonException("参数异常");
+		} else {
+			MaterialActivitiApply materialActivitiApply = this.setMaterialActivitiApply(materialActivitiApplyExDto);
+			// 如果有id
+			if (materialActivitiApplyExDto.getId() != null) {
+				// 更新物资采购申请表和物品清单表
+				this.update(materialActivitiApplyExDto);
+			} else {
+				// 否则，保存
+				Integer loginUserId = (Integer) SecurityUtils.getSubject().getSession()
+						.getAttribute(Contants.LOGINUSERID);
+					materialActivitiApply.setCreateuserid(loginUserId);
+					materialActivitiApply.setCreatetime(new Date());
+					int result = materialActivitiApplyMapper.insertSelective(materialActivitiApply);
+					if (result > 0) {
+						for (MaterialGoodsRelationshipActivitiApply mgr : materialActivitiApplyExDto.getList()) {
+							mgr.setMid(materialActivitiApply.getId());
+						}
+						List<MaterialGoodsRelationshipActivitiApply> materialGoodsRelationshipActivitiApplyList  = mgrActivitiApplyService.create(materialActivitiApplyExDto.getList());
+						if (materialGoodsRelationshipActivitiApplyList != null && materialGoodsRelationshipActivitiApplyList.size() > 0) {
+							materialActivitiApplyExDto.setId(materialActivitiApply.getId());
+							materialActivitiApplyExDto.setCreateuserid(materialActivitiApply.getCreateuserid());
+							materialActivitiApplyExDto.setCreatetime(materialActivitiApply.getCreatetime());
+							materialActivitiApplyExDto.setIssuccess(materialActivitiApply.getIssuccess());
+						} else {
+							throw new CommonException("创建失败");
+
+						}
+					} else {
+						throw new CommonException("创建失败");
+
+					}
+				
+			}
+		}
+		return materialActivitiApplyExDto;
+	}
+
+	/**
+	 * 通过id查询
+	 */
+	@Override
+	public MaterialActivitiApply findById(int id) {
+		return materialActivitiApplyMapper.selectByPrimaryKey(id);
+	}
+
+	/**
+	 * 查询详情
+	 */
+	@Override
+	public MaterialActivitiApplyDto findDetail(int id) {
+		return materialActivitiApplyExMapper.findDetail(id);
+	}
+
+	/**
+	 * 按条件获取分页列表
+	 */
+	@Override
+	public PageInfo<MaterialActivitiApplyDto> getList(Integer loginUserId, int pageNo, int pageSize, String drafts,
+			int isSuccess, Integer did, String accruingAmounts, Integer wid) {
+		PageHelper.orderBy("CreateTime DESC");
+		PageHelper.startPage(pageNo, pageSize);
+		List<MaterialActivitiApplyDto> list = materialActivitiApplyExMapper.getList(loginUserId, drafts, isSuccess, did,
+				accruingAmounts, wid);
+		PageInfo<MaterialActivitiApplyDto> pageInfo = new PageInfo<>(list);
+		return pageInfo;
+	}
+
+	/**
+	 * 更新物资采购申请表和物品清单表
+	 */
+	@Override
+	public MaterialActivitiApplyExDto update(MaterialActivitiApplyExDto materialActivitiApplyExDto) {
+		if (materialActivitiApplyExDto == null || materialActivitiApplyExDto.getList() == null
+				|| materialActivitiApplyExDto.getList().size() == 0) {
+			throw new CommonException("参数异常");
+
+		} else {
+			MaterialActivitiApply findDetail = this.findDetail(materialActivitiApplyExDto.getId());
+			if (findDetail == null) {
+				throw new CommonException("更新的对象不存在");
+
+			} else {
+				MaterialActivitiApply materialActivitiApply = this.setMaterialActivitiApply(materialActivitiApplyExDto);
+				int result = materialActivitiApplyMapper.updateByPrimaryKey(materialActivitiApply);
+				if (result > 0) {
+					int ret = mgrActivitiApplyService.deleteByMid(materialActivitiApply.getId());
+					if (ret > 0) {
+						for (MaterialGoodsRelationshipActivitiApply mgr : materialActivitiApplyExDto.getList()) {
+							mgr.setMid(materialActivitiApply.getId());
+						}
+						mgrActivitiApplyService.create(materialActivitiApplyExDto.getList());
+					}else {
+						throw new CommonException("数据异常");
+					}
+				} else {
+					throw new CommonException("更新失败");
+
+				}
+			}
+		}
+		return materialActivitiApplyExDto;
+	}
+
+	/**
+	 * 开始流程
+	 * @throws Exception 
+	 */
+	@Override
+	public int startProcess(String processDefinitionKey, String bussinessKey, Map<String, Object> variables) throws Exception {
+		if (StringUtils.isNotBlank(processDefinitionKey) && StringUtils.isNotBlank(bussinessKey)) {
+			int parseInt = Integer.parseInt(bussinessKey);
+			MaterialActivitiApply materialActivitiApply = this.findById(parseInt);
+			
+				String processInstanceId = workflowService.startProcess(processDefinitionKey, bussinessKey, variables);
+				if (StringUtils.isNotBlank(processInstanceId)) {
+					materialActivitiApply.setProcessinstanceid(processInstanceId);
+					this.update(materialActivitiApply);
+				} else {
+					throw new CommonException("开始流程失败");
+
+				}
+			
+		} else {
+			throw new CommonException("参数异常");
+
+		}
+		return 1;
+	}
+
+	/**
+	 * 重置success
+	 */
+	@Override
+	public void setSuccess(int id) {
+		MaterialActivitiApply materialActivitiApply = new MaterialActivitiApply();
+		materialActivitiApply.setId(id);
+		materialActivitiApply.setIssuccess(1);
+		materialActivitiApplyMapper.updateByPrimaryKeySelective(materialActivitiApply);
+	}
+
+	/**
+	 * 提取MaterialActivitiApply对象
+	 * 
+	 * @param materialActivitiApplyExDto
+	 * @return MaterialActivitiApply
+	 */
+	private MaterialActivitiApply setMaterialActivitiApply(MaterialActivitiApplyExDto materialActivitiApplyExDto) {
+		MaterialActivitiApply materialActivitiApply = new MaterialActivitiApply();
+		materialActivitiApply.setId(materialActivitiApplyExDto.getId());
+		materialActivitiApply.setProcessinstanceid(materialActivitiApplyExDto.getProcessinstanceid());
+		materialActivitiApply.setWellinfoid(materialActivitiApplyExDto.getWellinfoid());
+		materialActivitiApply.setUid(materialActivitiApplyExDto.getUid());
+		materialActivitiApply.setDid(materialActivitiApplyExDto.getDid());
+		materialActivitiApply.setCreateuserid(materialActivitiApplyExDto.getCreateuserid());
+		materialActivitiApply.setCreatetime(materialActivitiApplyExDto.getCreatetime());
+		materialActivitiApply.setIssuccess(materialActivitiApplyExDto.getIssuccess());
+		return materialActivitiApply;
+	}
+
+	/**
+	 * 只更新物资采购申请表
+	 */
+	@Override
+	public MaterialActivitiApply update(MaterialActivitiApply materialActivitiApply) {
+		if (materialActivitiApply == null) {
+			throw new CommonException("参数异常");
+
+		} else {
+			MaterialActivitiApply findById = this.findById(materialActivitiApply.getId());
+			if (findById == null) {
+				throw new CommonException("您需要修改的对象不存在");
+
+			} else {
+				int result = materialActivitiApplyMapper.updateByPrimaryKey(materialActivitiApply);
+				if (result <= 0) {
+					throw new CommonException("更新失败");
+				}
+			}
+		}
+		return materialActivitiApply;
+	}
+
+	/**
+	 * 通过查询当月累计金额获取下一步审批人参数
+	 */
+	@Override
+	public Integer findAccruingAmounts(Integer did, List<String> gnameList) {
+		if (did == null || gnameList == null || gnameList.size() == 0) {
+			throw new CommonException("参数异常");
+
+		} else {
+			Integer num = 0;// 返回条件值
+			// 判断发起申请的员工部门是否是井队，如果不是则直接返回1
+			Department departMent = departMentMapper.selectByPrimaryKey(did);
+			if (departMent != null && (departMent.getCode() == null || "".equals(departMent.getCode()))) {
+				num = 1;
+				return num;
+			}
+			// 遍历前端传入的物资集合，如果存在泥浆或钻头，直接返回3
+			for (String string : gnameList) {
+				if ("泥浆".equals(string) || "钻头".equals(string)) {
+					num = 3;
+					return num;
+				}
+			}
+			// 查询单井定额
+			Map<String, Object> wellInfoDe = wellinfoService.getWellInfoDe(did, 0);
+			// 井唯一标识
+			int wid = (int) wellInfoDe.get("wellid");
+			// 材料定额
+			String clde = (String) wellInfoDe.get("clde");
+			// 润滑油定额
+			String rhyde = (String) wellInfoDe.get("rhyde");
+			// 单井定额
+			double quota = 0.0;
+			double accruingAmounts = 0.0;// 声明当月累计金额
+			double wellAccruingAmounts = 0.0;// 单井累计金额
+			if (StringUtils.isNotBlank(clde) && StringUtils.isNotBlank(rhyde) && wid != 0) {
+				// 计算单井定额
+				quota = Double.parseDouble(clde) + Double.parseDouble(rhyde);
+				// 查询当月流转成功的物资采购流程
+				List<MaterialActivitiApplyDto> list = materialActivitiApplyExMapper.getList(null, null, 1, did,
+						"accruingAmounts", wid);
+				List<MaterialGoodsRelationshipActivitiApplyDto> mgrlist = new ArrayList<>();// 每个物资采购流程对应的物资集合
+				if (list != null && list.size() > 0) {
+					// 遍历集合，计算当月累计金额
+					for (MaterialActivitiApplyDto materialActivitiApplyDto : list) {
+						if (materialActivitiApplyDto != null) {
+							mgrlist = materialActivitiApplyDto.getList();
+							if (mgrlist.size() > 0) {
+								for (MaterialGoodsRelationshipActivitiApplyDto materialGoodsRelationshipActivitiApplyDto : mgrlist) {
+									if (!"泥浆".equals(materialGoodsRelationshipActivitiApplyDto.getGname())
+											|| !"钻头".equals(materialGoodsRelationshipActivitiApplyDto.getGname())) {
+										accruingAmounts += materialGoodsRelationshipActivitiApplyDto.getUnitPrice()
+												* materialGoodsRelationshipActivitiApplyDto.getApplycount();
+									} else {
+										continue;
+									}
+								}
+							} else {
+								throw new CommonException("流程物品清单数据异常(当月累计)");
+
+							}
+						} else {
+							throw new CommonException("流程数据异常(当月累计)");
+
+						}
+					}
+				} else {
+					throw new CommonException("查询当月流转成功的物资采购流程失败");
+				}
+				// 查询井队维护单井流转成功的物资采购流程
+				List<MaterialActivitiApplyDto> allList = materialActivitiApplyExMapper.getList(null, null, 1, did, null,
+						wid);
+				List<MaterialGoodsRelationshipActivitiApplyDto> mgrAllList = new ArrayList<>();// 每个物资采购流程对应的物资集合
+				if (allList != null && allList.size() > 0) {
+					// 遍历集合，计算单井累计金额
+					for (MaterialActivitiApplyDto materialActivitiApplyDto : allList) {
+						if (materialActivitiApplyDto != null) {
+							mgrAllList = materialActivitiApplyDto.getList();
+							if (mgrAllList.size() > 0) {
+								for (MaterialGoodsRelationshipActivitiApplyDto materialGoodsRelationshipActivitiApplyDto : mgrAllList) {
+									if (!"泥浆".equals(materialGoodsRelationshipActivitiApplyDto.getGname())
+											|| !"钻头".equals(materialGoodsRelationshipActivitiApplyDto.getGname())) {
+										wellAccruingAmounts += materialGoodsRelationshipActivitiApplyDto.getUnitPrice()
+												* materialGoodsRelationshipActivitiApplyDto.getApplycount();
+									} else {
+										continue;
+									}
+								}
+							} else {
+								throw new CommonException("流程物品清单数据异常(单井累计)");
+							}
+						} else {
+							throw new CommonException("流程数据异常(单井累计)");
+						}
+					}
+				} else {
+					throw new CommonException("查询井队维护单井流转成功的物资采购流程失败");
+
+				}
+			} else {
+				throw new CommonException("单井定额数据异常");
+			}
+			// 如果单井累计金额大于单井定额，直接返回3
+			if (wellAccruingAmounts > quota) {
+				num = 3;// 3:发送至业务部门
+			} else {
+				double middle = 75000;
+				// 如果井队编号以p7开头，middle=70000
+				if ("p7".equals(departMent.getCode().substring(2))) {
+					middle = 70000;
+				}
+				// 如果当月累计金额小于30000
+				if (accruingAmounts < 30000) {
+					num = 1;// 1:发送至供应站
+				} else if (accruingAmounts >= 30000 && accruingAmounts < middle) { // 如果当月累计金额大于等于30000小于70000或75000
+					num = 2;// 2:发送至总经理
+				} else { // 当月累计金额大于等于70000或75000
+					num = 3;// 3:发送至业务部门
+				}
+			}
+			
+			return num;
+		}
+	}
+}

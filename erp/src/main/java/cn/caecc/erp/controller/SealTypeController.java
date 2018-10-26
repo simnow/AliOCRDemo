@@ -1,0 +1,159 @@
+package cn.caecc.erp.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import com.github.pagehelper.PageInfo;
+import cn.caecc.erp.modules.dao.mybatis.entity.SealType;
+import cn.caecc.erp.modules.service.SealTypeService;
+import cn.caecc.erp.support.message.Message;
+
+@Controller
+@RequestMapping(value="api/sealtype")
+public class SealTypeController  {
+	@Autowired
+	private SealTypeService stService;
+		
+	/** 
+	* FunName: add
+	* Description : 添加印章
+	* @param：sealType
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-05-31
+	*/ 
+	@RequestMapping(method=RequestMethod.POST)
+	@ResponseBody
+	public Message addSealType(SealType sealType){
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			stService.addSealType(sealType);;
+			message.setSuccess(true);
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+	/** 
+	* FunName: deleteSealType
+	* Description : 删除印章
+	* @param：int
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-05-31
+	*/ 
+	public Message deleteSealType(int id){
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			int ret = stService.deleteSealType(id);
+			if (ret > 0) {
+				message.setSuccess(true);
+			} else {
+				message.setMsg("删除失败");
+			}
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;	
+	}
+	/** 
+	* FunName: updateSealType
+	* Description : 修改印章信息
+	* @param：sealType
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-05-31
+	*/ 
+	@RequestMapping(method=RequestMethod.PUT)
+	@ResponseBody
+	public Message updateSealType(SealType sealType){
+
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			stService.updateSealType(sealType);
+			message.setSuccess(true);
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;	
+	}
+	/** 
+	* FunName: queryStByName
+	* Description : 通过印章名称查询
+	* @param：string
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-05-31
+	*/ 
+	@RequestMapping(value="/{name}",method=RequestMethod.GET)
+	@ResponseBody
+	public Message queryStByName(@PathVariable("name") String name){
+		
+		boolean isexist=stService.queryStByName(name);
+		if(!isexist){
+				return new Message(false,"存在");
+		}
+		return new Message();
+	}
+	/** 
+	* FunName: getStAllList
+	* Description : 获取所有印章类型
+	* @param：string
+	* @return int
+	* @Author:shh
+	* @Create Date: 2018-06-14
+	**/
+	@RequestMapping(method=RequestMethod.GET)
+	@ResponseBody
+	public Message getStAllList(){
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			List<SealType> sealTypeList = stService.getStAllList();
+			message.setObj(sealTypeList);
+			message.setSuccess(true);
+			
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+	
+	
+	
+	/** 
+	* FunName:  getStPageList
+	* Description : 查询分页数据
+	* @param：string
+	* @return int
+	* @Author:shh
+	* @Create Date: 2018-05-31
+	*/ 
+	@RequestMapping(value="/stpageinfo/{pageno}/{pagesize}",method=RequestMethod.GET)
+	@ResponseBody
+	public Message getStPageList(@PathVariable("pageno") int pageno,@PathVariable("pagesize") int pagesize){
+		
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			PageInfo<SealType> sealTypeList = stService.getStPageList(pageno, pagesize);
+			message.setObj(sealTypeList);
+			message.setSuccess(true);
+			
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+	
+	
+
+}

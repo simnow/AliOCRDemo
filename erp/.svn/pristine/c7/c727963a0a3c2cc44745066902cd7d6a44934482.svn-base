@@ -1,0 +1,171 @@
+/**
+ * 
+ */
+package cn.caecc.erp.support.workflow.approver.service.serviceImpl;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import cn.caecc.erp.modules.dao.mybatis.entity.User;
+import cn.caecc.erp.modules.service.DeptmentService;
+import cn.caecc.erp.modules.service.UserService;
+import cn.caecc.erp.support.constant.Contants;
+import cn.caecc.erp.support.workflow.approver.service.WorkloadApproverService;
+import cn.caecc.erp.support.workflow.service.WorkflowService;
+
+/**
+ * @author weizhen
+ *
+ */
+@Service
+public class WorkloadApproverServiceImpl extends BaseApproverService implements WorkloadApproverService {
+
+	/**
+	 * 
+	 */
+	@Autowired
+	private UserService userService;
+	
+	@Autowired
+	private DeptmentService deptMentService;
+	
+	@Autowired
+	private WorkflowService workflowService;
+	
+	@Autowired
+	private HttpSession session;
+	public WorkloadApproverServiceImpl() {
+		// TODO Auto-generated constructor stub
+	}
+
+	/* (non-Javadoc)
+	 * @see cn.caecc.erp.support.workflow.approver.service.WorkloadApproverService#getApplyTaskNextApprover()
+	 */
+	@Override
+	public List<User> getApplyTaskNextApprover() {
+		// TODO Auto-generated method stub
+		List<User> userList = userService.getList();
+		return super.preProcessUsers(userList);
+	}
+
+	/* (non-Javadoc)
+	 * @see cn.caecc.erp.support.workflow.approver.service.WorkloadApproverService#getBusinessDepartmentTask1NextApprover()
+	 */
+	@Override
+	public List<User> getBusinessDepartmentTask1NextApprover() {
+		// TODO Auto-generated method stub
+		Integer userId = (Integer)session.getAttribute(Contants.LOGINUSERID);
+		List<User> userList = userService.findAssignedManagerLeader(userId);
+		return super.preProcessUsers(userList);
+	}
+
+	/* (non-Javadoc)
+	 * @see cn.caecc.erp.support.workflow.approver.service.WorkloadApproverService#getAssignedManagerTaskNextApprover()
+	 */
+	@Override
+	public List<User> getAssignedManagerTaskNextApprover() {
+		// TODO Auto-generated method stub
+		List<User> userList = deptMentService.getDepartmentUsers(Contants.GENERALMENERALMANAGER);
+		return super.preProcessUsers(userList);
+	}
+
+	/* (non-Javadoc)
+	 * @see cn.caecc.erp.support.workflow.approver.service.WorkloadApproverService#getGeneralManagerTask1NextApprover()
+	 */
+	@Override
+	public List<User> getGeneralManagerTask1NextApprover(String processInstanceId) {
+		// TODO Auto-generated method stub
+		List<User> userList = new ArrayList<User>();
+		String strStartUserId = workflowService.queryHistoryTaskOfRuntimeInstanceAssigneeId(processInstanceId,
+				"BusinessDepartmentTask1");
+		if (strStartUserId != null) {
+			userList.add(userService.findById(Integer.parseInt(strStartUserId)));
+		}
+		return super.preProcessUsers(userList);
+	}
+
+	/* (non-Javadoc)
+	 * @see cn.caecc.erp.support.workflow.approver.service.WorkloadApproverService#getBusinessDepartmentTask2NextApprover()
+	 */
+	@Override
+	public List<User> getBusinessDepartmentTask2NextApprover(String processInstanceId) {
+		// TODO Auto-generated method stub
+		List<User> userList = new ArrayList<User>();
+		String strStartUserId = workflowService.queryHistoryTaskOfRuntimeInstanceAssigneeId(processInstanceId,
+				"ApplyTask");
+		if (strStartUserId != null) {
+			userList.add(userService.findById(Integer.parseInt(strStartUserId)));
+		}
+		return super.preProcessUsers(userList);
+	}
+
+	/* (non-Javadoc)
+	 * @see cn.caecc.erp.support.workflow.approver.service.WorkloadApproverService#getDepartmentConfirmTaskNextApprover()
+	 */
+	@Override
+	public List<User> getDepartmentConfirmTaskNextApprover() {
+		// TODO Auto-generated method stub
+		Integer userId = (Integer)session.getAttribute(Contants.LOGINUSERID);
+		List<User> userList = userService.findDepartmentLeader(userId);
+		return super.preProcessUsers(userList);
+	}
+
+	/* (non-Javadoc)
+	 * @see cn.caecc.erp.support.workflow.approver.service.WorkloadApproverService#findDepartmentLeaderConfirmTaskNextApprover()
+	 */
+	@Override
+	public List<User> findDepartmentLeaderConfirmTaskNextApprover(String processInstanceId) {
+		// TODO Auto-generated method stub
+		List<User> userList = new ArrayList<User>();
+		String strStartUserId = workflowService.queryHistoryTaskOfRuntimeInstanceAssigneeId(processInstanceId,
+				"BusinessDepartmentTask1");
+		if (strStartUserId != null) {
+			userList.add(userService.findById(Integer.parseInt(strStartUserId)));
+		}
+		return super.preProcessUsers(userList);
+	}
+
+	/* (non-Javadoc)
+	 * @see cn.caecc.erp.support.workflow.approver.service.WorkloadApproverService#getBusinessDepartmentTask3NextApprover()
+	 */
+	@Override
+	public List<User> getBusinessDepartmentTask3NextApprover() {
+		// TODO Auto-generated method stub
+		return getDepartmentConfirmTaskNextApprover();
+	}
+
+	/* (non-Javadoc)
+	 * @see cn.caecc.erp.support.workflow.approver.service.WorkloadApproverService#getBusinessDepartmentLeaderTaskNextApprover()
+	 */
+	@Override
+	public List<User> getBusinessDepartmentLeaderTaskNextApprover() {
+		// TODO Auto-generated method stub
+		List<User> userList = deptMentService.getDepartmentUsers(Contants.MANAGEMENTANDPROCUREMENT);
+		return super.preProcessUsers(userList);
+	}
+
+	/* (non-Javadoc)
+	 * @see cn.caecc.erp.support.workflow.approver.service.WorkloadApproverService#getManagementAndProcurementExaminationTaskNextApprover()
+	 */
+	@Override
+	public List<User> getManagementAndProcurementExaminationTaskNextApprover() {
+		// TODO Auto-generated method stub
+		List<User> userList = deptMentService.getDepartmentMasters(Contants.FINANCIALMANAGEMENT);
+		return super.preProcessUsers(userList);
+	}
+
+	/* (non-Javadoc)
+	 * @see cn.caecc.erp.support.workflow.approver.service.WorkloadApproverService#getFinancialManagementTaskNextApprover()
+	 */
+	@Override
+	public List<User> getFinancialManagementTaskNextApprover() {
+		// TODO Auto-generated method stub
+		return getAssignedManagerTaskNextApprover();
+	}
+
+}

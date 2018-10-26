@@ -1,0 +1,7 @@
+package com.partymasses.modules.service;
+
+public interface OSSService {
+	public String putNewsImage(Integer newId, String strPath) throws Exception;
+	public void deleteNewsImages(Integer newId) throws Exception;
+
+}

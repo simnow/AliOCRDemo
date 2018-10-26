@@ -1,0 +1,171 @@
+package cn.caecc.erp.modules.service.serviceImpl;
+
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+
+import cn.caecc.erp.modules.dao.mybatis.entity.WellDxDaily;
+import cn.caecc.erp.modules.dao.mybatis.entity.WellDxDailyExample;
+import cn.caecc.erp.modules.dao.mybatis.entity.WellDxInfo;
+import cn.caecc.erp.modules.dao.mybatis.entity.WellDxDailyExample.Criteria;
+import cn.caecc.erp.modules.dao.mybatis.mapper.WellDxDailyMapper;
+import cn.caecc.erp.modules.service.DxWellInfoService;
+import cn.caecc.erp.modules.service.WellDxDailyService;
+import cn.caecc.erp.support.message.Message;
+import cn.caecc.erp.support.util.DateUtil;
+@Service
+public class WellDxDailyServiceImpl implements WellDxDailyService {
+
+	@Autowired
+	private WellDxDailyMapper wellDxDailyMapper;
+	@Autowired
+	private DxWellInfoService wellDxInfoSerivce;
+	
+	@Override
+	public Message insertDxWellDaily(WellDxDaily wellDxDaily) {
+		Message message=new Message();
+		wellDxDaily.setCreatetime(DateUtil.getcurrentDateTime());
+		//查询是否已经存在
+		WellDxDailyExample example=new WellDxDailyExample();
+		Criteria criteria=example.createCriteria();
+		criteria.andLogdateEqualTo(wellDxDaily.getLogdate());
+		criteria.andWellidEqualTo(wellDxDaily.getWellid());
+		List<WellDxDaily> result1 =wellDxDailyMapper.selectByExample(example);
+		if(null!=result1&&result1.size()>0){
+			message.setSuccess(false);
+			message.setMsg("已存在当日日志");
+			return message;
+		}
+		int result=wellDxDailyMapper.insertSelective(wellDxDaily);
+		if(result>0){
+			message.setObj(wellDxDaily.getId());
+		}else{
+			message.setSuccess(false);
+			message.setMsg("存储失败");
+		}
+		return message;
+	}
+
+	@Override
+	public Message updateDxWellDaily(WellDxDaily wellDxDaily){
+		Message message=new Message();
+		if(wellDxDailyMapper.updateByPrimaryKeySelective(wellDxDaily)<=0){
+			message.setSuccess(false);
+			message.setMsg("更新失败");
+		}
+		return message;
+	}
+
+	@Override
+	public Message deleteDxWellDaily(int id) {
+		Message message=new Message();
+		if(wellDxDailyMapper.deleteByPrimaryKey(id)<0){
+			message.setSuccess(false);
+			message.setMsg("删除失败");
+		}
+		return message;
+	}
+
+	@Override
+	public Message selectDxWellDaily(Date logDate, Integer wellId) {
+		WellDxDailyExample example=new WellDxDailyExample();
+		Criteria criteria=example.createCriteria();
+		if(null!=logDate){
+			criteria.andLogdateEqualTo(logDate);
+		}
+		if(null!=wellId){
+			criteria.andWellidEqualTo(wellId);
+		}
+		example.setOrderByClause("logdate desc");
+		Message message=new Message();
+		List<WellDxDaily> list=wellDxDailyMapper.selectByExample(example);
+		if(null!=list&&list.size()>0){
+			for(WellDxDaily well:list){
+				WellDxInfo wellDxInfo=wellDxInfoSerivce.selectDxWellInfoById(well.getWellid());
+				well.setJx(wellDxInfo.getJx());
+				well.setZxd(wellDxInfo.getZxd());
+				well.setSjjs(wellDxInfo.getSjjs());
+			}
+		}
+		message.setObj(list);
+		return message;
+	}
+
+	@Override
+	public Message selectAllDxWellDailyByWellId(String startDate, String endDate, Integer wellId, int pageNo, int pageSize) {
+		PageHelper.startPage(pageNo, pageSize);
+		WellDxDailyExample example=new WellDxDailyExample();
+		Criteria criteria=example.createCriteria();
+		if(StringUtils.isNotBlank(startDate)){
+			criteria.andLogdateGreaterThanOrEqualTo(DateUtil.convertStringToDate(startDate, DateUtil.YYYY_MM_DD));
+		}
+		if(StringUtils.isNotBlank(endDate)){
+			criteria.andLogdateLessThanOrEqualTo(DateUtil.convertStringToDate(endDate, DateUtil.YYYY_MM_DD));
+		}
+		if(null!=wellId){
+			criteria.andWellidEqualTo(wellId);
+		}
+		example.setOrderByClause("logdate desc");
+		Message message=new Message();
+		List<WellDxDaily> list=wellDxDailyMapper.selectByExample(example);
+		if(null!=list&&list.size()>0){
+			for(WellDxDaily well:list){
+				WellDxInfo wellDxInfo=wellDxInfoSerivce.selectDxWellInfoById(well.getWellid());
+				well.setJx(wellDxInfo.getJx());
+				well.setZxd(wellDxInfo.getZxd());
+				well.setSjjs(wellDxInfo.getSjjs());
+			}
+		PageInfo<WellDxDaily> pageInfo=new PageInfo<>(list);
+		message.setObj(pageInfo);
+		}
+		return message;
+	}
+	@Override
+	public Message selectAllDxWellDailyByWellIdNoPage(String startDate, String endDate, Integer wellId) {
+		WellDxDailyExample example=new WellDxDailyExample();
+		Criteria criteria=example.createCriteria();
+		if(StringUtils.isNotBlank(startDate)){
+			criteria.andLogdateGreaterThanOrEqualTo(DateUtil.convertStringToDate(startDate, DateUtil.YYYY_MM_DD));
+		}
+		if(StringUtils.isNotBlank(endDate)){
+			criteria.andLogdateLessThanOrEqualTo(DateUtil.convertStringToDate(endDate, DateUtil.YYYY_MM_DD));
+		}
+		if(null!=wellId){
+			criteria.andWellidEqualTo(wellId);
+		}
+		example.setOrderByClause("logdate desc");
+		Message message=new Message();
+		List<WellDxDaily> list=wellDxDailyMapper.selectByExample(example);
+		if(null!=list&&list.size()>0){
+			message.setObj(list);
+		}
+		return message;
+	}
+
+	@Override
+	public Message selectDxWellDaily(int id) {
+		Message message=new Message();
+		message.setObj(wellDxDailyMapper.selectByPrimaryKey(id));
+		return message;
+	}
+
+	@Override
+	public WellDxDaily getLessThanOrEqualTo(Date subDay, int wellId) {
+		WellDxDailyExample example=new WellDxDailyExample();
+		Criteria criteria=example.createCriteria();
+		criteria.andLogdateLessThanOrEqualTo(subDay);
+		criteria.andWellidEqualTo(wellId);
+		example.setOrderByClause("LogDate desc");
+		List<WellDxDaily> list=wellDxDailyMapper.selectByExample(example);
+		if(list!=null&&list.size()>0){
+			return list.get(0);
+		}
+		return null;
+	}
+}

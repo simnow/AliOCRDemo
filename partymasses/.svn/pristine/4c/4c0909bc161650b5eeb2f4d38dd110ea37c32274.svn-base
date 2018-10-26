@@ -1,0 +1,78 @@
+package com.partymasses.controller;
+
+import java.util.List;
+
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.partymasses.modules.dao.mybatis.entity.Question;
+import com.partymasses.modules.service.QuestionService;
+import com.partymasses.modules.service.TestQuestionService;
+import com.partymasses.support.constant.Contants;
+import com.partymasses.support.message.Message;
+@Controller
+@RequestMapping(value = "/api/question")
+public class QuestionController {
+	
+	@Autowired
+	private QuestionService questionService;
+	@Autowired
+	private TestQuestionService testQuestionService;
+
+	@ResponseBody
+	@RequestMapping(method = RequestMethod.POST)
+	@RequiresRoles(value = {Contants.ADMIN,Contants.SUPERADMIN},logical = Logical.OR)
+	public Message create(@RequestBody Question question) {
+		Message message = new Message();
+		message.setSuccess(false);
+		if (questionService.isExistQuestion(question)) {
+			message.setMsg("题目已存在");
+			return message;
+		}
+		return questionService.create(question);
+	}
+	
+	@RequestMapping(value = "/{id}",method = RequestMethod.GET)
+	@ResponseBody
+	@RequiresRoles(value = {Contants.ADMIN,Contants.SUPERADMIN},logical = Logical.OR)
+	public Question findByPrimeryKey(@PathVariable("id") int id) {
+		return questionService.findByPrimeryKey(id);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/typeId/{id}",method = RequestMethod.GET)
+	@RequiresRoles(value = {Contants.ADMIN,Contants.SUPERADMIN},logical = Logical.OR)
+	public List<Question> findByTypeId(@PathVariable("id") int typeId) {
+		return questionService.findByTypeId(typeId);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/styleId/{id}",method = RequestMethod.GET)
+	@RequiresRoles(value = {Contants.ADMIN,Contants.SUPERADMIN},logical = Logical.OR)
+	public List<Question> findByStyleId(@PathVariable("id") int styleId) {
+		return questionService.findByStyleId(styleId);
+	}
+	
+	@ResponseBody
+	@RequestMapping(method = RequestMethod.PUT)
+	@RequiresRoles(value = {Contants.ADMIN,Contants.SUPERADMIN},logical = Logical.OR)
+	public Message updateByPrimeryKey(@RequestBody Question question) {
+		return questionService.updateByPrimeryKey(question);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/{id}",method = RequestMethod.DELETE)
+	@RequiresRoles(value = {Contants.ADMIN,Contants.SUPERADMIN},logical = Logical.OR)
+	public Message delByPrimeryKey(@PathVariable("id") int id) {
+		//在用到该题的试卷中删除此题
+		testQuestionService.delByQuestionId(id);
+		return questionService.delByPrimeryKey(id);
+	}
+}

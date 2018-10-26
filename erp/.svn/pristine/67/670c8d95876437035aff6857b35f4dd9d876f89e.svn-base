@@ -1,0 +1,86 @@
+/**
+ * 
+ */
+package cn.caecc.erp.config;
+
+import java.util.Properties;
+
+import org.apache.ibatis.plugin.Interceptor;
+import org.mybatis.spring.SqlSessionFactoryBean;
+import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
+
+import com.github.pagehelper.PageInterceptor;
+
+import cn.caecc.erp.support.dbcp.MyBasicDataSource;
+
+/**
+ * @author weizhen
+ *
+ */
+@Configuration
+@PropertySource("classpath:db.properties")
+@MapperScan(basePackages = "cn.caecc.erp.modules.dao.**.mapper")
+public class MybatisConfig {
+
+	@Value("${jdbc.driver}")
+	private String driverClassName;
+
+	@Value("${jdbc.url}")
+	private String url;
+
+	@Value("${jdbc.username}")
+	private String username;
+
+	@Value("${jdbc.password}")
+	private String password;
+
+	/**
+	 * 
+	 */
+	public MybatisConfig() {
+		// TODO Auto-generated constructor stub
+	}
+
+	@Bean(name = "dataSource", destroyMethod = "close")
+	public MyBasicDataSource getDataSource() {
+		MyBasicDataSource datasource = new MyBasicDataSource();
+		datasource.setUrl(url);
+		datasource.setDriverClassName(driverClassName);
+		datasource.setUsername(username);
+		datasource.setPassword(password);
+		datasource.setValidationQuery("SELECT 1");
+		datasource.setTestOnBorrow(true);
+		return datasource;
+	}
+
+	@Bean
+	public static PropertySourcesPlaceholderConfigurer getPropertySourcesPlaceholderConfigurer() {
+		PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer = new PropertySourcesPlaceholderConfigurer();
+		propertySourcesPlaceholderConfigurer.setIgnoreUnresolvablePlaceholders(true);
+		return propertySourcesPlaceholderConfigurer;
+	}
+
+	@Bean(name = "sqlSessionFactory")
+	public SqlSessionFactoryBean getSqlSessionFactory() throws Exception {
+		SqlSessionFactoryBean sqlSessionFactory = new SqlSessionFactoryBean();
+		sqlSessionFactory.setDataSource(getDataSource());
+		sqlSessionFactory.setTypeAliasesPackage("cn.caecc.erp.modules.dao.**.entity");
+		ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
+		sqlSessionFactory.setMapperLocations(
+				resourcePatternResolver.getResources("classpath:cn/caecc/erp/modules/dao/**/sqlMap/**.xml"));
+		Properties properties = new Properties();
+		properties.setProperty("helperDialect", "mysql");
+		Interceptor interceptor = new PageInterceptor();
+		interceptor.setProperties(properties);
+		sqlSessionFactory.setPlugins(new Interceptor[] { interceptor });
+		return sqlSessionFactory;
+	}
+
+}

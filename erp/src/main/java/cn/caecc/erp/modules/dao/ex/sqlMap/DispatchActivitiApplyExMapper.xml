@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.caecc.erp.modules.dao.ex.mapper.DispatchActivitiApplyExMapper" >
+  <resultMap id="BaseResultMap" type="cn.caecc.erp.modules.dao.ex.dto.DispatchActivitiApplyDto" >
+    <id column="Id" property="id" jdbcType="INTEGER" />
+    <result column="ProcessInstanceId" property="processinstanceid" jdbcType="VARCHAR" />
+    <result column="UId" property="uid" jdbcType="INTEGER" />
+    <result column="Did" property="did" jdbcType="INTEGER" />
+    <result column="SId" property="sid" jdbcType="INTEGER" />
+    <result column="Code" property="code" jdbcType="VARCHAR" />
+    <result column="Title" property="title" jdbcType="VARCHAR" />
+    <result column="Topic" property="topic" jdbcType="VARCHAR" />
+    <result column="CreateUserId" property="createuserid" jdbcType="INTEGER" />
+    <result column="CreateTime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="UserName" property="username" jdbcType="VARCHAR" />
+    <result column="DeptName" property="deptname" jdbcType="VARCHAR" />
+    <result column="GradeName" property="gradename" jdbcType="VARCHAR" />
+  </resultMap>
+   <resultMap id="ResultMapWithBLOBs" type="cn.caecc.erp.modules.dao.mybatis.entity.DispatchActivitiApply" extends="BaseResultMap" >
+     <result column="Content" property="content" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <select id="getDispatchPageList" parameterType="hashmap" resultMap="BaseResultMap">
+
+			SELECT  DA.Id,DA.Title,DA.Topic,DA.CreateTime,U.`Name` as UserName
+
+			FROM  dispatch_activiti_apply  DA  
+
+			LEFT JOIN `user` U
+			
+			ON(DA.UId=U.Id)
+			
+			<where>
+				
+				<if test="state!=null and state==0">
+						AND DA.ProcessInstanceId is null
+				</if>
+				<if test="state!=null and state==1">
+						AND DA.IsSuccess=#{state}
+				</if>
+				<if test="state!=null and state==2">
+						AND DA.ProcessInstanceId is not null
+				</if>
+				<if test="startdate!=null and enddate==null">
+						AND DA.CreateTime &gt;= #{startdate}
+				</if>
+				<if test="enddate!=null and startdate==null">
+						AND DA.CreateTime &lt;= DATE_FORMAT(#{enddate},'%Y-%m-%d 23:59:59')
+				</if>
+				<if test="startdate!=null and enddate!=null">
+						AND DA.CreateTime BETWEEN #{startdate} AND DATE_FORMAT(#{enddate},'%Y-%m-%d 23:59:59')
+				</if>
+				<if test="uid!=null">
+						AND DA.UId=#{uid}
+				</if>
+			</where>
+			ORDER BY DA.CreateTime DESC
+  </select>
+  <select id="getDispathcApplyById" parameterType="int" resultMap="BaseResultMap">
+  			SELECT 
+  			
+			DA.*,U.`Name` as UserName,D.`Name` as DeptName,S.`Name` as GradeName
+			
+			FROM dispatch_activiti_apply DA LEFT JOIN `user` U
+			
+			ON(DA.UId=U.Id)
+
+			LEFT JOIN department D
+
+			ON(DA.DId=D.Id)
+			
+			LEFT JOIN safety_grade S
+			
+			ON(DA.SId=S.Id)
+
+			WHERE DA.Id=#{id}	
+  </select>
+</mapper>

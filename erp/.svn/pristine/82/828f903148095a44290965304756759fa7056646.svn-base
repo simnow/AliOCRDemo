@@ -1,0 +1,148 @@
+package cn.caecc.erp.controller;
+
+import java.util.List;
+
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.github.pagehelper.PageInfo;
+
+import cn.caecc.erp.modules.dao.ex.dto.PositionDto;
+import cn.caecc.erp.modules.dao.mybatis.entity.Position;
+import cn.caecc.erp.modules.service.PositionService;
+import cn.caecc.erp.support.constant.Contants;
+import cn.caecc.erp.support.message.Message;
+
+@Controller
+@RequestMapping("/api/position")
+public class PositionController {
+
+	@Autowired
+	private PositionService positionService;
+
+	@ResponseBody
+	@RequestMapping(method = RequestMethod.POST)
+	@RequiresPermissions(Contants.POSITION_ADD_PERMISSION)
+	public Message createPosition(@RequestBody Position position) {
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			int ret = positionService.createPosition(position);
+			if (ret > 0) {
+				message.setSuccess(true);
+			} else {
+				message.setMsg("创建失败");
+			}
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+
+	@ResponseBody
+	@RequestMapping(method = RequestMethod.PUT)
+	@RequiresPermissions(Contants.POSITION_UPDATE_PERMISSION)
+	public Message updateById(@RequestBody Position position) {
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			int ret = positionService.update(position);
+			if (ret > 0) {
+				message.setSuccess(true);
+			} else {
+				message.setMsg("创建失败");
+			}
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+
+	@ResponseBody
+	@RequiresPermissions(Contants.POSITION_SELECT_PERMISSION)
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
+	public Message findById(@PathVariable("id") int id) {
+		Message message = new Message();
+		message.setSuccess(false);
+		Position position = positionService.findById(id);
+		if (position == null) {
+			message.setMsg("不存在该职位");
+		} else {
+			message.setSuccess(true);
+			message.setObj(position);
+		}
+		return message;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "did/{id}", method = RequestMethod.GET)
+	public Message findByDid(@PathVariable("id") int id) {
+		Message message = new Message();
+		List<Position> list = positionService.findByDid(id);
+		message.setSuccess(true);
+		message.setObj(list);
+		return message;
+	}
+
+	@ResponseBody
+	@RequiresPermissions(Contants.POSITION_DELETE_PERMISSION)
+	@RequestMapping(method = RequestMethod.DELETE)
+	public Message delById(int id) {
+		Message message = new Message();
+		message.setSuccess(false);
+		String msg = "该岗位已产生过相关信息，不能删除";
+
+		try {
+			int ret = positionService.delById(id);
+			if (ret > 0) {
+				message.setSuccess(true);
+			} else {
+				message.setMsg("删除失败");
+			}
+		} catch (Exception ex) {
+			message.setMsg(msg);
+		}
+		return message;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/positionList", method = RequestMethod.GET)
+	@RequiresPermissions(Contants.POSITION_SELECT_PERMISSION)
+	public Message findPositionList(int pageNo, int pageSize, int did) {
+		Message message = new Message();
+		message.setSuccess(false);
+		if (pageNo == 0) {
+			message.setMsg("请选中要查询页数");
+		} else if (pageSize == 0) {
+			message.setMsg("页数大小不能为0");
+		} else {
+			PageInfo<PositionDto> pageInfo = positionService.findPositionList(pageNo, pageSize, did);
+			message.setSuccess(true);
+			message.setObj(pageInfo);
+		}
+		return message;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/name-like", method = RequestMethod.GET)
+	@RequiresPermissions(Contants.POSITION_SELECT_PERMISSION)
+	public Message findDeptByNameLike(int pageNo, int pageSize, String positionName) {
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			PageInfo<PositionDto> pageInfo = positionService.findPositionListByNameLike(pageNo, pageSize, positionName.trim());
+			message.setSuccess(true);
+			message.setObj(pageInfo);
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+
+}

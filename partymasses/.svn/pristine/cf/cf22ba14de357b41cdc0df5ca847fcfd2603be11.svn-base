@@ -1,0 +1,82 @@
+package com.partymasses.modules.service.impl;
+
+import java.io.File;
+import java.util.UUID;
+
+import javax.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.aliyun.oss.OSSClient;
+import com.aliyun.oss.model.CannedAccessControlList;
+import com.aliyun.oss.model.ListObjectsRequest;
+import com.aliyun.oss.model.OSSObjectSummary;
+import com.aliyun.oss.model.ObjectListing;
+import com.partymasses.modules.dao.mybatis.entity.User;
+import com.partymasses.modules.service.OSSService;
+import com.partymasses.support.constant.Contants;
+@Service
+public class OSSServiceImpl implements OSSService {
+	@Autowired  
+	private HttpSession session;  
+	
+	private String generalFolderName(Integer id, String type)
+	{
+	    User userInfo=(User) session.getAttribute(Contants.LOGINUSER);
+		String strFolder = "unitid_" + userInfo.getUnitid().toString() + "/" + type + "_" + id.toString();
+
+		return strFolder;
+	}
+	private String generalObjectName(Integer id, String type)
+	{
+		String strObject = generalFolderName(id, type) + "/" + UUID.randomUUID().toString();
+		return strObject;
+	}
+	
+	@Override
+	public String putNewsImage(Integer newId, String strPath)
+	{
+		String accessKeyId = Contants.OSSACCESSKEYID;
+		String accessKeySecret = Contants.OSSACCESSKEYSECRET;
+		
+	    File file = new File(strPath);  
+
+	    String strKey = generalObjectName(newId, "news") ;
+		String strUrl = Contants.OSSURLPREFIX + strKey;
+		// 创建OSSClient实例
+		OSSClient ossClient = new OSSClient(Contants.OSSENDPOINT, accessKeyId, accessKeySecret);
+
+		// 上传文件
+		ossClient.putObject(Contants.OSSNEWSIMAGEBUCKET, strKey, file);
+		ossClient.setObjectAcl(Contants.OSSNEWSIMAGEBUCKET, strKey, CannedAccessControlList.PublicRead);
+
+		// 关闭client
+		ossClient.shutdown();	
+		
+		return strUrl;
+				
+	}
+	@Override
+	public void deleteNewsImages(Integer newId)
+	{
+		String accessKeyId = Contants.OSSACCESSKEYID;
+		String accessKeySecret = Contants.OSSACCESSKEYSECRET;
+		OSSClient ossClient = new OSSClient(Contants.OSSENDPOINT, accessKeyId, accessKeySecret);
+		//模拟文件夹名，一个新闻存在对应的文件夹,prefix为模拟文件夹名
+		String prefix = generalFolderName(newId, "news");
+
+		ListObjectsRequest listObjectsRequest = new ListObjectsRequest(Contants.OSSNEWSIMAGEBUCKET);
+		listObjectsRequest.setPrefix(prefix);
+		listObjectsRequest.setMaxKeys(1000); //最大返回文件列表数
+		ObjectListing listing = ossClient.listObjects(listObjectsRequest);
+		
+		for (OSSObjectSummary objectSummary : listing.getObjectSummaries()) 
+		{			    
+			ossClient.deleteObject(Contants.OSSNEWSIMAGEBUCKET, objectSummary.getKey());
+		}
+		
+		// 关闭client
+		ossClient.shutdown();
+
+	}
+}

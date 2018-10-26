@@ -1,0 +1,27 @@
+package cn.caecc.erp.support.oss.service;
+
+import java.util.List;
+
+/**
+ * @author weizhen
+ *
+ */
+public interface OssService {
+	/**
+	 * 文件是否存在
+	 * @param bucketName
+	 * @param key
+	 * @return
+	 */
+	public boolean doesKeyExist(String key);
+	
+	public List<String> listDirectory(String directory);
+	
+	public void deleteDirectory(String directory);
+	
+	public boolean deleteObject(String key);
+	
+	public void moveFile(String sourceFileName, String destinationFileName);
+
+
+}

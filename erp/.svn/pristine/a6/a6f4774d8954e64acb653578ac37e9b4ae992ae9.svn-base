@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.caecc.erp.modules.dao.ex.mapper.TaskExMapper">
+	<resultMap id="BaseResultMap" type="cn.caecc.erp.modules.dao.ex.dto.TaskDto" >
+    <id column="Id" property="id" jdbcType="INTEGER" />
+    <result column="UId" property="uid" jdbcType="INTEGER" />
+    <result column="DId" property="did" jdbcType="INTEGER" />
+    <result column="AgencyAffairs" property="agencyaffairs" jdbcType="VARCHAR" />
+    <result column="AgencyStartTime" property="agencystarttime" jdbcType="TIMESTAMP" />
+    <result column="AgencyEndTime" property="agencyendtime" jdbcType="TIMESTAMP" />
+    <result column="CreateUserId" property="createuserid" jdbcType="INTEGER" />
+    <result column="CreateTime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="Progress" property="progress" jdbcType="VARCHAR" />
+    <result column="IsFinished" property="isfinished" jdbcType="INTEGER" />
+    <result column="FinishedTime" property="finishedtime" jdbcType="TIMESTAMP" />
+    <result column="DeptName" property="deptname" jdbcType="VARCHAR" />
+    <result column="UserName" property="username" jdbcType="VARCHAR" />
+    <result column="CreateName" property="createname" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="getTaskById" parameterType="int" resultMap="BaseResultMap">
+  			SELECT 
+  			
+			T.*,U.`Name` as UserName,D.`Name` as DeptName,CU.`Name` AS CreateName
+			
+			FROM task T LEFT JOIN `user` U
+			
+			ON(T.UId=U.Id)
+
+			LEFT JOIN department D
+
+			ON(T.DId=D.Id)
+			
+			LEFT JOIN `user` CU
+			
+			ON(T.CreateUserId=CU.Id)
+
+			WHERE T.Id=#{id}	
+  </select>
+  <select id="getTaskPageList" parameterType="hashmap" resultMap="BaseResultMap">
+  			SELECT 
+  			
+			T.Id,T.AgencyAffairs,T.AgencyStartTime,T.AgencyEndTime,T.CreateTime,T.IsFinished,U.`Name` as UserName,D.`Name` as DeptName
+			FROM task T LEFT JOIN `user` U
+			
+			ON(T.UId=U.Id)
+
+			LEFT JOIN department D
+
+			ON(T.DId=D.Id)
+			<where>
+				 DATE_FORMAT(T.AgencyStartTime, '%Y%m' )= DATE_FORMAT( CURDATE( ) ,'%Y%m') 
+				<if test="deptid!=null">
+					AND FIND_IN_SET(T.Did,getChildrenDept(#{deptid}))
+				</if>
+				<if test="userid!=null">
+					AND U.Id=#{userid}
+				</if>
+				ORDER BY T.CreateTime
+			</where>	
+  </select>
+</mapper>

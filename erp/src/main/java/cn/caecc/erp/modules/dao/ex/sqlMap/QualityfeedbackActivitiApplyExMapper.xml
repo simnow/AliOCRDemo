@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="cn.caecc.erp.modules.dao.ex.mapper.QualityfeedbackActivitiApplyExMapper">
+	<resultMap
+		type="cn.caecc.erp.modules.dao.ex.dto.QualityfeedbackActivitiApplyDto"
+		id="qualityfeedbackActivitiApplyDto">
+		<id column="Id" jdbcType="INTEGER" property="id" />
+		<result column="ProcessInstanceId" jdbcType="VARCHAR" property="processinstanceid" />
+		<result column="UId" jdbcType="INTEGER" property="uid" />
+		<result column="SId" jdbcType="INTEGER" property="sid" />
+		<result column="DId" jdbcType="INTEGER" property="did" />
+		<result column="ProblemDescription1" jdbcType="VARCHAR"
+			property="problemdescription1" />
+		<result column="ProblemDescription2" jdbcType="VARCHAR"
+			property="problemdescription2" />
+		<result column="CreateUserId" jdbcType="INTEGER" property="createuserid" />
+		<result column="CreateTime" jdbcType="TIMESTAMP" property="createtime" />
+		<result column="IsSuccess" jdbcType="INTEGER" property="issuccess" />
+		<result column="uname" property="uname" jdbcType="VARCHAR" />
+		<result column="dname" property="dname" jdbcType="VARCHAR" />
+		<result column="sname" property="sname" jdbcType="VARCHAR" />
+		<result column="cname" property="cname" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<!-- 查询详情 -->
+	<select id="findDetail" resultMap="qualityfeedbackActivitiApplyDto">
+		select q.*,u.name uname,d.name dname,s.name sname,c.name cname
+		from
+		qualityfeedback_activiti_apply q
+		left join user u
+		on(q.uid = u.id)
+		left
+		join department d
+		on(q.did = d.id)
+		left join supplier s
+		on(q.sid = s.id)
+		left join user c
+		on(q.createuserid = c.id)
+		<where>
+			<if test="id != null">
+				q.id = #{id}
+			</if>
+		</where>
+	</select>
+
+	<!-- 按条件获取分页列表 -->
+	<select id="getList" resultMap="qualityfeedbackActivitiApplyDto">
+		select q.*,u.name uname,d.name dname,s.name sname,c.name cname
+		from
+		qualityfeedback_activiti_apply q
+		left join user u
+		on(q.uid = u.id)
+		left
+		join department d
+		on(q.did = d.id)
+		left join supplier s
+		on(q.sid = s.id)
+		left join user c
+		on(q.createuserid = c.id)
+		<where>
+			<if test="userid != null">
+				q.createuserid = #{userid}
+			</if>
+			<if test="drafts == 'drafts'">
+				and q.processinstanceid is null
+			</if>
+			<if test="isSuccess != null">
+				and q.issuccess = #{isSuccess}
+			</if>
+			<if test="sid != null">
+				and q.sid = #{sid}
+			</if>
+		</where>
+	</select>
+</mapper>

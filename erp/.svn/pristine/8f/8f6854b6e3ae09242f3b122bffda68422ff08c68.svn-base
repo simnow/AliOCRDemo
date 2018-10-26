@@ -1,0 +1,114 @@
+/**
+ * 
+ */
+package cn.caecc.erp.config;
+
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.data.redis.connection.RedisPassword;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
+
+/**
+ * @author weizhen
+ *
+ */
+@Configuration
+@PropertySource("classpath:redis.properties")
+public class RedisConfig {
+
+	/**
+	 * 
+	 */
+	public RedisConfig() {
+		// TODO Auto-generated constructor stub
+	}
+
+	@Value("${redis.hostName}")
+	private String host;
+
+	@Value("${redis.port}")
+	private int port;
+
+	@Value("${redis.password}")
+	private String password;
+
+	@Bean
+	public static PropertySourcesPlaceholderConfigurer getPropertySourcesPlaceholderConfigurer() {
+		PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer = new PropertySourcesPlaceholderConfigurer();
+		propertySourcesPlaceholderConfigurer.setIgnoreUnresolvablePlaceholders(true);
+		return propertySourcesPlaceholderConfigurer;
+	}
+
+	/*
+	 * @Bean(name = "jedisPoolConfig") public JedisPoolConfig getJedisPoolConfig() {
+	 * JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
+	 * jedisPoolConfig.setMaxIdle(maxIdle); jedisPoolConfig.setMaxTotal(maxTotal);
+	 * jedisPoolConfig.setMaxWaitMillis(maxWaitMillis);
+	 * jedisPoolConfig.setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis);
+	 * jedisPoolConfig.setNumTestsPerEvictionRun(numTestsPerEvictionRun);
+	 * jedisPoolConfig.setTimeBetweenEvictionRunsMillis(
+	 * timeBetweenEvictionRunsMillis);
+	 * jedisPoolConfig.setTestOnBorrow(testOnBorrow);
+	 * jedisPoolConfig.setTestWhileIdle(testWhileIdle); return jedisPoolConfig;
+	 * 
+	 * }
+	 */
+
+	@Bean(name = "redisConfiguration")
+	public RedisStandaloneConfiguration getRedisConfiguration() {
+		RedisStandaloneConfiguration redisConfiguration = new RedisStandaloneConfiguration();
+		redisConfiguration.setHostName(host);
+		RedisPassword redisPassword = RedisPassword.of(password);
+		redisConfiguration.setPassword(redisPassword);
+		redisConfiguration.setPort(port);
+
+		return redisConfiguration;
+	}
+
+	@Bean(name = "jedisConnectionFactory")
+	public JedisConnectionFactory getJedisConnectionFactory() {
+		JedisConnectionFactory jedisConnectionFactory = new JedisConnectionFactory(this.getRedisConfiguration());
+		return jedisConnectionFactory;
+
+	}
+
+	@Bean(name = "redisTemplate")
+	public RedisTemplate<String, Object> getRedisTemplate() {
+		RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+		redisTemplate.setConnectionFactory(getJedisConnectionFactory());
+
+		StringRedisSerializer keySerializer = new StringRedisSerializer();
+		redisTemplate.setKeySerializer(keySerializer);
+
+		GenericJackson2JsonRedisSerializer valueSerializer = new GenericJackson2JsonRedisSerializer();
+		redisTemplate.setValueSerializer(valueSerializer);
+
+		redisTemplate.setHashKeySerializer(keySerializer);
+		redisTemplate.setHashValueSerializer(valueSerializer);
+
+		redisTemplate.setEnableTransactionSupport(true);
+		return redisTemplate;
+
+	}
+
+	@Bean(name = "redissonClient")
+	public RedissonClient getRedissonClient() {
+		Config config = new Config();
+		// 指定使用单节点部署方式
+		String address = String.format("redis://%s:%d", this.host, this.port);
+		config.useSingleServer().setAddress(address).setPassword(password);
+		RedissonClient redissonClient = Redisson.create(config);
+		return redissonClient;
+	}
+
+}

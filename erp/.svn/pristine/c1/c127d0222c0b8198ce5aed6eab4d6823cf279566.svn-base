@@ -1,0 +1,148 @@
+package cn.caecc.erp.controller;
+
+import java.util.Map;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import com.github.pagehelper.PageInfo;
+import cn.caecc.erp.modules.dao.ex.dto.TenderingActivitiApplyDto;
+import cn.caecc.erp.modules.dao.mybatis.entity.TenderingActivitiApply;
+import cn.caecc.erp.modules.service.TenderingActivitiApplyService;
+import cn.caecc.erp.support.constant.Contants;
+import cn.caecc.erp.support.message.Message;
+import cn.caecc.erp.support.workflow.entity.ProcessInstanceApplyEntity;
+
+@Controller
+@RequestMapping("/api/tendering-activiti-apply")
+public class TenderingActivitiApplyController extends BaseController {
+
+	@Autowired
+	private TenderingActivitiApplyService tenderingActivitiApplyService;
+	
+	/**
+	 * 新建
+	 * @param tenderingActivitiApply
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(method = RequestMethod.POST)
+	@RequiresPermissions(Contants.TENDERING_ADD_PERMISSION)
+	public Message create(@RequestBody TenderingActivitiApply tenderingActivitiApply) {
+		Message message = new Message();
+		message.setSuccess(false);
+		tenderingActivitiApply = tenderingActivitiApplyService.create(tenderingActivitiApply);
+		if (tenderingActivitiApply != null) {
+			message.setObj(tenderingActivitiApply);
+			message.setSuccess(true);
+		} else {
+			message.setMsg("未查询到相关数据");
+		}
+		return message;
+	}
+	
+	/**
+	 * 查询详情
+	 * @param id
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/detail/{id}",method = RequestMethod.GET)
+	@RequiresPermissions(Contants.TENDERING_SELECT_PERMISSION)
+	public Message findDetail(@PathVariable("id")int id) {
+		Message message = new Message();
+		message.setSuccess(false);
+		TenderingActivitiApplyDto tenderingActivitiApplyDto = tenderingActivitiApplyService.findDeatil(id);
+		if (tenderingActivitiApplyDto != null) {
+			message.setObj(tenderingActivitiApplyDto);
+			message.setSuccess(true);
+		}else {
+			message.setMsg("未查询到相关数据");
+		}
+		return message;
+	}
+	
+	/**
+	 * 按条件获取分页列表
+	 * @param pageNo
+	 * @param pageSize
+	 * @param drafts
+	 * @param isSuccess
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/list",method = RequestMethod.GET)
+	@RequiresPermissions(Contants.TENDERING_SELECT_PERMISSION)
+	public Message getList(Integer userid, int pageNo, int pageSize, String drafts, int isSuccess) {
+		Message message = new Message();
+		message.setSuccess(false);
+		if (pageNo == 0) {
+			message.setMsg("请选中要查询页数");
+		}else if (pageSize == 0) {
+			message.setMsg("每页显示数不能为0");
+		}else {
+			PageInfo<TenderingActivitiApplyDto> pageInfo = tenderingActivitiApplyService.getList(userid, pageNo, pageSize, drafts, isSuccess);
+			if (pageInfo != null) {
+				message.setObj(pageInfo);
+				message.setSuccess(true);
+			}else {
+				message.setMsg("获取列表失败");
+			}	
+			
+		}
+		return message;
+	}
+	
+	/**
+	 * 更新
+	 * @param tenderingActivitiApply
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(method = RequestMethod.PUT)
+	@RequiresPermissions(Contants.TENDERING_UPDATE_PERMISSION)
+	public Message update(@RequestBody TenderingActivitiApply tenderingActivitiApply) {
+		Message message = new Message();
+		message.setSuccess(false);
+		tenderingActivitiApply = tenderingActivitiApplyService.update(tenderingActivitiApply);
+		if (tenderingActivitiApply != null) {
+			message.setObj(tenderingActivitiApply);
+			message.setSuccess(true);
+		} else {
+			message.setMsg("未查询到相关数据");
+		}
+		return message;
+	}
+	
+	/**
+	 * 开始流程
+	 * @param processInstanceApplyEntity
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/startprocess",method = RequestMethod.POST)
+	@RequiresPermissions(Contants.TENDERING_PROCESS_START_PERMISSION)
+	public Message startProcess(@RequestBody ProcessInstanceApplyEntity processInstanceApplyEntity) {
+		String processDefinitionKey = processInstanceApplyEntity.getProcessDefinitionKey();
+		String bussinessKey = processInstanceApplyEntity.getBussinessKey();
+		Map<String, Object> variables = processInstanceApplyEntity.getVariables();
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			int ret = tenderingActivitiApplyService.startProcess(processDefinitionKey, bussinessKey, variables);
+			if (ret > 0) {
+				message.setSuccess(true);
+			} else {
+				message.setMsg("开启流程失败");
+			}
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+	
+}

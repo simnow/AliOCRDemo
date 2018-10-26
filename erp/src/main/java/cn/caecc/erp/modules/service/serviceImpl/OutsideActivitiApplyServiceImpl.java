@@ -1,0 +1,153 @@
+package cn.caecc.erp.modules.service.serviceImpl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import cn.caecc.erp.modules.dao.ex.dto.OutsideActivitiApplyDto;
+import cn.caecc.erp.modules.dao.ex.mapper.OutsideActivitiApplyExMapper;
+import cn.caecc.erp.modules.dao.mybatis.entity.OutsideActivitiApply;
+import cn.caecc.erp.modules.dao.mybatis.mapper.OutsideActivitiApplyMapper;
+import cn.caecc.erp.modules.service.OutsideActivitiApplyService;
+import cn.caecc.erp.support.constant.Contants;
+import cn.caecc.erp.support.exception.CommonException;
+import cn.caecc.erp.support.util.DateUtil;
+import cn.caecc.erp.support.workflow.service.WorkflowService;
+
+@Service
+public class OutsideActivitiApplyServiceImpl implements OutsideActivitiApplyService {
+	@Autowired
+	private OutsideActivitiApplyMapper osApplyMapper;
+	@Autowired
+	private WorkflowService workflowService;
+	@Autowired
+	private OutsideActivitiApplyExMapper osExApplyMapper;
+
+	@Override
+	public OutsideActivitiApply addOutsideActivitiApply(OutsideActivitiApply outsideActivitiApply) {
+		// TODO Auto-generated method stub
+
+		Integer loginUserId = (Integer) SecurityUtils.getSubject().getSession().getAttribute(Contants.LOGINUSERID);
+
+		// 判断是否存在ID
+		if (outsideActivitiApply.getId() == null) {
+			outsideActivitiApply.setCreateuserid(loginUserId);
+			outsideActivitiApply.setCreatetime(DateUtil.getcurrentDateTime());
+
+			osApplyMapper.insertSelective(outsideActivitiApply);
+
+		}
+		// 不存在进行修改操作
+		else {
+			// 查询数据库记录
+			OutsideActivitiApply exists = osApplyMapper.selectByPrimaryKey(outsideActivitiApply.getId());
+			// 判断流程是否开始
+			if (exists.getProcessinstanceid() == null) {
+
+				osApplyMapper.updateByPrimaryKeySelective(outsideActivitiApply);
+
+			} else {
+				throw new CommonException("流程中，不能进行修改操作");
+
+			}
+
+		}
+		return outsideActivitiApply;
+	}
+
+	@Override
+	public int deleteOsActivitiApply(int id) {
+		// TODO Auto-generated method stub
+		int result = 0;
+		OutsideActivitiApply osActivitiApply = osApplyMapper.selectByPrimaryKey(id);
+		if (osActivitiApply == null) {
+			throw new CommonException("不存在此条记录");
+
+		}
+		if (StringUtils.isBlank(osActivitiApply.getProcessinstanceid())) {
+			result = osApplyMapper.deleteByPrimaryKey(id);
+		} else {
+			throw new CommonException("存在流程信息，无法删除");
+
+		}
+		return result;
+	}
+
+	@Override
+	public PageInfo<OutsideActivitiApply> getOsApplyPageList(int state,int pagesize,int pageno,int uid) {
+		// TODO Auto-generated method stub
+		Map<String,Object> params=new HashMap<String,Object>();
+		params.put("state",state);
+		params.put("uid",uid);
+		PageHelper.startPage(pageno,pagesize);
+
+		List<OutsideActivitiApply> resultList = osExApplyMapper.getCaPageList(params);
+
+		PageInfo<OutsideActivitiApply> pageInfo = new PageInfo<>(resultList);
+		return pageInfo;
+	}
+
+	@Override
+	public int startOsActivitiApply(String processDefinitionKey, String bussinessKey, Map<String, Object> variables) throws Exception {
+		// TODO Auto-generated method stub
+
+		// 判断参数是否存在
+		if (StringUtils.isBlank(bussinessKey) || StringUtils.isBlank(processDefinitionKey)) {
+
+			throw new CommonException("参数异常");
+
+		}
+
+		// 开启流程
+		String processInstanceId = workflowService.startProcess(processDefinitionKey, bussinessKey, variables);
+		// 判断流程开启成功
+		if (StringUtils.isBlank(processInstanceId)) {
+			throw new CommonException("流程开启失败");
+
+		}
+		// 获取业务表信息
+		OutsideActivitiApply outsideActiviti = osApplyMapper.selectByPrimaryKey(Integer.parseInt(bussinessKey));
+		outsideActiviti.setProcessinstanceid(processInstanceId);
+		// 更新
+		return osApplyMapper.updateByPrimaryKey(outsideActiviti);
+
+	}
+
+	@Override
+	public OutsideActivitiApplyDto getOsApplyById(int id) {
+		// TODO Auto-generated method stub
+		return osExApplyMapper.getCardApplyById(id);
+
+	}
+
+	@Override
+	public OutsideActivitiApply updateOsApply(OutsideActivitiApply outsideActivitiApply) {
+		// TODO Auto-generated method stub
+		if (outsideActivitiApply.getId() == null || outsideActivitiApply.getUid() == null
+				|| StringUtils.isBlank(outsideActivitiApply.getContent())) {
+
+			throw new CommonException("参数异常");
+
+		}
+
+		osApplyMapper.updateByPrimaryKeySelective(outsideActivitiApply);
+		return outsideActivitiApply;
+
+	}
+
+	@Override
+	public void setSuccess(int id) {
+		// TODO Auto-generated method stub
+		OutsideActivitiApply ActivitiApply = new OutsideActivitiApply();
+		ActivitiApply.setId(id);
+		ActivitiApply.setIssuccess(1);
+		osApplyMapper.updateByPrimaryKeySelective(ActivitiApply);
+
+	}
+
+}

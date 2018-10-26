@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="cn.caecc.erp.modules.dao.ex.mapper.ContractGoodsRelationshipExMapper">
+	<resultMap
+		type="cn.caecc.erp.modules.dao.ex.dto.ContractGoodsRelationshipDto"
+		id="ContractGoodsRelationshipDto">
+		<id column="Id" property="id" jdbcType="INTEGER" />
+		<result column="CId" property="cid" jdbcType="INTEGER" />
+		<result column="GCode" property="gcode" jdbcType="VARCHAR" />
+		<result column="UnitPrice" property="unitprice"
+			jdbcType="DOUBLE" />
+		<result column="Count" property="count" jdbcType="INTEGER" />
+		<result column="Origin" property="origin" jdbcType="VARCHAR" />
+		<result column="gname" property="gname" jdbcType="VARCHAR" />
+		<result column="ccode" property="ccode" jdbcType="VARCHAR" />
+		<result column="cprocessinstanceid"
+			property="cprocessinstanceid" jdbcType="VARCHAR" />
+		<result column="cpid" property="cpid" jdbcType="INTEGER" />
+		<result column="cuid" property="cuid" jdbcType="INTEGER" />
+		<result column="cdid" property="cdid" jdbcType="INTEGER" />
+		<result column="cname" property="cname" jdbcType="VARCHAR" />
+		<result column="capplydate" property="capplydate"
+			jdbcType="DATE" />
+		<result column="cpartya" property="cpartya" jdbcType="VARCHAR" />
+		<result column="cpartyb" property="cpartyb" jdbcType="VARCHAR" />
+		<result column="cstarttime" property="cstarttime"
+			jdbcType="DATE" />
+		<result column="cendtime" property="cendtime" jdbcType="DATE" />
+		<result column="csummary" property="csummary"
+			jdbcType="VARCHAR" />
+		<result column="ccreateuserid" property="ccreateuserid"
+			jdbcType="INTEGER" />
+		<result column="ccreatetime" property="ccreatetime"
+			jdbcType="TIMESTAMP" />
+		<result column="cissuccess" property="cissuccess"
+			jdbcType="INTEGER" />
+	</resultMap>
+
+	<!-- 查询详情 -->
+	<select id="findDetail" resultMap="ContractGoodsRelationshipDto">
+		select cg.*,g.name gname,c.code ccode,c.processinstanceid
+		cprocessinstanceid,c.pid cpid,c.uid cuid,
+		c.did cdid,c.name
+		cname,c.applydate capplydate,c.partya cpartya,c.partyb
+		cpartyb,c.starttime cstarttime,
+		c.endtime cendtime,c.summary
+		csummary,c.createuserid ccreateuserid,c.createtime
+		ccreatetime,c.issuccess cissuccess
+		from contract_goods_relationship cg
+		left join goods g
+		on(cg.gcode = g.code)
+		left join
+		contract_activiti_apply c
+		on(cg.cid = c.id)
+		<where>
+			<if test="id != null">
+				cg.id = #{id}
+			</if>
+		</where>
+	</select>
+
+	<!-- 获取分页列表 -->
+	<select id="getList" resultMap="ContractGoodsRelationshipDto">
+		select cg.*,g.name gname,c.code ccode,c.processinstanceid
+		cprocessinstanceid,c.pid cpid,c.uid cuid,
+		c.did cdid,c.name
+		cname,c.applydate capplydate,c.partya cpartya,c.partyb
+		cpartyb,c.starttime cstarttime,
+		c.endtime cendtime,c.summary
+		csummary,c.createuserid ccreateuserid,c.createtime
+		ccreatetime,c.issuccess cissuccess
+		from contract_goods_relationship cg
+		left join goods g
+		on(cg.gcode = g.code)
+		left join
+		contract_activiti_apply c
+		on(cg.cid = c.id)
+		<where>
+			<if test="gcode != null and gcode != ''">
+				cg.gcode = #{gcode}
+			</if>
+		</where>
+	</select>
+
+	<!-- 批量查询 -->
+	<select id="batchFind"
+		resultType="cn.caecc.erp.modules.dao.mybatis.entity.ContractGoodsRelationship">
+		select * from contract_goods_relationship
+		where id in
+		<foreach collection="flist" item="itemId" open="(" close=")"
+			separator=",">
+			#{itemId}
+		</foreach>
+	</select>
+
+	<!-- 批量新增 -->
+	<insert id="batchAdd" useGeneratedKeys="true" keyProperty="id">
+		<selectKey resultType="int" keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert into contract_goods_relationship(CId,
+		GCode, UnitPrice, Count,
+		Origin)
+		values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.cid},#{item.gcode},#{item.unitprice},#{item.count},#{item.origin})
+		</foreach>
+	</insert>
+
+	<!-- 批量修改 -->
+	<update id="batchUpdate" parameterType="java.util.List">
+		update contract_goods_relationship
+		<trim prefix="set" suffixOverrides=",">
+			<trim prefix="cid =case" suffix="end,">
+				<foreach collection="ulist" item="item" index="index">
+					<if test="item.cid != null">
+						when id=#{item.id} then #{item.cid}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="gcode =case" suffix="end,">
+				<foreach collection="ulist" item="item" index="index">
+					<if test="item.gcode != null and item.gcode != ''">
+						when id=#{item.id} then #{item.gcode}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="unitprice =case" suffix="end,">
+				<foreach collection="ulist" item="item" index="index">
+					<if test="item.unitprice != null">
+						when id=#{item.id} then #{item.unitprice}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="count =case" suffix="end,">
+				<foreach collection="ulist" item="item" index="index">
+					<if test="item.count != null">
+						when id=#{item.id} then #{item.count}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="origin =case" suffix="end,">
+				<foreach collection="ulist" item="item" index="index">
+					<if test="item.origin != null and item.origin != ''">
+						when id=#{item.id} then #{item.origin}
+					</if>
+				</foreach>
+			</trim>
+		</trim>
+		where id in
+		<foreach collection="ulist" index="index" item="item"
+			separator="," open="(" close=")">
+			#{item.id,jdbcType=INTEGER}
+		</foreach>
+	</update>
+</mapper>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="cn.caecc.erp.modules.dao.ex.mapper.FixedassetsActivitiApplyExMapper">
+	<resultMap
+		type="cn.caecc.erp.modules.dao.ex.dto.FixedassetsActivitiApplyDto" id="FixedassetsActivitiApplyDto">
+		<id column="Id" property="id" jdbcType="INTEGER" />
+		<result column="ProcessInstanceId" property="processinstanceid"
+			jdbcType="VARCHAR" />
+		<result column="UId" property="uid" jdbcType="INTEGER" />
+		<result column="DId" property="did" jdbcType="INTEGER" />
+		<result column="GCode" property="gcode" jdbcType="VARCHAR" />
+		<result column="ApplyCount" property="applycount" jdbcType="INTEGER" />
+		<result column="CGId" property="cgid" jdbcType="INTEGER" />
+		<result column="Reason" property="reason" jdbcType="VARCHAR" />
+		<result column="CreateUserId" property="createuserid" jdbcType="INTEGER" />
+		<result column="CreateTime" property="createtime" jdbcType="TIMESTAMP" />
+		<result column="IsSuccess" property="issuccess" jdbcType="INTEGER" />
+		<result column="uname" property="uname" jdbcType="VARCHAR" />
+		<result column="dname" property="dname" jdbcType="VARCHAR" />
+		<result column="gname" property="gname" jdbcType="VARCHAR" />
+		<result column="cname" property="cname" jdbcType="VARCHAR" />
+		<result column="contractCode" property="contractCode" jdbcType="VARCHAR" />
+		<result column="contractName" property="contractName" jdbcType="VARCHAR" />
+		<result column="partyb" property="partyb" jdbcType="VARCHAR" />
+		<result column="unitPrice" property="unitPrice" jdbcType="DOUBLE" />
+	</resultMap>
+
+	<!-- 查询详情 -->
+	<select id="findDetail" resultMap="FixedassetsActivitiApplyDto">
+		select f.*,u.name uname,d.name dname,g.name gname,c.name cname,
+		caa.code contractCode,caa.name contractName,caa.partyb
+		partyb,cg.unitPrice unitPrice
+		from
+		fixedassets_activiti_apply f
+		left join
+		user u
+		on(f.uid = u.id)
+		left join
+		department d
+		on(f.did = d.id)
+		left join
+		goods g
+		on(f.gcode = g.code)
+		left
+		join user c
+		on(f.createuserid = c.id)
+		left join
+		contract_goods_relationship cg
+		on(f.cgid = cg.id)
+		left join contract_activiti_apply
+		caa
+		on(cg.cid = caa.id)
+		<where>
+			<if test="id != null">
+				f.id = #{id}
+			</if>
+		</where>
+	</select>
+
+	<!-- 获取分页列表 -->
+	<select id="getList" resultMap="FixedassetsActivitiApplyDto">
+		select f.*,u.name uname,d.name dname,g.name gname,c.name cname,
+		caa.code contractCode,caa.name contractName,caa.partyb partyb,cg.unitPrice unitPrice
+		from
+		fixedassets_activiti_apply f
+		left join user u
+		on(f.uid = u.id)
+		left join
+		department d
+		on(f.did = d.id)
+		left join goods g
+		on(f.gcode = g.code)
+		left
+		join user c
+		on(f.createuserid = c.id)
+		left join
+		contract_goods_relationship cg
+		on(f.cgid = cg.id)
+		left join contract_activiti_apply
+		caa
+		on(cg.cid = caa.id)
+		<where>
+			<if test="userid != null">
+				f.createuserid = #{userid}
+			</if>
+			<if test="drafts == 'drafts'">
+				and f.processinstanceid is null
+			</if>
+			<if test="isSuccess != null">
+				and f.issuccess = #{isSuccess}
+			</if>
+		</where>
+	</select>
+</mapper>

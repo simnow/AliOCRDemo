@@ -1,0 +1,18 @@
+package com.partymasses.modules.service;
+
+import javax.servlet.http.HttpSession;
+
+import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
+import com.aliyuncs.exceptions.ClientException;
+import com.partymasses.support.message.Message;
+
+public interface SmsService {
+		
+		public SendSmsResponse sendLoginSms(String phonenumber,String mess)  throws ClientException;
+		
+		public SendSmsResponse sendUpdateSms(String phonenumber,String mess)  throws ClientException;
+		
+		public Message checkLoginSms(String phonenumber,String code,HttpSession session);
+		
+		public Message checkUpdateSms(String phonenumber,String code,HttpSession session);
+}

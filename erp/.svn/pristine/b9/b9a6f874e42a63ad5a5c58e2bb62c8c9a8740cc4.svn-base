@@ -1,0 +1,38 @@
+/**
+ * 
+ */
+package cn.caecc.erp.support.workflow.approver.service;
+
+import java.util.List;
+
+import cn.caecc.erp.modules.dao.mybatis.entity.User;
+
+/**
+ * @author weizhen
+ *
+ */
+public interface ContractApproverService {
+
+	/**
+	 * 
+	 */
+	
+	public List<User> getApplyTaskNextApprover();
+
+	public List<User> getBusinessDepartmentTaskNextApprover();
+
+	public List<User> getManagerTaskNextApprover();
+
+	public List<User> getSecuritiesAffairsTaskNextApprover();
+
+	public List<User> getFinancialManagementTaskNextApprover();
+	
+	public List<User> getFinancialOfficerTaskNextApprover(String processInstanceId);
+	
+	public List<User> getAssignedManagerTaskNextApprover();
+	
+	public List<User> getGeneralManagerTaskNextApprover(int isChairman);
+	
+	public List<User> getChairmanTaskNextApprover();
+	
+}

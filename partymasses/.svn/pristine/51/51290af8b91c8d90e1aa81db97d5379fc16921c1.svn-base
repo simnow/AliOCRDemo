@@ -1,0 +1,169 @@
+package com.partymasses.modules.service.impl;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.shiro.SecurityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.github.pagehelper.PageHelper;
+import com.partymasses.modules.dao.ex.mapper.UnitExMapper;
+import com.partymasses.modules.dao.ex.mapper.UnitFunctionExMapper;
+import com.partymasses.modules.dao.mybatis.entity.InputUnit;
+import com.partymasses.modules.dao.mybatis.entity.InputUnitPut;
+import com.partymasses.modules.dao.mybatis.entity.SelectUnit;
+import com.partymasses.modules.dao.mybatis.entity.Unit;
+import com.partymasses.modules.dao.mybatis.entity.UnitFunction;
+import com.partymasses.modules.dao.mybatis.entity.User;
+import com.partymasses.modules.dao.mybatis.mapper.UnitMapper;
+import com.partymasses.modules.service.UnitService;
+import com.partymasses.support.constant.Contants;
+@Service
+public class UnitServiceImpl implements UnitService{
+	
+	@Autowired
+	private UnitMapper unit;
+	@Autowired
+	private UnitExMapper unitex;
+	@Autowired
+	private UnitFunctionExMapper unitfunctionex;
+	@Override
+	public Unit getById(Integer id) {
+		Unit u=unit.selectByPrimaryKey(id);
+		return u;
+	}
+
+	@Override
+	public List<Unit> select(SelectUnit selectunit) {
+			List<Unit> u=new ArrayList<Unit>();
+			List<Integer> paging=selectunit.getPaging();
+			PageHelper.startPage(paging.get(0),paging.get(1));
+			/*Unit unit=new Unit();
+			unit.setName(selectunit.getUnitname());
+			unit.setDistrictid(selectunit.getUnitdistrict());
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			Date date=new Date();
+			//如果查询初始时间为null,默认查询时间
+			if (selectunit.getBegintime()==null) {
+				selectunit.setBegintime("2018-3-1");
+			}
+			if (selectunit.getFinishtime()==null) {
+				selectunit.setFinishtime("2118-3-1");
+			}
+			try {
+				date = sdf.parse(selectunit.getBegintime());
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			unit.setCreatetime(date);
+			try {
+				date=sdf.parse(selectunit.getFinishtime());
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			unit.setUpdatetime(date);
+			u=unitex.selectBySelectUnit(unit);*/
+			u=selectLike(selectunit);
+			return u;
+	}
+	@Override
+	public List<Unit> selectLike(SelectUnit selectunit){
+		List<Unit> u=new ArrayList<Unit>();
+		Unit unit=new Unit();
+		unit.setName(selectunit.getUnitname());
+		unit.setDistrictid(selectunit.getUnitdistrict());
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		Date date=new Date();
+		//如果查询初始时间为null,默认查询时间
+		if (selectunit.getBegintime()==null) {
+			selectunit.setBegintime("2018-3-1");
+		}
+		if (selectunit.getFinishtime()==null) {
+			selectunit.setFinishtime("2118-3-1");
+		}
+		try {
+			date = sdf.parse(selectunit.getBegintime());
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		unit.setCreatetime(date);
+		try {
+			date=sdf.parse(selectunit.getFinishtime());
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		unit.setUpdatetime(date);
+		u=unitex.selectBySelectUnit(unit);
+		return u;
+	}
+	@Override
+	public Boolean update(InputUnitPut inputunitput) {
+		Unit units=new Unit();
+		units.setLevel(inputunitput.getLevel());
+		units.setName(inputunitput.getName());
+		units.setDistrictid(inputunitput.getDistrictid());
+		units.setParentid(inputunitput.getParentid());
+		units.setUpdatetime(new Date());
+		User userInfo=(User) SecurityUtils.getSubject().getSession().getAttribute(Contants.LOGINUSER);
+		units.setUpdateuser(userInfo.getId());
+		units.setId(inputunitput.getId());
+		units.setDistrictname(inputunitput.getDistrictname());
+		int n=unit.updateByPrimaryKeySelective(units);
+		if (n==0) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public boolean create(InputUnit u ) {
+		Unit units=new Unit();
+		units.setLevel(u.getLevel());
+		units.setName(u.getName());
+		units.setDistrictid(u.getDistrictid());
+		units.setParentid(u.getParentid());
+		units.setCreatetime(new Date());
+		User userInfo=(User) SecurityUtils.getSubject().getSession().getAttribute(Contants.LOGINUSER);
+		units.setCreateuser(userInfo.getId());
+		int unitid=unitex.selectMaxId()+1;
+		units.setId(unitid);
+		units.setDistrictname(u.getDistrictname());
+		int n=unit.insert(units);
+		if(n==0){
+			return false;
+		}
+		List<Integer>functionids=u.getFunctionids();
+		List<UnitFunction>listUnitFunction=new ArrayList<UnitFunction>();
+		for (int i=0;i<functionids.size();i++) {
+			listUnitFunction.add(new UnitFunction(unitid,functionids.get(i)));
+		}
+		int lineNumber=unitfunctionex.addUnitFunction(listUnitFunction);
+		if (lineNumber==0) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public boolean deleteById(Integer id) {
+		int number1=unitfunctionex.deleteByUnitId(id);
+		int n=unit.deleteByPrimaryKey(id);
+		//int number=unitfunctionex.getByUnitID(id).size();
+		if (n==0||number1==0) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public List<Unit> selectAllUnit() {
+		List<Unit> u=new ArrayList<Unit>();
+		u =unitex.select();
+		return u;
+	}
+
+}

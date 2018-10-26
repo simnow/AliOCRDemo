@@ -1,0 +1,34 @@
+package cn.caecc.erp.modules.service;
+
+import java.util.Map;
+
+import com.github.pagehelper.PageInfo;
+
+import cn.caecc.erp.modules.dao.ex.dto.OutsideActivitiApplyDto;
+import cn.caecc.erp.modules.dao.mybatis.entity.OutsideActivitiApply;
+
+public interface OutsideActivitiApplyService {
+	
+	
+	public  OutsideActivitiApply  addOutsideActivitiApply(OutsideActivitiApply outsideActivitiApply);
+	
+	
+	public  int  deleteOsActivitiApply(int id);
+	
+	
+	public  PageInfo<OutsideActivitiApply>   getOsApplyPageList(int state,int pagesize,int pageno,int uid);
+	
+	
+	public  int  startOsActivitiApply(String processDefinitionKey,String bussinessKey,Map<String, Object> variables) throws Exception;
+	
+	
+	public  OutsideActivitiApplyDto  getOsApplyById(int id);
+	
+	
+	public  OutsideActivitiApply  updateOsApply(OutsideActivitiApply outsideActivitiApply);
+	
+	
+	public  void    setSuccess(int id);
+	
+
+}

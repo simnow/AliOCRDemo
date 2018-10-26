@@ -1,0 +1,165 @@
+package cn.caecc.erp.modules.service.serviceImpl;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import cn.caecc.erp.modules.dao.ex.dto.WorkloadActivitiApplyDto;
+import cn.caecc.erp.modules.dao.ex.mapper.WorkloadActivitiApplyExMapper;
+import cn.caecc.erp.modules.dao.mybatis.entity.WorkloadActivitiApply;
+import cn.caecc.erp.modules.dao.mybatis.mapper.WorkloadActivitiApplyMapper;
+import cn.caecc.erp.modules.service.WorkloadActivitiApplyService;
+import cn.caecc.erp.support.constant.Contants;
+import cn.caecc.erp.support.exception.CommonException;
+import cn.caecc.erp.support.workflow.service.WorkflowService;
+
+@Service
+public class WorkloadActivitiApplyServiceImpl implements WorkloadActivitiApplyService {
+
+	@Autowired
+	private WorkloadActivitiApplyMapper workloadActivitiApplyMapper;
+	@Autowired
+	private WorkloadActivitiApplyExMapper workloadActivitiApplyExMapper;
+	@Autowired
+	private WorkflowService workflowService;
+
+	/**
+	 * 新建保存
+	 */
+	@Override
+	public WorkloadActivitiApply create(WorkloadActivitiApply workloadActivitiApply) {
+		if (workloadActivitiApply == null) {
+			throw new CommonException("参数异常");
+
+		} else {
+
+			// 如果有id
+			if (workloadActivitiApply.getId() != null) {
+				// 更新
+				this.update(workloadActivitiApply);
+			} else {
+				// 否则，保存
+				Integer loginUserId = (Integer) SecurityUtils.getSubject().getSession()
+						.getAttribute(Contants.LOGINUSERID);
+
+				workloadActivitiApply.setCreateuserid(loginUserId);
+				workloadActivitiApply.setCreatetime(new Date());
+				int result = workloadActivitiApplyMapper.insertSelective(workloadActivitiApply);
+				if (result <= 0) {
+					throw new CommonException("创建失败");
+				}else {
+					workloadActivitiApply.setIssuccess(0);
+				}
+			}
+		}
+		return workloadActivitiApply;
+	}
+
+	/**
+	 * 通过id查询
+	 */
+	@Override
+	public WorkloadActivitiApply findById(int id) {
+		return workloadActivitiApplyMapper.selectByPrimaryKey(id);
+	}
+
+	/**
+	 * 查询详情
+	 */
+	@Override
+	public WorkloadActivitiApplyDto findDetail(int id) {
+		return workloadActivitiApplyExMapper.findDetail(id);
+	}
+
+	/**
+	 * 按条件获取分页列表
+	 */
+	@Override
+	public PageInfo<WorkloadActivitiApplyDto> getList(Integer loginUserId, int pageNo, int pageSize, String drafts,
+			int isSuccess) {
+		PageHelper.orderBy("CreateTime DESC");
+		PageHelper.startPage(pageNo, pageSize);
+		List<WorkloadActivitiApplyDto> list = workloadActivitiApplyExMapper.getList(loginUserId, drafts, isSuccess);
+		PageInfo<WorkloadActivitiApplyDto> pageInfo = new PageInfo<>(list);
+		return pageInfo;
+	}
+
+	/**
+	 * 更新
+	 */
+	@Override
+	public WorkloadActivitiApply update(WorkloadActivitiApply workloadActivitiApply) {
+		if (workloadActivitiApply == null) {
+			throw new CommonException("参数异常");
+		} else {
+			WorkloadActivitiApply findById = this.findById(workloadActivitiApply.getId());
+			if (findById == null) {
+				throw new CommonException("需要更新的对象不存在");
+
+			} else {
+				int result = workloadActivitiApplyMapper.updateByPrimaryKey(workloadActivitiApply);
+				if (result <= 0) {
+					throw new CommonException("更新失败");
+				}
+
+			}
+		}
+		return workloadActivitiApply;
+	}
+
+	/**
+	 * 开始流程
+	 * @throws Exception 
+	 */
+	@Override
+	public int startProcess(String processDefinitionKey, String bussinessKey, Map<String, Object> variables) throws Exception {
+		if (StringUtils.isNotBlank(processDefinitionKey) && StringUtils.isNotBlank(bussinessKey)) {
+			int parseInt = Integer.parseInt(bussinessKey);
+			WorkloadActivitiApply workloadActivitiApply = this.findById(parseInt);
+
+			String processInstanceId = workflowService.startProcess(processDefinitionKey, bussinessKey, variables);
+			if (StringUtils.isNotBlank(processInstanceId)) {
+				workloadActivitiApply.setProcessinstanceid(processInstanceId);
+				this.update(workloadActivitiApply);
+			} else {
+				throw new CommonException("开始流程失败");
+
+			}
+
+		} else {
+			throw new CommonException("参数异常");
+
+		}
+		return 1;
+	}
+
+	/**
+	 * 重置isSuccess
+	 */
+	@Override
+	public void setSuccess(int id) {
+		WorkloadActivitiApply workloadActivitiApply = new WorkloadActivitiApply();
+		workloadActivitiApply.setId(id);
+		workloadActivitiApply.setIssuccess(1);
+		workloadActivitiApplyMapper.updateByPrimaryKeySelective(workloadActivitiApply);
+	}
+
+	/**
+	 * 删除
+	 */
+	@Override
+	public int deleteById(int id) {
+		WorkloadActivitiApply findById = this.findById(id);
+		if (findById == null) {
+			throw new CommonException("删除的数据不存在");
+		}else {
+			return workloadActivitiApplyMapper.deleteByPrimaryKey(id);
+		}
+	}
+
+}

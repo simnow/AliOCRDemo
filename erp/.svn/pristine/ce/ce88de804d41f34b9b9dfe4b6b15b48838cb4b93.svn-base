@@ -1,0 +1,256 @@
+package cn.caecc.erp.modules.service.serviceImpl;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.shiro.SecurityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import cn.caecc.erp.modules.dao.ex.dto.ContractActivitiApplyDto;
+import cn.caecc.erp.modules.dao.ex.dto.ContractGoodsDto;
+import cn.caecc.erp.modules.dao.ex.mapper.ContractActivitiApplyExMapper;
+import cn.caecc.erp.modules.dao.mybatis.entity.ContractActivitiApply;
+import cn.caecc.erp.modules.dao.mybatis.entity.ContractActivitiApplyExample;
+import cn.caecc.erp.modules.dao.mybatis.entity.ContractActivitiApplyExample.Criteria;
+import cn.caecc.erp.modules.dao.mybatis.mapper.ContractActivitiApplyMapper;
+import cn.caecc.erp.modules.service.ContractActivitiApplyService;
+import cn.caecc.erp.modules.service.MessageService;
+import cn.caecc.erp.support.constant.Contants;
+import cn.caecc.erp.support.exception.CommonException;
+import cn.caecc.erp.support.workflow.service.WorkflowService;
+
+@Service
+public class ContractActivitiApplyServiceImpl implements ContractActivitiApplyService {
+
+	@Autowired
+	private ContractActivitiApplyMapper contractActivitiApplyMapper;
+	@Autowired
+	private ContractActivitiApplyExMapper contractActivitiApplyExMapper;
+	@Autowired
+	private WorkflowService workflowService;
+	@Autowired
+	private MessageService messageService;
+	@Override
+	public ContractActivitiApply create(ContractActivitiApply contractActivitiApply) {
+		if (contractActivitiApply == null) {
+			throw new CommonException("请求参数为空");
+		} else {
+			// 如果有id
+			if (contractActivitiApply.getId() != null) {
+				// 更新
+				this.update(contractActivitiApply);
+			} else {
+				// 否则，保存
+				Integer loginUserId = (Integer) SecurityUtils.getSubject().getSession()
+						.getAttribute(Contants.LOGINUSERID);
+				contractActivitiApply.setCreateuserid(loginUserId);
+				contractActivitiApply.setCreatetime(new Date());
+				contractActivitiApplyMapper.insertSelective(contractActivitiApply);
+			}
+		}
+		return contractActivitiApply;
+	}
+
+	@Override
+	public ContractActivitiApply findById(int id) {
+		return contractActivitiApplyMapper.selectByPrimaryKey(id);
+	}
+
+	@Override
+	public ContractActivitiApplyDto findDetail(int id) {
+		return contractActivitiApplyExMapper.findDetail(id);
+	}
+
+	@Override
+	public ContractActivitiApply findByCode(String code) {
+		if (code != null) {
+			ContractActivitiApplyExample example = new ContractActivitiApplyExample();
+			Criteria criteria = example.createCriteria();
+			criteria.andCodeEqualTo(code);
+			List<ContractActivitiApply> list = contractActivitiApplyMapper.selectByExample(example);
+			if (list != null && list.size() > 0) {
+				return list.get(0);
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public PageInfo<ContractActivitiApplyDto> getList(Integer userid, int pageNo, int pageSize, String drafts,
+			int isSuccess, String operation, String name) {
+		PageHelper.startPage(pageNo, pageSize);
+		PageHelper.orderBy("CreateTime DESC");
+		List<ContractActivitiApplyDto> list = contractActivitiApplyExMapper.getList(userid, drafts, isSuccess,
+				operation, name);
+		PageInfo<ContractActivitiApplyDto> pageInfo = new PageInfo<>(list);
+		return pageInfo;
+	}
+
+	@Override
+	public ContractActivitiApply update(ContractActivitiApply contractActivitiApply) {
+		if (contractActivitiApply != null) {
+			int result = contractActivitiApplyExMapper.updateByPrimaryKey(contractActivitiApply);
+			if (result <= 0) {
+				throw new CommonException("更新失败");
+			}
+		} else {
+			throw new CommonException("参数异常");
+
+		}
+		return contractActivitiApply;
+	}
+
+	@Override
+	public int startProcess(String processDefinitionKey, String bussinessKey, Map<String, Object> variables)
+			throws Exception {
+		if (StringUtils.isNotBlank(processDefinitionKey) && StringUtils.isNotBlank(bussinessKey)) {
+			int parseInt = Integer.parseInt(bussinessKey);
+			ContractActivitiApply contractActivitiApply = this.findById(parseInt);
+
+			String processInstanceId = workflowService.startProcess(processDefinitionKey, bussinessKey, variables);
+			if (StringUtils.isNotBlank(processInstanceId)) {
+				contractActivitiApply.setProcessinstanceid(processInstanceId);
+				this.update(contractActivitiApply);
+			} else {
+				throw new CommonException("开始流程失败");
+
+			}
+
+		} else {
+			throw new CommonException("参数异常");
+
+		}
+		return 1;
+	}
+
+	/**
+	 * 重置isSuccess状态
+	 */
+	@Override
+	public void setSuccess(int id) {
+		ContractActivitiApply contractActivitiApply = new ContractActivitiApply();
+		contractActivitiApply.setId(id);
+		contractActivitiApply.setIssuccess(1);
+		contractActivitiApplyMapper.updateByPrimaryKeySelective(contractActivitiApply);
+	}
+
+	@Override
+	public ByteArrayInputStream exportContractGoods(int id) throws IOException {
+		ContractActivitiApplyDto contractActivitiApplyDto = contractActivitiApplyExMapper.findDetail(id);
+		// 创建工作簿
+		HSSFWorkbook workBook = new HSSFWorkbook();
+		// 创建工作表 工作表的名字叫合同物资列表
+		HSSFSheet sheet = workBook.createSheet("合同物资列表");
+		// 创建行,第一行
+		HSSFRow row = sheet.createRow(0);
+		// 创建单元格，操作第一行各列
+		HSSFCell cell = row.createCell(0, CellType.STRING);
+		cell.setCellValue(contractActivitiApplyDto.getName() + "(" + contractActivitiApplyDto.getCode() + ")");
+		row = sheet.createRow(1);
+		cell = row.createCell(0, CellType.STRING);
+		cell.setCellValue("物资名字");
+		cell = row.createCell(1, CellType.STRING);
+		cell.setCellValue("物资价格");
+		cell = row.createCell(2, CellType.STRING);
+		cell.setCellValue("物资数量");
+		List list = contractActivitiApplyDto.getGoods();
+		for (int i = 0; i < list.size(); i++) {
+			row = sheet.createRow(i + 2);
+			cell = row.createCell(1, CellType.STRING);
+			Double code = ((ContractGoodsDto) (list.get(i))).getUnitprice();
+			cell.setCellValue(code);
+
+			cell = row.createCell(0, CellType.STRING);
+			String name = ((ContractGoodsDto) (list.get(i))).getName();
+			cell.setCellValue(name);
+
+			cell = row.createCell(2, CellType.STRING);
+			int count = ((ContractGoodsDto) (list.get(i))).getCount();
+			cell.setCellValue(count);
+
+		}
+		for (int i = 0; i < 5; i++) {
+			// 调整每一列宽度
+			sheet.autoSizeColumn(i, true);
+		}
+		CellRangeAddress region = new CellRangeAddress(0, // first row
+				0, // last row
+				0, // first column
+				2 // last column
+		);
+		sheet.addMergedRegion(region);
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		try {
+			// 工作簿写入流中
+			workBook.write(os);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		byte[] content = os.toByteArray();
+		ByteArrayInputStream is = new ByteArrayInputStream(content);
+		os.close();
+		workBook.close();
+		return is;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * cn.caecc.erp.modules.service.ContractActivitiApplyService#checkContractDaily(
+	 * )
+	 */
+	@Override
+	public void checkContractDaily() {
+		// TODO Auto-generated method stub
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.MONTH, 1);//增加一个月		
+		ContractActivitiApplyExample example = new ContractActivitiApplyExample();
+		Criteria criteria = example.createCriteria();
+		Date date1 = new Date();
+		criteria.andEndtimeGreaterThan(date1); //结束日期比今天大
+		Date date2 = calendar.getTime();
+		criteria.andEndtimeLessThan(date2); //结束日期小于下个月的今天
+		List<ContractActivitiApply> contractList = contractActivitiApplyMapper.selectByExample(example);
+		String title = "合同到期提醒";
+		for (ContractActivitiApply contract : contractList) {
+			int uId = contract.getUid();
+			Date date = contract.getEndtime();
+			DateFormat dFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		    String formatDate = dFormat.format(date);
+			String content = String.format("合同(编号:%s,名称:%s)即将过期(过期时间:%s)，请您尽快进行续签", contract.getCode(), contract.getName(), formatDate);
+			messageService.createContractMessage(uId, title, content);
+			
+		}
+		
+	}
+
+	/**
+	 * 删除
+	 */
+	@Override
+	public int deleteById(int id) {
+		ContractActivitiApply contractActivitiApply = this.findById(id);
+		if (contractActivitiApply == null) {
+			throw new CommonException("删除的数据不存在");
+		}else {
+			return contractActivitiApplyMapper.deleteByPrimaryKey(id);
+		}
+	}
+}

@@ -1,0 +1,293 @@
+package cn.caecc.erp.controller;
+
+import java.util.List;
+
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.github.pagehelper.PageInfo;
+
+import cn.caecc.erp.modules.dao.ex.dto.DepartmentDto;
+import cn.caecc.erp.modules.dao.mybatis.entity.Department;
+import cn.caecc.erp.modules.dao.mybatis.entity.User;
+import cn.caecc.erp.modules.service.DeptmentService;
+import cn.caecc.erp.support.constant.Contants;
+import cn.caecc.erp.support.message.Message;
+@Controller
+@RequestMapping(value="api/dept")
+public class DepartmentController {
+	@Autowired 
+	private DeptmentService deptMentService;
+	
+	/** 
+	* FunName: getDeptById
+	* Description : 获取组织详细信息
+	* @param：Int
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-04-16
+	*/
+	@RequestMapping(value="/{id}",method=RequestMethod.GET)
+	@RequiresPermissions(Contants.DEPARTMENT_SELECT_PERMISSION)
+	@ResponseBody
+	public Message  getDeptById(@PathVariable("id") int id){
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			DepartmentDto departMent =  deptMentService.getDeptById(id);
+			message.setObj(departMent);
+			message.setSuccess(true);
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+	
+	/** 
+	* FunName: getDeptList
+	* Description : 获取全部
+	* @param：Int
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-04-16
+	*/ 
+	@RequestMapping(value="/list",method=RequestMethod.GET)
+	@RequiresPermissions(Contants.DEPARTMENT_SELECT_PERMISSION)
+	@ResponseBody
+	public Message  getDeptList(){
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			List<Department> departMentList = deptMentService.getDeptList();
+			message.setObj(departMentList);
+			message.setSuccess(true);
+		} catch(Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+	
+	@RequestMapping(value="/select-list",method=RequestMethod.GET)
+	@ResponseBody
+	public Message  getSelectDeptList(){
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			List<Department> departMentList = deptMentService.getSelectDeptList();
+			message.setObj(departMentList);
+			message.setSuccess(true);
+		} catch(Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+	
+	/** 
+	* FunName: getDeptList
+	* Description : 获取组织上下级列表
+	* @param：Int
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-04-16
+	*/ 
+	@RequestMapping(value="/depttree",method=RequestMethod.GET)
+	@ResponseBody
+	public Message  getDeptAll(){
+		
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			List<DepartmentDto> departMentDtoList = deptMentService.getDeptAll();
+			message.setObj(departMentDtoList);
+			message.setSuccess(true);
+		} catch(Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+		 
+	}
+	
+	/** 
+	* FunName: deleteDeptById
+	* Description :删除组织节点
+	* @param：Int
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-04-16
+	*/ 
+	@RequestMapping(value="/{id}",method=RequestMethod.DELETE)
+	@RequiresPermissions(Contants.DEPARTMENT_DEL_PERMISSION)
+	@ResponseBody
+	public Message  deleteDeptById(@PathVariable("id") int id){
+		Message message = new Message();
+		message.setSuccess(false);
+		String msg = "该部门已产生过相关信息，不能删除";
+		try {
+			int ret = deptMentService.deleteDeptById(id);
+			if (ret > 0) {
+				message.setSuccess(true);
+				message.setMsg("删除成功");
+			} else {
+				message.setMsg("删除失败");
+			}
+			
+		} catch(Exception ex) {
+			message.setMsg(msg);
+		}
+		return message;
+	}
+	
+	/** 
+	* FunName: updateDeptById
+	* Description :修改组织信息
+	* @param：Int
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-04-16
+	*/ 
+	@RequestMapping(method=RequestMethod.PUT)
+	@RequiresPermissions(Contants.DEPARTMENT_UPDATE_PERMISSION)
+	@ResponseBody
+	public Message  updateDeptById(@RequestBody Department departMent){
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			int ret = deptMentService.updateDeptById(departMent);
+			if (ret > 0) { 
+				message.setObj(departMent);
+				message.setSuccess(true);
+				message.setMsg("更新成功");
+			}
+		} catch(Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+	
+	/** 
+	* FunName: updateDeptById
+	* Description :新增组织
+	* @param：Department
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-04-16
+	*/ 
+	@RequestMapping(method=RequestMethod.POST)
+	@RequiresPermissions(Contants.DEPARTMENT_ADD_PERMISSION)
+	@ResponseBody
+	public Message  addDept(@RequestBody Department departMent){
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			int ret = deptMentService.addDept(departMent);
+			if (ret > 0) { 
+				message.setObj(departMent);
+				message.setSuccess(true);
+				message.setMsg("更新成功");
+			}
+		} catch(Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+	/** 
+	* FunName: getPageList
+	* Description :组织结构分页查询
+	* @param：Int
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-05-03
+	*/ 
+	@RequestMapping(value="/pageinfo",method=RequestMethod.GET)
+	@RequiresPermissions(Contants.DEPARTMENT_SELECT_PERMISSION)
+	@ResponseBody
+	public Message  getPageList(@RequestParam("pageNo") int pageNo,@RequestParam("pageSize") int pageSize,@RequestParam("id") int id){
+		
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			PageInfo<DepartmentDto> pageList = deptMentService.getPageList(pageNo,pageSize,id);
+			message.setSuccess(true);
+			message.setObj(pageList);
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return  message;
+	}
+	
+	/**
+	 * 
+	 * @param pageNo
+	 * @param pageSize
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value="/name-like",method=RequestMethod.GET)
+	@RequiresPermissions(Contants.DEPARTMENT_SELECT_PERMISSION)
+	@ResponseBody
+	public Message  findDeptByNameLike(@RequestParam("pageNo") int pageNo, @RequestParam("pageSize") int pageSize,@RequestParam("departmentName") String departmentName){
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			PageInfo<DepartmentDto> pageList = deptMentService.getDeptByNameLike(pageNo, pageSize, departmentName.trim());
+			message.setSuccess(true);
+			message.setObj(pageList);
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return  message;
+	}
+	
+	/**
+	 * 获取部门全部员工
+	 * @param deparmentName
+	 * @return
+	 */
+	@RequestMapping(value="/{deparmentName}/users",method=RequestMethod.GET)
+	@RequiresPermissions({Contants.DEPARTMENT_SELECT_PERMISSION, Contants.USER_SELECT_PERMISSION})
+	@ResponseBody
+	public Message getDepartmentUsers(@RequestParam("deparmentName") String deparmentName){
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			List<User> userList = deptMentService.getDepartmentUsers(deparmentName);
+			message.setSuccess(true);
+			message.setObj(userList);
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return  message;
+	}
+	
+	/**
+	 * 获取部门领导（正职和副职）
+	 * @param deparmentName
+	 * @return
+	 */
+	@RequestMapping(value="/{deparmentName}/masters",method=RequestMethod.GET)
+	@RequiresPermissions({Contants.DEPARTMENT_SELECT_PERMISSION, Contants.USER_SELECT_PERMISSION})
+	@ResponseBody
+	public Message getDepartmentMasters(@RequestParam("deparmentName") String deparmentName){	
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			List<User> userList = deptMentService.getDepartmentMasters(deparmentName);
+			message.setSuccess(true);
+			message.setObj(userList);
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return  message;
+	}
+	
+	
+	
+	
+}

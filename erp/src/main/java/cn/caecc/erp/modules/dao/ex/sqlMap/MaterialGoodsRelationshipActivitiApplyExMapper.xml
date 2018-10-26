@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="cn.caecc.erp.modules.dao.ex.mapper.MaterialGoodsRelationshipActivitiApplyExMapper">
+	<resultMap
+		type="cn.caecc.erp.modules.dao.ex.dto.MaterialGoodsRelationshipActivitiApplyDto"
+		id="ExResultMap">
+		<id column="Id" property="id" jdbcType="INTEGER" />
+		<result column="MId" property="mid" jdbcType="INTEGER" />
+		<result column="GCode" property="gcode" jdbcType="VARCHAR" />
+		<result column="ApplyCount" property="applycount" jdbcType="INTEGER" />
+		<result column="CGId" property="cgid" jdbcType="INTEGER" />
+		<result column="Remarks" property="remarks" jdbcType="VARCHAR" />
+		<result column="Reason" property="reason" jdbcType="VARCHAR" />
+		<result column="gname" property="gname" jdbcType="VARCHAR" />
+		<result column="contractName" property="contractName" jdbcType="VARCHAR" />
+		<result column="unitPrice" property="unitPrice" jdbcType="DOUBLE" />
+	</resultMap>
+
+	<!-- 批量新增 -->
+	<insert id="batchAdd" useGeneratedKeys="true" keyProperty="id">
+		<selectKey resultType="int" keyProperty="id">
+	      SELECT LAST_INSERT_ID()
+	    </selectKey>
+		insert into material_goods_relationship_activiti_apply(MId, GCode,
+		ApplyCount, CGId, Remarks, Reason)
+		values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.mid},#{item.gcode},#{item.applycount},#{item.cgid},#{item.remarks},#{item.reason})
+		</foreach>
+	</insert>
+	<!-- 查询详情 -->
+	<select id="findDetail" resultMap="ExResultMap">
+		select mgr.*,g.name gname,c.name contractName,cg.unitPrice unitPrice
+		from
+		material_goods_relationship_activiti_apply mgr
+		left join goods g
+		on(mgr.gcode = g.code)
+		left join contract_goods_relationship cg
+		on(mgr.cgid = cg.id)
+		left join contract_activiti_apply c
+		on(cg.cid = c.id)
+		<where>
+			<if test="id != null">
+				mgr.id = #{id}
+			</if>
+		</where>
+	</select>
+
+	<!-- 批量查询 -->
+	<select id="batchFind"
+		resultType="cn.caecc.erp.modules.dao.mybatis.entity.MaterialGoodsRelationshipActivitiApply">
+		select * from material_goods_relationship_activiti_apply
+		where id in
+		<foreach collection="flist" item="itemId" open="(" close=")"
+			separator=",">
+			#{itemId}
+		</foreach>
+	</select>
+
+	<!-- 批量修改 -->
+	<update id="batchUpdate" parameterType="java.util.List">
+		update material_goods_relationship_activiti_apply
+		<trim prefix="set" suffixOverrides=",">
+			<trim prefix="mid =case" suffix="end,">
+				<foreach collection="ulist" item="item" index="index">
+					<if test="item.mid != null">
+						when id=#{item.id} then #{item.mid}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="gcode =case" suffix="end,">
+				<foreach collection="ulist" item="item" index="index">
+					<if test="item.gcode != null and item.gcode != ''">
+						when id=#{item.id} then #{item.gcode}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="applycount =case" suffix="end,">
+				<foreach collection="ulist" item="item" index="index">
+					<if test="item.applycount != null">
+						when id=#{item.id} then #{item.applycount}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="cgid =case" suffix="end,">
+				<foreach collection="ulist" item="item" index="index">
+					<if test="item.cgid != null">
+						when id=#{item.id} then #{item.cgid}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="remarks =case" suffix="end,">
+				<foreach collection="ulist" item="item" index="index">
+					<if test="item.remarks != null and item.remarks != ''">
+						when id=#{item.id} then #{item.remarks}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="reason =case" suffix="end,">
+				<foreach collection="ulist" item="item" index="index">
+					<if test="item.reason != null and item.reason != ''">
+						when id=#{item.id} then #{item.reason}
+					</if>
+				</foreach>
+			</trim>
+		</trim>
+		where id in
+		<foreach collection="ulist" index="index" item="item"
+			separator="," open="(" close=")">
+			#{item.id,jdbcType=INTEGER}
+		</foreach>
+	</update>
+
+</mapper>

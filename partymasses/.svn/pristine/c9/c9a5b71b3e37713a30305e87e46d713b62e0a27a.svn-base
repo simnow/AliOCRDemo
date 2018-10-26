@@ -1,0 +1,278 @@
+package com.partymasses.controller;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.util.Iterator;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+
+import sun.misc.BASE64Decoder;
+
+import com.partymasses.modules.dao.mybatis.entity.NewsWithBLOBs;
+import com.partymasses.modules.dao.mybatis.entity.User;
+import com.partymasses.modules.service.NewService;
+import com.partymasses.modules.service.OSSService;
+import com.partymasses.support.constant.Contants;
+import com.partymasses.support.message.Message;
+import com.partymasses.support.util.DateUtil;
+
+/**
+ * 新闻 ，通用
+ * 
+ * @author GaiNing
+ *
+ */
+@Controller
+@RequestMapping(value = "api/news")
+public class NewsController {
+	@Autowired
+	private NewService newService;
+	@Autowired
+	private OSSService ossService;
+
+	/**
+	 * 通过id查询新闻，添加阅读量
+	 * 
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
+	@ResponseBody
+	public Message getNewsById(@PathVariable("id") int newsId, HttpServletRequest req) {
+		User userinfo = (User) req.getSession().getAttribute(Contants.LOGINUSER);
+		if(userinfo==null){ //直接增加阅读量
+			newService.insertCount(newsId,Contants.ReadType);
+		}else{
+			newService.insertRecordAndCount(newsId,userinfo);
+		}
+		Message message=new Message();
+		message.setObj(newService.findNewsById(newsId));
+		return message;
+	}
+
+	/**
+	 * 通过单位id，查询新闻列表
+	 * 
+	 * @param unitid
+	 * @return
+	 */
+	@RequestMapping(value = "/unit/{unitid}", method = RequestMethod.GET)
+	@ResponseBody
+	public Message getNewsByUnit(@PathVariable("unitid") int unitid) {
+		Message message=new Message();
+		message.setObj(newService.findNewsListByUnitId(unitid));
+		return message;
+	}
+
+	/**
+	 * 查询所有
+	 * 
+	 * @return
+	 */
+	@RequestMapping(method = RequestMethod.GET)
+	@ResponseBody
+	public Message getNewsList() {
+		Message message=new Message();
+		message.setObj(newService.findNewList());
+		return message;
+	}
+
+	/**
+	 * 增加新闻，如果是超级管理员需要添加单位id
+	 * 
+	 * @param news
+	 * @param req
+	 * @return
+	 */
+	@RequestMapping(method = RequestMethod.POST)
+	@ResponseBody
+	@RequiresRoles(value = { Contants.SUPERADMIN, Contants.ADMIN }, logical = Logical.OR)
+	public Message insertNews(@RequestBody NewsWithBLOBs news, HttpServletRequest req) {
+		User userinfo = (User) req.getSession().getAttribute(Contants.LOGINUSER);
+		Message message = new Message();
+		news.setCreateuser(userinfo.getId());
+		news.setCreatetime(DateUtil.getcurrentDateTime());
+		// 如果是超级管理员，那么单位id取传入的值，如果是管理员，直接就是当下用户的
+		if (Contants.SUPERADMIN.equals(userinfo.getRoletype())) {
+			news.setUnitid(news.getUnitid());
+		} else if (Contants.ADMIN.equals(userinfo.getRoletype())) {
+			news.setUnitid(userinfo.getUnitid());
+		} else if (Contants.USER.equals(userinfo.getRoletype())) {
+			message.setMsg("你没有权限");
+			message.setSuccess(false);
+			return message;
+		}
+		int result = newService.insertNews(news);
+		if (result > 0) {
+			message.setMsg("插入成功");
+			message.setObj(result);
+		} else {
+			message.setMsg("插入失败");
+			message.setSuccess(false);
+		}
+		return message;
+	}
+
+	/**
+	 * 修改新闻
+	 * 
+	 * @param news
+	 * @param req
+	 * @return
+	 */
+	@RequestMapping(method = RequestMethod.PUT)
+	@ResponseBody
+	@RequiresRoles(value = { Contants.SUPERADMIN, Contants.ADMIN }, logical = Logical.OR)
+	public Message updateNews(@RequestBody NewsWithBLOBs news, HttpServletRequest req) {
+		User userinfo = (User) req.getSession().getAttribute(Contants.LOGINUSER);
+		Message message = new Message();
+		// 如果是超级管理员，不做任何操作
+		if (Contants.ADMIN.equals(userinfo.getRoletype())) {
+			news.setUnitid(userinfo.getUnitid());
+		} else if (Contants.USER.equals(userinfo.getRoletype())) {
+			message.setMsg("你没有权限");
+			message.setSuccess(false);
+			return message;
+		}
+		return newService.updateNewsById(news);
+	}
+
+	/**
+	 * 删除新闻
+	 * 
+	 * @param id
+	 * @param req
+	 * @return
+	 */
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+	@ResponseBody
+	@RequiresRoles(value = { Contants.SUPERADMIN, Contants.ADMIN }, logical = Logical.OR)
+	public Message deleteNews(@PathVariable("id") int id, HttpServletRequest req) {
+		User userinfo = (User) req.getSession().getAttribute(Contants.LOGINUSER);
+		Message message = new Message();
+		// 如果是超级管理员，不做任何操作
+		if (Contants.USER.equals(userinfo.getRoletype())) {
+			message.setMsg("你没有权限");
+			message.setSuccess(false);
+			return message;
+		}
+		return newService.deleteNewsById(id, userinfo);
+	}
+	
+
+	/**
+     * ckeditor图片上传
+     * 
+     * @Title imageUpload
+     * @param request
+     * @param response
+	 * @throws Exception 
+     */
+    @RequestMapping(value="/imageUpload", method = RequestMethod.POST)
+    public void imageUpload(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        try {
+        	//解析
+        	// 创建一个通用的多部分解析器
+            CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver(request.getSession().getServletContext());
+            String fileUrl = null;
+            // 判断 request 是否有文件上传,即多部分请求
+            if (multipartResolver.isMultipart(request)) {
+                // 转换成多部分request
+                MultipartHttpServletRequest multiRequest = (MultipartHttpServletRequest) request;
+                // 取得request中的所有文件名
+                Iterator<String> iter = multiRequest.getFileNames();
+                while (iter.hasNext()) {
+                    MultipartFile file = multiRequest.getFile(iter.next());
+                    InputStream inputStream=file.getInputStream();
+                    try {
+                    	//TODO
+                    	fileUrl= ossService.putNewsImage(12, 22, inputStream);
+                        response.setContentType("text/html;charset=UTF-8");
+                        String callback = request.getParameter("CKEditorFuncNum");
+                        PrintWriter out = response.getWriter();
+                        out.println("<script type=\"text/javascript\">");
+                        out.println("window.parent.CKEDITOR.tools.callFunction(" + callback + ",'" + fileUrl + "',''" + ")");
+                        out.println("</script>");
+                        out.flush();
+                        out.close();
+    				} catch (Exception e) {
+    					e.getMessage();
+    				}finally{
+    					inputStream.close();
+    				}
+                }
+            }
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    /**
+     * 粘贴监控
+     * @param request
+     * @param response
+     * @return
+     * @throws IOException 
+     */
+    @RequestMapping(value="/imageParseUpload", method = RequestMethod.POST)
+    public String parseImgUpload(HttpServletRequest request) throws IOException{
+    	String imgUrl=request.getParameter("src");
+    	imgUrl = imgUrl.replace("data:image/png;base64,", "");
+    	return uploadImg(imgUrl);
+    }
+    
+    private String uploadImg(String imgUrl) throws IOException{
+    	//将字符串转成
+    	byte[] b=GenerateImage(imgUrl);
+    	InputStream in = new ByteArrayInputStream(b);
+    	try {
+    		//TODO
+			return  ossService.putNewsImage(12, 22, in);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally{
+			in.close();
+		}
+    	return null;
+    }
+    
+    /*
+	 * 图片解码
+	 */
+	@SuppressWarnings("restriction")
+	private static byte[] GenerateImage(String imgURL) {
+		BASE64Decoder decoder=new BASE64Decoder();
+		//Base64解码
+        try {
+        	//Base64解码
+            byte[] b = decoder.decodeBuffer(imgURL);
+         // Base64解码  
+			for (int i = 0; i < b.length; ++i) {  
+				if (b[i] < 0) {// 调整异常数据  
+				b[i] += 256;  
+			}
+			}
+            return b;
+		} catch (IOException e) {
+			e.printStackTrace();
+        }
+		return null;
+	}
+}

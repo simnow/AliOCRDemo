@@ -1,0 +1,158 @@
+package cn.caecc.erp.controller;
+
+import java.util.Map;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import com.github.pagehelper.PageInfo;
+import cn.caecc.erp.modules.dao.ex.dto.ProjectActivitiApplyDto;
+import cn.caecc.erp.modules.dao.mybatis.entity.ProjectActivitiApply;
+import cn.caecc.erp.modules.service.ProjectActivitiApplyService;
+import cn.caecc.erp.support.constant.Contants;
+import cn.caecc.erp.support.message.Message;
+import cn.caecc.erp.support.workflow.entity.ProcessInstanceApplyEntity;
+
+@Controller
+@RequestMapping("/api/project-activiti-apply")
+public class ProjectActivitiApplyController extends BaseController{
+
+	@Autowired
+	private ProjectActivitiApplyService projectActivitiApplyService;
+	
+	@ResponseBody
+	@RequestMapping(method = RequestMethod.POST)
+	@RequiresPermissions(Contants.PROJECT_ADD_PERMISSION)
+	public Message create(@RequestBody ProjectActivitiApply projectActivitiApply) {
+		Message message = new Message();
+		message.setSuccess(false);
+		projectActivitiApply =  projectActivitiApplyService.create(projectActivitiApply);
+		if (projectActivitiApply != null) {
+			message.setObj(projectActivitiApply);
+			message.setSuccess(true);
+		} else {
+			message.setMsg("未查询到相关数据");
+		}
+		return message;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/detail/{id}",method = RequestMethod.GET)
+	@RequiresPermissions(Contants.PROJECT_SELECT_PERMISSION)
+	public Message findDetail(@PathVariable("id")int id){
+		Message message = new Message();
+		message.setSuccess(false);
+		ProjectActivitiApplyDto projectActivitiApplyDto = projectActivitiApplyService.findDetail(id);
+		if (projectActivitiApplyDto == null) {
+			message.setMsg("未查询到相关数据");
+		}else {
+			message.setSuccess(true);
+			message.setObj(projectActivitiApplyDto);
+		}
+		return message;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/list",method = RequestMethod.GET)
+	@RequiresPermissions(Contants.PROJECT_SELECT_PERMISSION)
+	public Message getList(int pageNo, int pageSize, String drafts, int isSuccess, Integer userid, String name) {
+		Message message = new Message();
+		message.setSuccess(false);
+		if (pageNo == 0) {
+			message.setMsg("请选中要查询页数");
+		} else if (pageSize == 0) {
+			message.setMsg("页数大小不能为0");
+		} else {
+			PageInfo<ProjectActivitiApplyDto> pageInfo = projectActivitiApplyService.getList(pageNo,
+					pageSize, drafts, isSuccess, userid, name);
+			if (pageInfo != null) {
+				message.setObj(pageInfo);
+				message.setSuccess(true);
+			} else {
+				message.setMsg("获取列表失败");
+			}	
+			
+		}
+		return message;
+	}
+	
+	@ResponseBody
+	@RequestMapping(method = RequestMethod.PUT)
+	@RequiresPermissions(Contants.PROJECT_UPDATE_PERMISSION)
+	public Message update(@RequestBody ProjectActivitiApply projectActivitiApply) {
+		Message message = new Message();
+		message.setSuccess(false);
+		projectActivitiApply = projectActivitiApplyService.updateProjectApproval(projectActivitiApply);
+		if (projectActivitiApply != null) {
+			message.setObj(projectActivitiApply);
+			message.setSuccess(true);
+		} else {
+			message.setMsg("未查询到相关数据");
+		}
+		return message;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/id/{id}",method = RequestMethod.DELETE)
+	@RequiresPermissions(Contants.PROJECT_DELETE_PERMISSION)
+	public Message delProjectApprovalById(@PathVariable("id")int id) {
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			int ret = projectActivitiApplyService.delProjectApprovalById(id);
+			if (ret > 0) {
+				message.setSuccess(true);
+			} else {
+				message.setMsg("删除失败");
+			}
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/code/{code}",method = RequestMethod.DELETE)
+	@RequiresPermissions(Contants.PROJECT_DELETE_PERMISSION)
+	public Message delProjectApprovalByCode(@PathVariable("code")String code) {
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			int ret = projectActivitiApplyService.delProjectApprovalByCode(code);
+			if (ret > 0) {
+				message.setSuccess(true);
+			} else {
+				message.setMsg("删除失败");
+			}
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/startprocess",method = RequestMethod.POST)
+	@RequiresPermissions(Contants.PROJECT_PROCESS_START_PERMISSION)
+	public Message startProcess(@RequestBody ProcessInstanceApplyEntity processInstanceApplyEntity) {
+		String processDefinitionKey = processInstanceApplyEntity.getProcessDefinitionKey();
+		String bussinessKey = processInstanceApplyEntity.getBussinessKey();
+		Map<String, Object> variables = processInstanceApplyEntity.getVariables();
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			int ret = projectActivitiApplyService.startProcess(processDefinitionKey, bussinessKey, variables);
+			if (ret > 0) {
+				message.setSuccess(true);
+			} else {
+				message.setMsg("开启流程失败");
+			}
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+}

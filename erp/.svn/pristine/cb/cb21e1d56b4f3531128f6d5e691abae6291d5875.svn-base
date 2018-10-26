@@ -1,0 +1,38 @@
+package cn.caecc.erp.support.context.listener;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import javax.servlet.annotation.WebListener;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.mysql.jdbc.AbandonedConnectionCleanupThread;
+@WebListener
+public class MyServletContextListener implements ServletContextListener {
+	private final static Logger logger = LoggerFactory.getLogger(MyServletContextListener.class);
+	public void contextInitialized(ServletContextEvent sce) {
+	}
+
+	public void contextDestroyed(ServletContextEvent sce) {
+		/*
+		Enumeration<Driver> drivers = DriverManager.getDrivers();
+		Driver d = null;
+		while (drivers.hasMoreElements()) {
+			try {
+				d = drivers.nextElement();
+				DriverManager.deregisterDriver(d);
+				logger.info(String.format("ContextFinalizer:Driver %s deregistered", d));
+			} catch (SQLException ex) {
+				logger.info(String.format("ContextFinalizer:Error deregistering driver %s", d) + ":" + ex);
+			}
+		}
+		*/
+		try {
+			AbandonedConnectionCleanupThread.shutdown();
+		} catch (InterruptedException e) {
+			logger.info("ContextFinalizer:SEVERE problem cleaning up: " + e.getMessage());
+			e.printStackTrace();
+		}
+	}
+
+}

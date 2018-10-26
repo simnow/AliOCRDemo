@@ -1,0 +1,5 @@
+•
+jdbc.driver=com.mysql.jdbc.Driver
+jdbc.url=jdbc:mysql://60.205.205.183:3306/bs_website?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull
+jdbc.username=root
+jdbc.password=123.abc

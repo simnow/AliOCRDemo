@@ -1,0 +1,141 @@
+package cn.caecc.erp.support.shiro.realm;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.AuthenticationInfo;
+import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.CredentialsException;
+import org.apache.shiro.authc.SimpleAuthenticationInfo;
+import org.apache.shiro.authc.UnknownAccountException;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
+import org.apache.shiro.realm.AuthorizingRealm;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.subject.PrincipalCollection;
+import org.apache.shiro.subject.Subject;
+import org.springframework.beans.factory.annotation.Autowired;
+import cn.caecc.erp.modules.service.UserService;
+import cn.caecc.erp.modules.dao.mybatis.entity.User;
+import cn.caecc.erp.support.constant.Contants;
+import cn.caecc.erp.support.shiro.session.listener.MySessionListener;
+import cn.caecc.erp.modules.dao.ex.dto.UserDto;
+import cn.caecc.erp.modules.dao.mybatis.entity.Permission;
+import cn.caecc.erp.modules.dao.mybatis.entity.Role;
+import cn.caecc.erp.modules.service.UserRoleRelationshipService;
+
+public class MyAuthorizingRealm extends AuthorizingRealm {
+
+	/**
+	 * 自己先进行模拟后台固定参数
+	 */
+
+	@Autowired
+	private UserService userService;
+
+	@Autowired
+	private UserRoleRelationshipService userRoleRelationshipService;
+
+	@Autowired
+	private MySessionListener mySessionListener;
+
+	/* 
+	 * 
+	 */
+	/**
+	 * 如果使用UserInfoDto的getAuthCacheKey，那么将不会每次都进入该函数，因此会直接从缓存中读取
+	 * 
+	 */
+	@Override
+	protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
+		SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
+
+		MyAuthInfo myAuthInfo = (MyAuthInfo)getAvailablePrincipal(principals);
+		// 当缓存无效时，说明userinfo发生了变化，重新生成userinfo
+		UserDto userDto = userRoleRelationshipService.findUrByUserId(myAuthInfo.getLoginUserId());
+		// 处理用户
+		Set<String> rolesSet = new HashSet<String>(); // 角色
+		Set<String> PermissionsSet = new HashSet<String>(); // 权限
+		if (userDto != null) {
+			List<Role> roleList = userDto.getRoleList();
+			for (Role role : roleList) {
+				rolesSet.add(role.getName());
+			}
+			List<Permission> permissionList = userDto.getPermissionList();
+			for (Permission permission : permissionList) {
+				PermissionsSet.add(permission.getName());
+			}
+
+		}
+		info.setRoles(rolesSet);
+		info.setStringPermissions(PermissionsSet);
+
+		return info;
+	}
+
+	/*
+	 * 登录验证
+	 */
+	@Override
+	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authcToken)
+			throws AuthenticationException {
+		UsernamePasswordToken token = (UsernamePasswordToken) authcToken;
+
+		String userName = token.getUsername();
+		String password = new String(token.getPassword());
+		// 先判断时候是登录名登录
+		User user = userService.findByLoginName(userName);
+		if (user == null) {
+			// 判断是否是电话号登录
+			user = userService.findByTelphone(userName);
+			if (user == null) {
+				// 判断是否是单位电话号登录
+				user = userService.findByUnitTelephone(userName);
+				if (user == null) {
+					// 判断是否是email登录
+					user = userService.findByEmail(userName);
+					if (user == null) {
+						throw new UnknownAccountException("您的账号尚未注册，请先注册!");
+
+					}
+				}
+			}
+		}
+
+		// 对比密码
+		if (!user.getPassword().equals(password)) {
+			throw new CredentialsException("您输入的密码有误，请输入正确的登录密码");
+		}
+		Integer loginUserId = user.getId();
+		MyAuthInfo myAuthInfo = new MyAuthInfo(loginUserId);
+		// 更新session
+		setSessionLoginFlag(loginUserId);
+		// 注意
+		return new SimpleAuthenticationInfo(myAuthInfo, password, getName());
+	}
+
+	
+	public void setSessionLoginFlag(Integer loginUserId) {
+		Subject subject = SecurityUtils.getSubject();
+		Session session = subject.getSession();
+		Object object = session.getAttribute(Contants.LOGINUSERID);
+		if (object == null) {
+			session.setAttribute(Contants.LOGINUSERID, loginUserId);
+			mySessionListener.onLogin(session);
+		}
+	}
+	
+	public static void login(String userName, String password) {
+		Subject currentUserSubject = SecurityUtils.getSubject();
+		if (currentUserSubject.isAuthenticated()) {
+			currentUserSubject.logout();
+		}
+		UsernamePasswordToken token = new UsernamePasswordToken(userName, password, false);
+		// 使用shiro来验证
+		currentUserSubject.login(token);
+
+	}
+}

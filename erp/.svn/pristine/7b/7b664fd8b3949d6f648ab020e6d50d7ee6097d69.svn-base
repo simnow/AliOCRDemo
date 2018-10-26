@@ -1,0 +1,21 @@
+package cn.caecc.erp.modules.service;
+
+import java.util.List;
+
+import cn.caecc.erp.modules.dao.ex.dto.ConferenceArrangementDto;
+import cn.caecc.erp.modules.dao.ex.dto.ConferenceArrangementSaveDto;
+
+public interface ConferenceArrangementService {
+
+	public  ConferenceArrangementSaveDto addConferenceArrangement(ConferenceArrangementSaveDto conferenceArrangementSaveDto);
+	
+	public  void updateConferenceArrangement(ConferenceArrangementSaveDto conferenceArrangementSaveDto);
+	
+	public  List<ConferenceArrangementDto> getConferenceArrangementByType(int type);
+	
+	public  List<ConferenceArrangementDto> getConferenceArrangementList(ConferenceArrangementDto conferenceArrangementDto);
+	
+	public  int deleteConferenceArrangement(int id);
+		
+	public  ConferenceArrangementDto getConferenceArrangementById(int id);
+}

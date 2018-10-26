@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="cn.caecc.erp.modules.dao.ex.mapper.MaterialActivitiApplyExMapper">
+	<resultMap id="materialDto"
+		type="cn.caecc.erp.modules.dao.ex.dto.MaterialActivitiApplyDto">
+		<id column="Id" jdbcType="INTEGER" property="id" />
+		<result column="ProcessInstanceId" jdbcType="VARCHAR" property="processinstanceid" />
+		<result column="UId" jdbcType="INTEGER" property="uid" />
+		<result column="WellInfoId" jdbcType="INTEGER" property="wellinfoid" />
+		<result column="DId" jdbcType="INTEGER" property="did" />
+		<result column="CreateUserId" jdbcType="INTEGER" property="createuserid" />
+		<result column="CreateTime" jdbcType="TIMESTAMP" property="createtime" />
+		<result column="IsSuccess" jdbcType="INTEGER" property="issuccess" />
+		<result column="uname" property="uname" jdbcType="VARCHAR" />
+		<result column="dname" property="dname" jdbcType="VARCHAR" />
+		<result column="cname" property="cname" jdbcType="VARCHAR" />
+		<result column="dcode" property="dcode" jdbcType="VARCHAR"/>
+		<result column="wellcode" property="wellcode" jdbcType="VARCHAR"/>
+		<collection property="list" column="Id"
+			ofType="cn.caecc.erp.modules.dao.ex.dto.MaterialGoodsRelationshipActivitiApplyDto"
+			select="getMaterialGoodsRelationship"></collection>
+	</resultMap>
+	<resultMap
+		type="cn.caecc.erp.modules.dao.ex.dto.MaterialGoodsRelationshipActivitiApplyDto"
+		id="ExResultMap">
+		<id column="Id" property="id" jdbcType="INTEGER" />
+		<result column="MId" property="mid" jdbcType="INTEGER" />
+		<result column="GCode" property="gcode" jdbcType="VARCHAR" />
+		<result column="ApplyCount" property="applycount" jdbcType="INTEGER" />
+		<result column="CGId" property="cgid" jdbcType="INTEGER" />
+		<result column="Remarks" property="remarks" jdbcType="VARCHAR" />
+		<result column="Reason" property="reason" jdbcType="VARCHAR" />
+		<result column="gname" property="gname" jdbcType="VARCHAR" />
+		<result column="contractName" property="contractName" jdbcType="VARCHAR" />
+		<result column="unitPrice" property="unitPrice" jdbcType="DOUBLE" />
+	</resultMap>
+
+	<!-- 查询详情 -->
+	<select id="findDetail" resultMap="materialDto">
+		select m.*,u.name uname,d.name dname,d.code dcode,c.name cname,w.wellcode wellcode
+		from
+		material_activiti_apply m
+		left join user u
+		on(m.uid=u.id)
+		left join
+		department d
+		on(m.did=d.id)
+		left join user c
+		on(m.createuserid=c.id)
+		left join well_info w
+		on(m.wellinfoid = w.id)
+		<where>
+			<if test="id != null">
+				m.id = #{id}
+			</if>
+		</where>
+	</select>
+
+	<!-- 按条件获取分页列表 -->
+	<select id="getList" resultMap="materialDto">
+		select m.*,u.name uname,d.name dname,d.code dcode,c.name cname,w.wellcode wellcode
+		from
+		material_activiti_apply m
+		left join user u
+		on(m.uid=u.id)
+		left join
+		department d
+		on(m.did=d.id)
+		left join user c
+		on(m.createuserid=c.id)
+		left join well_info w
+		on(m.wellinfoid = w.id)
+		<where>
+			<if test="userid != null">
+				m.createuserid = #{userid}
+			</if>
+			<if test="drafts == 'drafts'">
+				and m.processinstanceid is null
+			</if>
+			<if test="isSuccess != null">
+				and m.isSuccess = #{isSuccess}
+			</if>
+			<if test="did != null">
+				and m.did = #{did}
+			</if>
+			<if test="wid != null">
+				and m.wellinfoid = #{wid}
+			</if>
+			<if test="accruingAmounts == 'accruingAmounts'">
+				and CONVERT(m.CreateTime,CHAR(7)) =
+				CONVERT(NOW(),CHAR(7))
+			</if>
+		</where>
+	</select>
+
+	<!-- 获取子类列表 -->
+	<select id="getMaterialGoodsRelationship" resultMap="ExResultMap">
+		select mg.*,g.name gname,c.name contractName,cg.unitPrice unitPrice
+		from material_goods_relationship_activiti_apply mg
+		left join goods g
+		on(mg.gcode = g.code)
+		left join contract_goods_relationship cg
+		on(mg.cgid = cg.id)
+		left join contract_activiti_apply c
+		on(cg.cid = c.id)
+		<where>
+			mg.mid = #{Id}
+		</where>
+	</select>
+</mapper>

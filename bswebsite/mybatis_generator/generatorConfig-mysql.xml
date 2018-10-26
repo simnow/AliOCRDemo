@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
+<generatorConfiguration >
+<!-- 设置Mysql驱动路径 -->
+<classPathEntry location="./mysql-connector-java-5.1.21-bin.jar" />
+
+<!-- 此处指定生成针对MyBatis3的DAO -->
+<context id="shark"  targetRuntime="MyBatis3">
+<!-- jdbc连接信息  -->  
+<jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://localhost:3306/dev?useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull" userId="root" password="123.abc" />
+     <javaModelGenerator targetPackage="com.bswebsite.modules.dao.mybatis.entity" targetProject="../src/main/java"  />
+     <sqlMapGenerator targetPackage="com.bswebsite.modules.dao.mybatis.sqlMap" targetProject="../src/main/java" />
+    <javaClientGenerator targetPackage="com.bswebsite.modules.dao.mybatis.mapper" targetProject="../src/main/java"  type="XMLMAPPER"/>
+	<table tableName="well_bit" domainObjectName="WellBit">
+      <generatedKey column="ID" sqlStatement="Mysql" identity="true"/>
+    </table>
+    <table tableName="well_daily_sum" domainObjectName="WellDaily">
+      <generatedKey column="ID" sqlStatement="Mysql" identity="true"/>
+    </table>
+    <table tableName="well_dx_daily" domainObjectName="WellDxDaily">
+      <generatedKey column="ID" sqlStatement="Mysql" identity="true"/>
+    </table>
+    <table tableName="well_dx_info" domainObjectName="WellDxInfo">
+      <generatedKey column="ID" sqlStatement="Mysql" identity="true"/>
+    </table>
+    <table tableName="well_log" domainObjectName="WellLog">
+      <generatedKey column="ID" sqlStatement="Mysql" identity="true"/>
+    </table>
+    <table tableName="well_info" domainObjectName="WellInfo">
+      <generatedKey column="ID" sqlStatement="Mysql" identity="true"/>
+    </table>
+    <table tableName="well_mud" domainObjectName="WellMud">
+      <generatedKey column="ID" sqlStatement="Mysql" identity="true"/>
+    </table>
+    <table tableName="well_power" domainObjectName="WellPower">
+      <generatedKey column="ID" sqlStatement="Mysql" identity="true"/>
+    </table>
+    <table tableName="well_time" domainObjectName="WellTime">
+      <generatedKey column="ID" sqlStatement="Mysql" identity="true"/>
+    </table>
+    <table tableName="well_wd_daily" domainObjectName="WellWdDaily">
+      <generatedKey column="ID" sqlStatement="Mysql" identity="true"/>
+    </table>
+    <table tableName="well_wd_qk" domainObjectName="WellWdQk">
+      <generatedKey column="ID" sqlStatement="Mysql" identity="true"/>
+    </table>
+    <table tableName="well_xw_daily" domainObjectName="WellXwDaily">
+      <generatedKey column="ID" sqlStatement="Mysql" identity="true"/>
+    </table>
+   
+   <!-- <table tableName="BLOG" domainObjectName="Blog">
+    </table> 
+    <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://47.104.148.203:3306/bs_website?useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull" userId="root" password="123.abc" />
+     <javaModelGenerator targetPackage="com.bswebsite.modules.dao.mybatis.entity" targetProject="../src/main/java"  />
+     <sqlMapGenerator targetPackage="com.bswebsite.modules.dao.mybatis.sqlMap" targetProject="../src/main/java" />
+    <javaClientGenerator targetPackage="com.bswebsite.modules.dao.mybatis.mapper" targetProject="../src/main/java"  type="XMLMAPPER"/>
+      <table tableName="news" domainObjectName="News">
+      <generatedKey column="ID" sqlStatement="Mysql" identity="true"/>
+      <columnOverride column="NewsContent" javaType="java.lang.String" jdbcType="VARCHAR" />  
+    </table>
+    -->  
+    <!--<table tableName="person" domainObjectName="Person">-->
+     <!-- <table tableName="users" domainObjectName="User">
+      <generatedKey column="ID" sqlStatement="Mysql" identity="true"/>
+    </table> -->
+    <!-- <table tableName="news" domainObjectName="News">
+      <generatedKey column="ID" sqlStatement="Mysql" identity="true"/> -->
+    <!-- <table tableName="unit_function" domainObjectName="UnitFunctionInfo">
+    </table>
+    <table tableName="unit" domainObjectName="UnitInfo">
+    <generatedKey column="ID" sqlStatement="Mysql" identity="true"/>
+    </table>
+    <table tableName="party_family" domainObjectName="PartyFamilyInfo">
+    <generatedKey column="ID" sqlStatement="Mysql" identity="true"/>
+    </table>
+    <table tableName="function" domainObjectName="FunctionInfo">
+    <generatedKey column="ID" sqlStatement="Mysql" identity="true"/> 
+    </table>-->
+</context>
+</generatorConfiguration>

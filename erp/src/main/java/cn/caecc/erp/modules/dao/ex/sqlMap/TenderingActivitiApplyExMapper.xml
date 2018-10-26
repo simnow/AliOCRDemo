@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="cn.caecc.erp.modules.dao.ex.mapper.TenderingActivitiApplyExMapper">
+	<resultMap type="cn.caecc.erp.modules.dao.ex.dto.TenderingActivitiApplyDto"
+		id="tenderingActivitiApplyDto">
+		<id column="Id" property="id" jdbcType="INTEGER" />
+		<result column="ProcessInstanceId" property="processinstanceid"
+			jdbcType="VARCHAR" />
+		<result column="UId" property="uid" jdbcType="INTEGER" />
+		<result column="DId" property="did" jdbcType="INTEGER" />
+		<result column="PId" jdbcType="INTEGER" property="pid" />
+		<result column="BiddingPlan" property="biddingplan" jdbcType="VARCHAR" />
+		<result column="MarketResearch" property="marketresearch"
+			jdbcType="VARCHAR" />
+		<result column="CreateUserId" property="createuserid" jdbcType="INTEGER" />
+		<result column="CreateTime" property="createtime" jdbcType="TIMESTAMP" />
+		<result column="IsSuccess" property="issuccess" jdbcType="INTEGER" />
+		<result column="pcode" property="pcode" jdbcType="VARCHAR"/>
+		<result column="pname" property="pname" jdbcType="VARCHAR"/>
+		<result column="pprocessinstanceid" property="pprocessinstanceid" jdbcType="VARCHAR" />
+		<result column="pdid" property="pdid" jdbcType="INTEGER" />
+		<result column="puid" property="puid" jdbcType="INTEGER" />
+		<result column="ptelephone" property="ptelephone" jdbcType="VARCHAR" />
+		<result column="prelative" property="prelative" jdbcType="VARCHAR" />
+		<result column="pagent" property="pagent" jdbcType="VARCHAR" />
+		<result column="ptelephone2" property="ptelephone2" jdbcType="VARCHAR" />
+		<result column="pmoney" property="pmoney" jdbcType="DOUBLE" />
+		<result column="psituation" property="psituation" jdbcType="VARCHAR" />
+		<result column="pcreateuserid" property="pcreateuserid" jdbcType="INTEGER" />
+		<result column="pcreatetime" property="pcreatetime" jdbcType="DATE" />
+		<result column="pissuccess" property="pissuccess" jdbcType="INTEGER" />
+		<result column="uname" property="uname" jdbcType="VARCHAR" />
+		<result column="dname" property="dname" jdbcType="VARCHAR" />
+		<result column="cname" property="cname" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<!-- 查询详情 -->
+	<select id="findDetail" resultMap="tenderingActivitiApplyDto">
+		select t.*,p.code pcode,p.name pname,p.processinstanceid pprocessinstanceid,p.did pdid,p.uid puid,p.telephone ptelephone,
+		p.relative prelative,p.agent pagent,p.telephone2 ptelephone2,p.money pmoney,p.situation psituation,p.createuserid pcreateuserid,
+		p.createtime pcreatetime,p.issuccess pissuccess,u.name uname,d.name dname,c.name cname
+		from
+		tendering_activiti_apply t
+		left join project_activiti_apply p
+		on(t.pid = p.id)
+		left join user u
+		on(t.uid = u.id)
+		left join
+		department d
+		on(t.did = d.id)
+		left join user c
+		on(t.createuserid = c.id)
+		<where>
+			<if test="id != null">
+				t.id = #{id}
+			</if>
+		</where>
+	</select>
+
+	<!-- 按条件获取分页列表 -->
+	<select id="getList" resultMap="tenderingActivitiApplyDto">
+		select t.*,p.code pcode,p.name pname,u.name uname,d.name dname,c.name cname
+		from
+		tendering_activiti_apply t
+		left join project_activiti_apply p
+		on(t.pid = p.id)
+		left join user u
+		on(t.uid = u.id)
+		left join
+		department d
+		on(t.did = d.id)
+		left join user c
+		on(t.createuserid = c.id)
+		<where>
+			<if test="userid != null">
+				t.createuserid = #{userid}
+			</if>
+			<if test="drafts == 'drafts'">
+				and t.processinstanceid is null
+			</if>
+			<if test="isSuccess != null">
+				and t.issuccess = #{isSuccess}
+			</if>
+		</where>
+	</select>
+</mapper>

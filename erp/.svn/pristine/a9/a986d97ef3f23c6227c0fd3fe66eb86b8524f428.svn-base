@@ -1,0 +1,103 @@
+package cn.caecc.erp.modules.service;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
+import com.github.pagehelper.PageInfo;
+
+import cn.caecc.erp.modules.dao.ex.dto.UserDto;
+import cn.caecc.erp.modules.dao.mybatis.entity.User;
+
+public interface UserService {
+
+	public int createUser(User user);
+	
+	public int insertUserList(List<User> list) throws Exception;
+	
+	public int update(User user);
+	
+	public List<User> findByIds(List<Integer> userIdList);
+			
+	public List<User> getList();
+	
+	public PageInfo<UserDto> findPageList(int pageNo,int pageSize,int did);
+	
+	public PageInfo<UserDto> findContactPageList(int pageNo, int pageSize, int did);
+
+	public PageInfo<UserDto> findByNameLike(int pageNo,int pageSize,String userName);
+	
+	public PageInfo<UserDto> findContactByNameLike(int pageNo,int pageSize,String userName);
+
+	public int delById(int userId);
+	
+	public int delByLoginName(String loginName);
+	
+	public User findByLoginName(String loginName);
+	
+	public User findByTelphone(String telphone);
+	
+	public User findByUnitTelephone(String telphone);
+
+	public User findByEmail(String email);
+	
+	public User findByIdNo(String idNo);
+	
+	public User findByJobNo(String jobNo);
+	
+	public User login(String mobile, String password);
+	
+	public String findEmailById(int userId);
+	
+	//获取批量变更员工
+	public List<Object> findAlterDusers(int id);
+	
+	//部门员工批量分配
+	public void updateUsersOfDepartment(int deptid,String ids);
+	
+	//获取部门下全部员工
+	public List<User> findDpetUsers(int deptid);
+	
+	public List<User> findDpetUsersContactInfo(int deptid);
+
+	//获取副职变更员工
+	public List<Object>  findAlterEusers(int deptid);
+	
+	//部门副职分配
+	public void updateEputysOfDepartment(int deptid,String ids);
+	
+	/**
+	 * 获取用户（uId）的所属部门领导（包括正职和副职）列表。
+	 * @param uId
+	 * @return
+	 */
+	public List<User> findDepartmentLeader(int uId);
+
+	/**
+	 *  获取用户（uId）的主管领导列表（备注：查找所属部门为‘主管领导’的上级部门中的所有人）。
+	 * @param uId
+	 * @return
+	 */
+	public List<User> findManagerLeader(int uId);
+	
+	/**
+	 * 获取用户（uId）的主管领导列表（备注：查找所属部门为‘分管领导’的上级部门中的所有人）。
+	 * @param uId
+	 * @return
+	 */
+	public List<User>  findAssignedManagerLeader(int uId);
+	//恢复数据
+	public List<User> getUsersFromExcel(File file, Integer userId)throws Exception;
+	
+	public UserDto findDtoById(int id);
+	
+	public User findById(int id);
+	
+	public String getHeadPortraitOssKey(Integer userId, String name);
+	
+	public String getElectronicSealOssKey(Integer userId, String name);
+	
+	public ByteArrayInputStream exportUsers()throws IOException;
+
+}

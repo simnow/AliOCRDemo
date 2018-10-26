@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="cn.caecc.erp.modules.dao.ex.mapper.ContractActivitiApplyExMapper">
+	<resultMap type="cn.caecc.erp.modules.dao.ex.dto.ContractActivitiApplyDto"
+		id="contractActivitiApplyDto">
+		<id column="Id" property="id" jdbcType="INTEGER" />
+		<result column="Code" property="code" jdbcType="VARCHAR" />
+		<result column="ProcessInstanceId" property="processinstanceid"
+			jdbcType="VARCHAR" />
+		<result column="PId" property="pid" jdbcType="INTEGER" />
+		<result column="UId" property="uid" jdbcType="INTEGER" />
+		<result column="DId" property="did" jdbcType="INTEGER" />
+		<result column="Name" property="name" jdbcType="VARCHAR" />
+		<result column="ApplyDate" property="applydate" jdbcType="DATE" />
+		<result column="PartyA" property="partya" jdbcType="VARCHAR" />
+		<result column="PartyB" property="partyb" jdbcType="VARCHAR" />
+		<result column="StartTime" property="starttime" jdbcType="DATE" />
+		<result column="Duration" property="duration" jdbcType="INTEGER" />
+		<result column="EndTime" property="endtime" jdbcType="DATE" />
+		<result column="Summary" property="summary" jdbcType="VARCHAR" />
+		<result column="CreateUserId" property="createuserid" jdbcType="INTEGER" />
+		<result column="CreateTime" property="createtime" jdbcType="TIMESTAMP" />
+		<result column="IsSuccess" property="issuccess" jdbcType="INTEGER" />
+		<result column="pcode" property="pcode" jdbcType="VARCHAR" />
+		<result column="pname" property="pname" jdbcType="VARCHAR" />
+		<result column="pprocessinstanceid" property="pprocessinstanceid"
+			jdbcType="VARCHAR" />
+		<result column="pdid" property="pdid" jdbcType="INTEGER" />
+		<result column="puid" property="puid" jdbcType="INTEGER" />
+		<result column="ptelephone" property="ptelephone" jdbcType="VARCHAR" />
+		<result column="prelative" property="prelative" jdbcType="VARCHAR" />
+		<result column="pagent" property="pagent" jdbcType="VARCHAR" />
+		<result column="ptelephone2" property="ptelephone2" jdbcType="VARCHAR" />
+		<result column="pmoney" property="pmoney" jdbcType="DOUBLE" />
+		<result column="psituation" property="psituation" jdbcType="VARCHAR" />
+		<result column="pcreateuserid" property="pcreateuserid"
+			jdbcType="INTEGER" />
+		<result column="pcreatetime" property="pcreatetime" jdbcType="DATE" />
+		<result column="pissuccess" property="pissuccess" jdbcType="INTEGER" />
+		<result column="sname" property="sname" jdbcType="VARCHAR" />
+		<result column="servicecontent" property="servicecontent"
+			jdbcType="VARCHAR" />
+		<result column="stelephone" property="stelephone" jdbcType="VARCHAR" />
+		<result column="saddress" property="saddress" jdbcType="VARCHAR" />
+		<result column="sisqualified" property="sisqualified" jdbcType="INTEGER" />
+		<result column="scontracts" property="scontracts" jdbcType="VARCHAR" />
+		<result column="uname" property="uname" jdbcType="VARCHAR" />
+		<result column="dname" property="dname" jdbcType="VARCHAR" />
+		<result column="cname" property="cname" jdbcType="VARCHAR" />
+		<collection property="goods" column="Id"
+			ofType="cn.caecc.erp.modules.dao.ex.dto.ContractGoodsDto" select="findGoods"></collection>
+	</resultMap>
+
+	<resultMap type="cn.caecc.erp.modules.dao.ex.dto.ContractGoodsDto"
+		id="ContractGoodsDto">
+		<id column="Id" property="id" jdbcType="INTEGER" />
+		<result column="CId" property="cid" jdbcType="INTEGER" />
+		<result column="GCode" property="gcode" jdbcType="VARCHAR" />
+		<result column="UnitPrice" property="unitprice" jdbcType="DOUBLE" />
+		<result column="Count" property="count" jdbcType="INTEGER" />
+		<result column="Origin" property="origin" jdbcType="VARCHAR" />
+		<result column="pcode" property="pcode" jdbcType="VARCHAR" />
+		<result column="gid" property="gid" jdbcType="INTEGER" />
+		<result column="grade" property="grade" jdbcType="INTEGER" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="model" property="model" jdbcType="VARCHAR" />
+		<result column="unit" property="unit" jdbcType="VARCHAR" />
+		<result column="remarks" property="remarks" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<!-- 查询合同申请详情 -->
+	<select id="findDetail" parameterType="int" resultMap="contractActivitiApplyDto">
+		select c.*,p.code pcode,p.name pname,p.processinstanceid
+		pprocessinstanceid,p.did pdid,p.uid puid,p.telephone ptelephone,
+		p.relative prelative,p.agent pagent,p.telephone2 ptelephone2,p.money
+		pmoney,p.situation psituation,p.createuserid pcreateuserid,
+		p.createtime pcreatetime,p.issuccess pissuccess,s.name
+		sname,s.servicecontent servicecontent,s.telephone stelephone,
+		s.address saddress,s.isqualified sisqualified,s.contacts
+		scontacts,u.name uname,d.name dname,us.name
+		cname
+		from
+		contract_activiti_apply c
+		left join project_activiti_apply p
+		on(c.pid =
+		p.id)
+		left join supplier s
+		on(c.sid = s.id)
+		left join user u
+		on(c.uid =
+		u.id)
+		left join department d
+		on(c.did = d.id)
+		left join user us
+		on(c.createuserid = us.id)
+		<where>
+			c.id = #{id}
+		</where>
+	</select>
+
+	<!-- 按条件获取分页列表 -->
+	<select id="getList" resultMap="contractActivitiApplyDto">
+		select c.*,p.code pcode,p.name pname,u.name uname,d.name dname,us.name
+		cname
+		from contract_activiti_apply c
+		left join project_activiti_apply p
+		on(c.pid = p.id)
+		left join user u
+		on(c.uid = u.id)
+		left join department d
+		on(c.did = d.id)
+		left join user us
+		on(c.createuserid = us.id)
+		<where>
+			<if test="isSuccess != null">
+				c.isSuccess = #{isSuccess}
+			</if>
+			<if test="userid != null">
+				and c.createuserid = #{userid}
+			</if>
+			<if test="drafts == 'drafts'">
+				and c.processinstanceid is null
+			</if>
+			<!-- 如果是在采购关联合同时（"operation = 'relevance'"），查询未过期的合同 -->
+			<if test="operation == 'nod'">
+				and datediff(c.endtime,now())>=0
+			</if>
+			<if test="name != null and name != ''">
+				and c.name LIKE CONCAT(CONCAT('%',REPLACE(#{name},' ',''),'%'))
+			</if>
+		</where>
+	</select>
+
+	<select id="findGoods" resultMap="ContractGoodsDto">
+		select cg.*,g.pcode pcode,g.id gid,g.grade grade,g.name
+		name,g.model
+		model,g.unit unit,g.remarks remarks
+		from contract_goods_relationship cg
+		left join goods g
+		on(cg.gcode = g.code)
+		<where>
+			cg.cid = #{Id}
+		</where>
+	</select>
+</mapper>

@@ -1,0 +1,26 @@
+package cn.caecc.erp.modules.service;
+
+
+import java.io.InputStream;
+import java.util.List;
+
+import com.github.pagehelper.PageInfo;
+import cn.caecc.erp.modules.dao.ex.dto.ContractGoodsRelationshipDto;
+import cn.caecc.erp.modules.dao.mybatis.entity.ContractGoodsRelationship;
+
+public interface ContractGoodsRelationshipService {
+
+	public List<ContractGoodsRelationship> create(List<ContractGoodsRelationship> list);
+	
+	ContractGoodsRelationship findById(int id);
+
+	ContractGoodsRelationship findDetail(int id);
+
+	PageInfo<ContractGoodsRelationshipDto> getList(int pageNo, int pageSize, String gcode);
+
+	ContractGoodsRelationship update(ContractGoodsRelationship contractGoodsRelationship);
+
+	int deleteById(int id);
+	
+	List<ContractGoodsRelationship> exprotExcel(InputStream in,String fileName,int contractId) throws Exception;
+}

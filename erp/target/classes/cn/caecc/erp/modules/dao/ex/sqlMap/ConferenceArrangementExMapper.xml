@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.caecc.erp.modules.dao.ex.mapper.ConferenceArrangementExMapper" >
+
+  <resultMap id="BaseResultMap" type="cn.caecc.erp.modules.dao.ex.dto.ConferenceArrangementDto" >
+    <id column="Id" property="id" jdbcType="INTEGER" />
+    <result column="UId" property="uid" jdbcType="INTEGER" />
+    <result column="CId" property="cid" jdbcType="INTEGER" />
+    <result column="Time" property="time" jdbcType="TIMESTAMP" />
+    <result column="HostId" property="hostid" jdbcType="INTEGER" />
+    <result column="ContractorId" property="contractorid" jdbcType="INTEGER" />
+    <result column="Description" property="description" jdbcType="VARCHAR" />
+    <result column="UserName" property="username" jdbcType="VARCHAR" />
+    <result column="HostName" property="hostname" jdbcType="VARCHAR" />
+    <result column="ContractorName" property="contractorname" jdbcType="VARCHAR" />
+    <result column="RoomName" property="roomname" jdbcType="VARCHAR" />
+    <result column="ConferenceDay" property="conferenceday" jdbcType="INTEGER" />
+    <collection property="userlist" javaType="ArrayList" ofType="cn.caecc.erp.modules.dao.mybatis.entity.User">
+                <id column="UserId" property="id" />
+                <result column="AllName" property="name" />
+            </collection>
+  </resultMap>
+  
+  <select id="getConferenceArrangementByType" parameterType="hashmap" resultMap="BaseResultMap">
+ 
+ 
+ 	 SELECT CA.*,UG.Id as UserID ,UG.`Name` AS AllName,UO.`Name` AS UserName,UT.`Name` AS HostName ,UC.`Name` AS ContractorName,CR.`Name` AS RoomName,WEEKDAY(CA.Time) AS ConferenceDay
+  	
+
+	FROM conference_arrangement CA 
+	
+	LEFT JOIN  conference_user_relationship CUR ON(CA.Id=CUR.CAId)
+
+	LEFT JOIN `user` UO ON(CA.UId=UO.Id)
+
+	LEFT JOIN `user` UT ON(CA.HostId=UT.Id)
+
+	LEFT JOIN `user` UC ON(CA.ContractorId=UC.Id)
+
+	LEFT JOIN  conference_room CR ON(CA.CId=CR.Id)
+	
+    LEFT JOIN  `user`  UG  ON(CUR.UId=UG.Id)
+	<where>
+		<if test="type==1">
+		  TO_DAYS(CA.Time)=TO_DAYS(NOW())
+		</if>
+		<if test="type==2">
+		  YEARWEEK(CA.Time,1) = YEARWEEK(now(),1) AND TO_DAYS(Time)>DATE_FORMAT(NOW(),'%Y-%m-%d 00:00:00')
+		</if>
+		<if test="type==3">
+		  YEARWEEK(Time,1) = YEARWEEK(now(),1)+1
+		</if>	
+	</where>
+		ORDER BY CA.Time ASC
+  </select>
+  
+  <select id="getConferenceArrangementList" parameterType="cn.caecc.erp.modules.dao.mybatis.entity.ConferenceArrangement" resultMap="BaseResultMap">
+  
+    SELECT CA.*,UO.`Name` AS UserName,UT.`Name` AS HostName ,UC.`Name` AS ContractorName,CR.`Name` AS RoomName
+
+	FROM conference_arrangement CA 
+
+	LEFT JOIN `user` UO ON(CA.UId=UO.Id)
+
+	LEFT JOIN `user` UT ON(CA.HostId=UT.Id)
+
+	LEFT JOIN `user` UC ON(CA.ContractorId=UC.Id)
+
+	LEFT JOIN  conference_room CR ON(CA.CId=CR.Id)
+	
+	<where>
+	
+		<if test="username!=null">
+			 AND UO.`Name` LIKE "%"#{username}"%"
+		</if>
+		<if test="hostname!=null">
+			 AND UT.`Name` LIKE "%"#{hostname}"%"
+		</if>
+		<if test="contractorname">
+			 AND UC.`Name` LIKE "%"#{hostname}"%" 
+		</if>
+		<if test="roomname!=null">
+			 AND CR.`Name` LIKE "%"#{roomname}"%"
+		</if>
+	
+	</where>
+  
+  
+  </select>
+    <select id="getConferenceArrangementById" parameterType="int" resultMap="BaseResultMap">
+ 
+ 
+ 	SELECT CA.*,UG.Id as UserID ,UG.`Name` AS AllName,UO.`Name` AS UserName,UT.`Name` AS HostName ,UC.`Name` AS ContractorName,CR.`Name` AS RoomName
+  	
+	FROM conference_arrangement CA 
+	
+	LEFT JOIN  conference_user_relationship CUR ON(CA.Id=CUR.CAId)
+
+	LEFT JOIN `user` UO ON(CA.UId=UO.Id)
+
+	LEFT JOIN `user` UT ON(CA.HostId=UT.Id)
+
+	LEFT JOIN `user` UC ON(CA.ContractorId=UC.Id)
+
+	LEFT JOIN  conference_room CR ON(CA.CId=CR.Id)
+	
+    LEFT JOIN  `user`  UG  ON(CUR.UId=UG.Id)
+	<where>
+		CA.Id=#{id}
+	</where>
+
+  </select>
+  
+  <insert id ="batchInsertCuser" parameterType="cn.caecc.erp.modules.dao.ex.dto.ConferenceArrangementSaveDto" >
+  
+         INSERT INTO conference_user_relationship(CAid,Uid)
+ 		 VALUES  
+            <foreach collection ="userids" item="userid" index= "index" separator =",">
+                 (
+               		  #{conferenceArrangement.id},
+               		  #{userid} 
+                 )
+             </foreach >
+ </insert >
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+

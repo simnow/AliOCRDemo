@@ -1,0 +1,71 @@
+/**
+ * 
+ */
+package cn.caecc.erp.config;
+
+import java.util.Properties;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+
+/**
+ * @author weizhen
+ *
+ */
+@Configuration
+@PropertySource("classpath:/email.properties")
+public class EmailConfig {
+
+	/**
+	 * 
+	 */
+	public EmailConfig() {
+		// TODO Auto-generated constructor stub
+	}
+
+	@Value("${email.url}")
+	private String url;
+
+	@Value("${email.port}")
+	private int port;
+
+	@Value("${email.username}")
+	private String username;
+
+	@Value("${email.password}")
+	private String password;
+
+	@Bean
+	public static PropertySourcesPlaceholderConfigurer getPropertySourcesPlaceholderConfigurer() {
+		PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer = new PropertySourcesPlaceholderConfigurer();
+		propertySourcesPlaceholderConfigurer.setIgnoreUnresolvablePlaceholders(true);
+		return propertySourcesPlaceholderConfigurer;
+	}
+
+	@Bean(name = "mailSender")
+	public JavaMailSenderImpl getMailSender() {
+		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+		mailSender.setHost(url);
+		mailSender.setPort(port);
+		mailSender.setUsername(username);
+		mailSender.setPassword(password);
+
+		Properties properties = new Properties();
+		properties.setProperty("mail.smtp.auth", "true");
+		mailSender.setJavaMailProperties(properties);
+		return mailSender;
+	}
+
+	@Bean(name = "simpleMailMessage")
+	public SimpleMailMessage getSimpleMailMessage() {
+		SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+		simpleMailMessage.setFrom(username);
+		return simpleMailMessage;
+	}
+
+}

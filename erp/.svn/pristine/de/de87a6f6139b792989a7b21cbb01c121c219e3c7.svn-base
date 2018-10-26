@@ -1,0 +1,195 @@
+package cn.caecc.erp.support.util;
+
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
+/**
+ * 日期工具类
+ * @author Administrator
+ *
+ */
+public class DateUtil {
+
+	public static final String YYYY_MM_DD = "yyyy-MM-dd";
+	public static final String YYYYMMDD = "yyyyMMdd";
+	public static final String HHMMSS = "HH:mm:ss";
+	public static final String YMDHMS = "yyyy-MM-dd HH:mm:ss";
+	
+	/**
+	 * 描述：获取当前日期 
+	 * @return 返回当前日期 日期格式  yyyy-MM-dd HH:mm:ss
+	 */
+	public static Date getcurrentDateTime() {
+		SimpleDateFormat sf = new SimpleDateFormat(YMDHMS);
+		String currentDate = sf.format(new Date());
+		try {
+			Date birthDate = sf.parse(currentDate);
+			return birthDate;
+		} catch (ParseException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	/**
+	 * 获取当日时间 YYYYMMDD = "yyyyMMdd";
+	 * @return
+	 */
+	public static Date getcurrentDate() {
+		SimpleDateFormat sf = new SimpleDateFormat(YYYY_MM_DD);
+		String currentDate = sf.format(new Date());
+		try {
+			Date birthDate = sf.parse(currentDate);
+			return birthDate;
+		} catch (ParseException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
+	 * 描述：获取当前日期 
+	 * @return 返回当前日期 日期格式  yyyy-MM-dd
+	 */
+	public static String currentDate() {
+		return currentDate(YYYY_MM_DD);
+	}
+	public static String hourDate() {
+		return currentDate(HHMMSS);
+	}
+	/**
+	 * 描述：获取当前日期
+	 * @param dateFormat 日期格式
+	 * @return 返回当前日期
+	 */
+	public static String currentDate(String dateFormat) {
+		try {
+			SimpleDateFormat sf = new SimpleDateFormat(dateFormat);
+			String currentDate = sf.format(new Date());
+			return currentDate;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	/**
+	 * 转换
+	 * @param date
+	 * @param dateFormat
+	 * @return
+	 */
+	public static Date convertStringToDate(String str, String dateFormat) {
+		if (str != null && !"".equals(str)) {
+			SimpleDateFormat sf = new SimpleDateFormat(dateFormat);
+			try {
+				Date birthDate = sf.parse(str);
+				return birthDate;
+			} catch (ParseException e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+		return null;
+	}
+	public  static  Boolean   compareDate(Date startDate,Date endDate){
+			Date now=new Date();
+			if(now.after(startDate)&&now.before(endDate)){
+				
+				return  true ;
+			}
+			return false;
+		
+	}
+	
+	/**
+	 * Date 转 String 
+	 * @param date
+	 * @param dateFormat
+	 * @return
+	 */
+	public static String DateToString(Date date,String dateFormat){
+		if(date==null){
+			return "";
+		}else{
+			SimpleDateFormat sf = new SimpleDateFormat(dateFormat);
+			String dateString = sf.format(date);
+			return dateString;
+		}
+	}
+
+	/**
+	 * 日期相减得到天数，前提入参不为空
+	 * @param beginDateStr
+	 * @param endDateStr
+	 * @return
+	 */
+	 public static long getDaySub(Date beginDate,Date endDate){
+		 long day=0;
+		 day=(endDate.getTime()-beginDate.getTime())/(24*60*60*1000);    
+	     return day;
+	 }   
+	 
+	 /**
+	  * type(year,day,month)
+	  * @param type
+	  * @return
+	  */
+	 public static Date getSubDay(String type){
+		 Calendar c = Calendar.getInstance();
+		 if("year".equals(type)){
+			 c.add(Calendar.YEAR, -1); //年份减1 
+		 }
+		 if("month".equals(type)){
+			 c.add(Calendar.MONTH, -1); //月份减1 
+		 }
+		 if("day".equals(type)){
+			 c.add(Calendar.DATE, -1); //天数减1 
+		 }
+		return c.getTime();
+		 
+	 }
+	 //获取传入日期每周开始时间
+	 public static int getMondayPlus(Date date) {
+	        Calendar cd = Calendar.getInstance();
+	        cd.setTime(date);
+	        // 获得今天是一周的第几天，星期日是第一天，星期二是第二天......
+	        int dayOfWeek = cd.get(Calendar.DAY_OF_WEEK);
+	        if (dayOfWeek == 1) {
+	            return -6;
+	        } else {
+	            return 2 - dayOfWeek;
+	        }
+	    } 
+	//获取传入日期每周开始时间
+	public static  Date getCurrentMonday(Date date,int week) {
+	        int mondayPlus = getMondayPlus(date);
+	        GregorianCalendar currentDate = new GregorianCalendar();
+	        currentDate.setTime(date);
+	        currentDate.add(GregorianCalendar.DATE,mondayPlus+7*week);
+	        currentDate.set(Calendar.HOUR_OF_DAY, 0);
+	        currentDate.set(Calendar.MINUTE, 0);
+	        currentDate.set(Calendar.SECOND, 0);
+	        Date monday = currentDate.getTime();
+	        return monday ;
+	    }
+	 //获取传入日期每周结束时间
+	 public static Date getPreviousSunday(Date date,int week) {
+	        int mondayPlus = getMondayPlus(date);
+	        GregorianCalendar currentDate = new GregorianCalendar();
+	        currentDate.setTime(date);
+	        currentDate.add(GregorianCalendar.DATE, mondayPlus+6+7*week);
+	        currentDate.set(Calendar.HOUR_OF_DAY, 23);
+	        currentDate.set(Calendar.MINUTE, 59);
+	        currentDate.set(Calendar.SECOND, 59);
+	        Date sunday = currentDate.getTime();;
+	        return sunday;
+	    }
+	public static void main(String []args){
+		   
+
+
+	}
+}

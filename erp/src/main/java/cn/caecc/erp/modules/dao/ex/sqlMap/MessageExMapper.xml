@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="cn.caecc.erp.modules.dao.ex.mapper.MessageExMapper">
+	<resultMap id="ResultExMap"
+		type="cn.caecc.erp.modules.dao.ex.dto.MessageDto">
+		<id column="MessageId" jdbcType="INTEGER" property="messageid" />
+		<result column="MessageTypeId" jdbcType="INTEGER"
+			property="messagetypeid" />
+		<result column="UId" jdbcType="INTEGER" property="uid" />
+		<result column="Title" jdbcType="VARCHAR" property="title" />
+		<result column="Content" jdbcType="VARCHAR" property="content" />
+		<result column="Status" jdbcType="INTEGER" property="status" />
+		<result column="CreateTime" jdbcType="TIMESTAMP"
+			property="createtime" />
+		<result column="MessageTypeName" jdbcType="VARCHAR"
+			property="messageTypeName" />
+	</resultMap>
+	<select id="getMessageById" parameterType="int"
+		resultMap="ResultExMap">
+		SELECT
+		m.*, mt.Name MessageTypeName
+		FROM message m
+		LEFT JOIN message_type mt
+		ON(m.MessageTypeId=mt.MessageTypeId)
+		WHERE m.MessageId=#{id}
+	</select>
+	<select id="getMessagePageList" parameterType="hashmap"
+		resultMap="ResultExMap">
+		SELECT
+		m.*, mt.Name MessageTypeName
+		FROM message m
+		LEFT JOIN message_type mt
+		ON(m.MessageTypeId=mt.MessageTypeId)
+		<where>
+			m.UId=#{userId}
+			<if test="status!=null">
+				AND m.Status=#{status}
+			</if>
+			<if test="messageTypeId!=null">
+				AND m.MessageTypeId=#{messageTypeId}
+			</if>
+			ORDER BY m.CreateTime DESC
+		</where>
+	</select>
+</mapper>

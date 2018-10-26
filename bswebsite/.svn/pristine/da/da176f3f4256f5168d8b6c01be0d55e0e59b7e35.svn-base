@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <title>组织架构</title>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+      <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+      <meta name="apple-mobile-web-app-capable" content="yes"/>
+      <link href="resources/css/jquery-ui-themes.css" type="text/css" rel="stylesheet"/>
+      <!-- <link href="resources/css/axure_rp_page.css" type="text/css" rel="stylesheet"/> -->
+      <script src="resources/scripts/jquery-1.7.1.min.js"></script>
+      <script src="resources/scripts/jquery-ui-1.8.10.custom.min.js"></script>
+    <style>
+        #footer {
+          position: relative;
+            width:1960px;
+            height:194px;
+        }
+        .footer {
+        width: 1960px;
+        height: 194px;
+        background-color: rgba(17, 106, 204, 1);
+      }
+      .footer div {
+        margin-top:50px;
+        display:inline-block;
+        width: 890px;
+        height: 101px;
+        vertical-align: middle;
+        /* background: brown; */
+      } 
+      .footer div.info-tex {
+        width: 1060px;
+        text-align: right;
+        border-right:1px cornflowerblue solid
+      }
+      .footer div.info-tex  ul {
+        margin-top:0;
+        margin-right:45px;
+      }
+      .footer div.info-tex  ul li {
+        display: inline-block;
+        font-family: '微软雅黑 Regular', '微软雅黑';
+        font-weight: 400;
+        font-style: normal;
+        font-size: 13px;
+        color: #FFFFFF;
+        margin-left:20px;
+      }
+      .footer div.info-tex .hasborder {
+        margin-right:45px;
+      }
+      .footer div.info-tex .hasborder li {
+        /* width:250px; */
+        /* padding-right:10px; */
+        padding-left: 20px;
+        border-left: 2px #fff solid;
+      }
+      .footer div.info-tex .hasborder li.first {
+        border-left: 0;
+      }
+      .ercode {
+        margin-left: 35px;
+        width: 107px;
+        height: 107px;
+      }
+      .showmap {
+        width: 140px;
+        height: 107px;
+        margin-left: 15px;
+        
+      }
+      .location {
+        width:150px;
+        height:30px;
+        font-family:'微软雅黑 Regular', '微软雅黑';
+        font-weight:400;
+        font-style:normal;
+        font-size:12px;
+        color:#FFFFFF;
+        display:inline-block;
+        margin-top: -30px;
+      }
+      .location a {
+        text-decoration: none;
+      }
+      #u916.text {
+        width:150px !important;
+        height:30px;
+      }
+      #u914 {
+        position: static;
+        width:150px ;
+        height:50px;
+        margin-top:0;
+        margin-left:10px;
+        
+      }
+      #u914 div {
+        position: static;
+        width:150px ;
+        margin-top:0;
+        font-family:'微软雅黑 Regular', '微软雅黑';
+        font-weight:400;
+        font-style:normal;
+        font-size:12px;
+        color:#FFFFFF;
+      }
+      #u936, #u938, #u932, #u934{
+      position: absolute;
+      left: 1603px;
+      top: -300px;
+      width: 52px;
+      height: 40px;
+      text-align: center;
+      line-height: 40px;
+      background:rgba(242, 242, 242, 1);
+    }
+    #u932,#u934{
+      top:-360px;
+    }
+    #u938 img, #u934 img{
+      margin-top: 10px;
+      width: 21px;
+      height: 21px;
+    }
+    #u934 img {
+      width: 24px;
+      height: 14px;
+    }
+    </style>
+  </head>
+  <body>
+     <div id="footer">
+        <!-- Unnamed (组合) -->
+      <div id="u929" class="ax_default">
+
+          <!-- Unnamed (组合) -->
+          <div id="u930" class="ax_default">
+  
+            <!-- Unnamed (组合) -->
+            <div id="u931" class="ax_default">
+  
+              <!-- Unnamed (矩形) -->
+              <!-- <div id="u932" class="ax_default box_2">
+                <div id="u932_div" class=""></div> -->
+                <!-- Unnamed () -->
+                <!-- <div id="u933" class="text" style="display: none; visibility: hidden">
+                  <p><span></span></p>
+                </div>
+              </div> -->
+  
+              <!-- Unnamed (形状) -->
+              <div id="u934" class="ax_default icon">
+                <img id="u934_img" class="img " src="images/index/u488.png"/>
+                <!-- Unnamed () -->
+                <div id="u935" class="text" style="display: none; visibility: hidden">
+                  <p><span></span></p>
+                </div>
+              </div>
+            </div>
+  
+            <!-- Unnamed (矩形) -->
+            <!-- <div id="u936" class="ax_default box_2">
+              <div id="u936_div" class=""></div> -->
+              <!-- Unnamed () -->
+              <!-- <div id="u937" class="text" style="display: none; visibility: hidden">
+                <p><span></span></p>
+              </div>
+            </div> -->
+  
+            <!-- Unnamed (形状) -->
+            <div id="u938" class="ax_default icon">
+              <img id="u938_img" class="img " src="images/index/u492.png"/>
+              <!-- Unnamed () -->
+              <div id="u939" class="text" style="display: none; visibility: hidden">
+                <p><span></span></p>
+              </div>
+            </div>
+          </div>
+        </div> 
+
+        <div class="footer">
+            <div class="info-tex">
+              <ul>
+                <li>电话：010-12345678</li>
+                <li>传真：010-12345678</li>
+                <li>邮箱：12345678@163.com</li>
+              </ul>
+              <ul>
+                <li>邮编：100088</li>
+                <li>地址：北京市海淀区阜成路14号</li>
+              </ul>
+              <ul class="hasborder">
+                <li class="first">京IC备13000834号</li>
+                <li  class="second">京公网安备11010802022396号</li>
+                <li>中国航天工程科技发展战略研究院版权所有</li>
+              </ul>
+            </div>
+            <div class="info-pic">
+              <img class="ercode" src="images/index/u479.jpg">
+              <a href="http://api.map.baidu.com/mapCard/finish.html?location=%E5%8C%97%E4%BA%AC%E5%B8%82%7C%E6%B5%B7%E6%B7%80%E5%8C%BA%7C%7C&information=%E4%B8%AD%E5%9B%BD%E8%88%AA%E5%A4%A9%E5%B7%A5%E7%A8%8B%E7%A7%91%E6%8A%80%E5%8F%91%E5%B1%95%E6%88%98%E7%95%A5%E7%A0%94%E7%A9%B6%E9%99%A2%7C%7C%7C%7C&point=[116.319317,39.929254]&width=1000&height=720&basicInformation=false&route=false&searchBox=false&zoom=19"><img class="showmap" src="images/index/u477.png"></a>
+              <!-- <p class="location"><a href="http://api.map.baidu.com/mapCard/finish.html?location=%E5%8C%97%E4%BA%AC%E5%B8%82%7C%E6%B5%B7%E6%B7%80%E5%8C%BA%7C%7C&information=%E4%B8%AD%E5%9B%BD%E8%88%AA%E5%A4%A9%E5%B7%A5%E7%A8%8B%E7%A7%91%E6%8A%80%E5%8F%91%E5%B1%95%E6%88%98%E7%95%A5%E7%A0%94%E7%A9%B6%E9%99%A2%7C%7C%7C%7C&point=[116.319317,39.929254]&width=500&height=360&basicInformation=false&route=false&searchBox=false&zoom=19">定位：航天战略院位置图</a></p> -->
+            </div>
+          </div>
+     </div>
+  </body>
+  <script>
+
+  	$(function(){
+        $("#u938").click(function(){
+          window.location.reload();
+        });
+        $("#u934").click(function(){
+          $(window).scrollTop(0);
+        });
+    });
+  </script>
+</html>

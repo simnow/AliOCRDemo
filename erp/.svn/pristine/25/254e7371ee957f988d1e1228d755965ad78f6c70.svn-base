@@ -1,0 +1,204 @@
+package cn.caecc.erp.modules.service.serviceImpl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import cn.caecc.erp.modules.dao.ex.dto.MessageDto;
+import cn.caecc.erp.modules.dao.ex.mapper.MessageExMapper;
+import cn.caecc.erp.modules.dao.mybatis.entity.Message;
+import cn.caecc.erp.modules.dao.mybatis.entity.MessageExample;
+import cn.caecc.erp.modules.dao.mybatis.entity.MessageExample.Criteria;
+import cn.caecc.erp.modules.dao.mybatis.mapper.MessageMapper;
+import cn.caecc.erp.modules.service.MessageService;
+import cn.caecc.erp.support.constant.Contants;
+import cn.caecc.erp.support.util.DateUtil;
+
+@Service
+public class MessageServiceImpl implements MessageService {
+
+	@Autowired
+	private MessageMapper messageMapper;
+
+	@Autowired
+	private MessageExMapper messageExMapper;
+
+	@Autowired
+	private HttpSession session;
+
+	private void addMessage(int userId, String title, String content, int typeId) {
+		// TODO Auto-generated method stub
+		Message message = new Message();
+		message.setUid(userId);
+		message.setTitle(title);
+		message.setContent(content);
+		message.setMessagetypeid(typeId);
+
+		message.setStatus(StatusEnum.UnRead.ordinal());
+		message.setCreatetime(DateUtil.getcurrentDateTime());
+		messageMapper.insert(message);
+	}
+
+	@Override
+	public void createWorkflowMessage(int userId, String title, String content) {
+		addMessage(userId, title, content, 1);
+	}
+
+	@Override
+	public void createContractMessage(int userId, String title, String content) {
+		addMessage(userId, title, content, 2);
+
+	}
+
+	@Override
+	public void createConferenceMessage(int userId, String title, String content) {
+		addMessage(userId, title, content, 3);
+
+	}
+
+	@Override
+	public int updateMessage(Message message) {
+		// TODO Auto-generated method stub
+		return messageMapper.updateByPrimaryKey(message);
+
+	}
+
+	private PageInfo<MessageDto> getMessageByUIdInternal(int uId, Integer status, Integer messageTypeId, int pageNo,
+			int pageSize) {
+		// TODO Auto-generated method stub
+		PageInfo<MessageDto> result = null;
+		PageHelper.startPage(pageNo, pageSize);
+		Map<String, Object> parameterMap = new HashMap<String, Object>();
+		parameterMap.put("userId", uId);
+		parameterMap.put("messageTypeId", messageTypeId);
+		parameterMap.put("status", status);
+
+		List<MessageDto> messageList = messageExMapper.getMessagePageList(parameterMap);
+		if (messageList != null && messageList.size() > 0) {
+			result = new PageInfo<>(messageList);
+		}
+		return result;
+	}
+
+	@Override
+	public int getUnreadMessageCountById() {
+		Integer userId = (Integer) session.getAttribute(Contants.LOGINUSERID);
+		MessageExample messageExample = new MessageExample();
+		Criteria criteria = messageExample.createCriteria();
+		criteria.andUidEqualTo(userId);
+		criteria.andStatusEqualTo(MessageService.StatusEnum.UnRead.ordinal());
+		int count = messageMapper.countByExample(messageExample);
+		return count;
+	}
+
+	@Override
+	public PageInfo<MessageDto> getMyMessageList(Integer status, Integer messageTypeId, int pageNo, int pageSize) {
+		Integer userId = (Integer) session.getAttribute(Contants.LOGINUSERID);
+		return getMessageByUIdInternal(userId, status, messageTypeId, pageNo, pageSize);
+	}
+
+	@Override
+	public int deleteMessageById(int messageId) {
+		// TODO Auto-generated method stub
+		return messageMapper.deleteByPrimaryKey(messageId);
+
+	}
+
+	private int updateStatus(int messageId, int status) {
+		// TODO Auto-generated method stub
+		Message message = new Message();
+		message.setStatus(status);
+		MessageExample messageExample = new MessageExample();
+		Criteria criteria = messageExample.createCriteria();
+		criteria.andMessageidEqualTo(messageId);
+		return messageMapper.updateByExampleSelective(message, messageExample);
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see cn.caecc.erp.modules.service.MessageService#updateUnReadStatus(int)
+	 */
+	@Override
+	public int updateUnReadStatus(int messageId) {
+		// TODO Auto-generated method stub
+		return updateStatus(messageId, StatusEnum.UnRead.ordinal());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see cn.caecc.erp.modules.service.MessageService#updateHasReadStatus(int)
+	 */
+	@Override
+	public int updateHasReadStatus(int messageId) {
+		// TODO Auto-generated method stub
+		return updateStatus(messageId, StatusEnum.HasRead.ordinal());
+	}
+
+	@Override
+	public Message getMessageById(int messageId) {
+		// TODO Auto-generated method stub
+		Message message = messageMapper.selectByPrimaryKey(messageId);
+		return message;
+	}
+
+	@Override
+	public int deleteMessageByIds(List<Integer> messageIdList) {
+		int ret = 1;
+		if (messageIdList != null && messageIdList.size() > 0) {
+			MessageExample messageExample = new MessageExample();
+			Criteria criteria = messageExample.createCriteria();
+			criteria.andMessageidIn(messageIdList);
+			ret = messageMapper.deleteByExample(messageExample);
+		}
+		return ret;
+	}
+
+	private int updateStatus(List<Integer> messageIdList, int status) {
+		// TODO Auto-generated method stub
+		int ret = 1;
+		if (messageIdList != null && messageIdList.size() > 0) {
+			Message message = new Message();
+			message.setStatus(status);
+			MessageExample messageExample = new MessageExample();
+			Criteria criteria = messageExample.createCriteria();
+			criteria.andMessageidIn(messageIdList);
+			ret = messageMapper.updateByExampleSelective(message, messageExample);
+		}
+		return ret;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * cn.caecc.erp.modules.service.MessageService#updateUnReadStatus(java.util.
+	 * List)
+	 */
+	@Override
+	public int updateUnReadStatus(List<Integer> messageIdList) {
+		// TODO Auto-generated method stub
+
+		return updateStatus(messageIdList, StatusEnum.UnRead.ordinal());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * cn.caecc.erp.modules.service.MessageService#updateHasReadStatus(java.util.
+	 * List)
+	 */
+	@Override
+	public int updateHasReadStatus(List<Integer> messageIdList) {
+		// TODO Auto-generated method stub
+		return updateStatus(messageIdList, StatusEnum.HasRead.ordinal());
+	}
+
+}

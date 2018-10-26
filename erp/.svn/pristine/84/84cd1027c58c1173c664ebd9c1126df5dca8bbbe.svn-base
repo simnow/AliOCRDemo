@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://caecc.cn/erp">
+  <collaboration id="Collaboration">
+    <participant id="OutsidePool" name="外部事项审批流程" processRef="OutsideProcess"></participant>
+  </collaboration>
+  <process id="OutsideProcess" name="外部事项审批流程" isExecutable="true">
+    <laneSet id="laneSet_OutsideProcess">
+      <lane id="DepartmentLane" name="部门">
+        <flowNodeRef>startevent1</flowNodeRef>
+        <flowNodeRef>ApplyTask</flowNodeRef>
+      </lane>
+      <lane id="GeneralManagerOfficeLane" name="总经理办公室">
+        <flowNodeRef>endevent1</flowNodeRef>
+        <flowNodeRef>GeneralManagerOfficeTask</flowNodeRef>
+        <flowNodeRef>GeneralManagerOfficeConfirmTask</flowNodeRef>
+        <flowNodeRef>GeneralManagerOfficeLeaderTask</flowNodeRef>
+      </lane>
+      <lane id="ManagerAboveLane" name="主管领导以上">
+        <flowNodeRef>ManagerAboveLeaderTask</flowNodeRef>
+      </lane>
+      <lane id="AttendeesLane" name="处理人员">
+        <flowNodeRef>endevent1</flowNodeRef>
+        <flowNodeRef>ProcesserConfirmTask</flowNodeRef>
+        <flowNodeRef>ProcesserConfirmTask</flowNodeRef>
+        <flowNodeRef>ProcesserSummaryTask</flowNodeRef>
+        <flowNodeRef>GeneralManagerOfficeConfirmTask</flowNodeRef>
+      </lane>
+    </laneSet>
+    <startEvent id="startevent1" name="Start" activiti:initiator="startUserId"></startEvent>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="ApplyTask"></sequenceFlow>
+    <userTask id="ProcesserConfirmTask" name="处理人员确认" activiti:assignee="${user}">
+      <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="${attendeesUsers}" activiti:elementVariable="user"></multiInstanceLoopCharacteristics>
+    </userTask>
+    <sequenceFlow id="flow16" sourceRef="ProcesserConfirmTask" targetRef="ProcesserSummaryTask"></sequenceFlow>
+    <userTask id="ProcesserSummaryTask" name="处理人员总结" activiti:assignee="${user}">
+      <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="${attendeesUsers}" activiti:elementVariable="user">
+        <completionCondition>${nrOfCompletedInstances &gt;= 1}</completionCondition>
+      </multiInstanceLoopCharacteristics>
+    </userTask>
+    <sequenceFlow id="flow8" sourceRef="ProcesserSummaryTask" targetRef="GeneralManagerOfficeConfirmTask"></sequenceFlow>
+    <userTask id="ManagerAboveLeaderTask" name="主管领导以上审批" activiti:candidateUsers="${nextCandidateUsers}"></userTask>
+    <sequenceFlow id="flow15" sourceRef="ManagerAboveLeaderTask" targetRef="ProcesserConfirmTask"></sequenceFlow>
+    <userTask id="GeneralManagerOfficeTask" name="总经理办公室审批" activiti:candidateUsers="${nextCandidateUsers}">
+      <extensionElements>
+        <activiti:taskListener event="assignment" class="cn.caecc.erp.support.workflow.service.listener.SetAssigneeOnAssignmentTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow2" sourceRef="GeneralManagerOfficeLeaderTask" targetRef="ManagerAboveLeaderTask"></sequenceFlow>
+    <endEvent id="endevent1" name="End">
+      <extensionElements>
+        <activiti:executionListener event="start" class="cn.caecc.erp.support.workflow.service.listener.ApproveExecutionListener"></activiti:executionListener>
+      </extensionElements>
+    </endEvent>
+    <userTask id="ApplyTask" name="员工申请" activiti:assignee="${startUserId}"></userTask>
+    <sequenceFlow id="flow18" sourceRef="ApplyTask" targetRef="GeneralManagerOfficeTask"></sequenceFlow>
+    <userTask id="GeneralManagerOfficeConfirmTask" name="总经理办公室确认" activiti:assignee="${GeneralManagerOfficeTaskAssignee}"></userTask>
+    <sequenceFlow id="flow17" sourceRef="GeneralManagerOfficeConfirmTask" targetRef="endevent1"></sequenceFlow>
+    <userTask id="GeneralManagerOfficeLeaderTask" name="总经理办公室主任审批" activiti:candidateUsers="${nextCandidateUsers}"></userTask>
+    <sequenceFlow id="flow19" sourceRef="GeneralManagerOfficeTask" targetRef="GeneralManagerOfficeLeaderTask"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Collaboration">
+    <bpmndi:BPMNPlane bpmnElement="Collaboration" id="BPMNPlane_Collaboration">
+      <bpmndi:BPMNShape bpmnElement="OutsidePool" id="BPMNShape_OutsidePool">
+        <omgdc:Bounds height="356.0" width="551.0" x="20.0" y="5.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="DepartmentLane" id="BPMNShape_DepartmentLane">
+        <omgdc:Bounds height="89.0" width="531.0" x="40.0" y="5.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="GeneralManagerOfficeLane" id="BPMNShape_GeneralManagerOfficeLane">
+        <omgdc:Bounds height="89.0" width="531.0" x="40.0" y="94.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ManagerAboveLane" id="BPMNShape_ManagerAboveLane">
+        <omgdc:Bounds height="89.0" width="531.0" x="40.0" y="183.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="AttendeesLane" id="BPMNShape_AttendeesLane">
+        <omgdc:Bounds height="89.0" width="531.0" x="40.0" y="272.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="240.0" y="23.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ProcesserConfirmTask" id="BPMNShape_ProcesserConfirmTask">
+        <omgdc:Bounds height="55.0" width="105.0" x="230.0" y="290.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ProcesserSummaryTask" id="BPMNShape_ProcesserSummaryTask">
+        <omgdc:Bounds height="55.0" width="105.0" x="380.0" y="290.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ManagerAboveLeaderTask" id="BPMNShape_ManagerAboveLeaderTask">
+        <omgdc:Bounds height="55.0" width="105.0" x="230.0" y="200.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="GeneralManagerOfficeTask" id="BPMNShape_GeneralManagerOfficeTask">
+        <omgdc:Bounds height="55.0" width="105.0" x="80.0" y="115.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="520.0" y="125.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ApplyTask" id="BPMNShape_ApplyTask">
+        <omgdc:Bounds height="55.0" width="105.0" x="80.0" y="13.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="GeneralManagerOfficeConfirmTask" id="BPMNShape_GeneralManagerOfficeConfirmTask">
+        <omgdc:Bounds height="55.0" width="105.0" x="380.0" y="115.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="GeneralManagerOfficeLeaderTask" id="BPMNShape_GeneralManagerOfficeLeaderTask">
+        <omgdc:Bounds height="55.0" width="141.0" x="210.0" y="115.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="240.0" y="40.0"></omgdi:waypoint>
+        <omgdi:waypoint x="185.0" y="40.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow16" id="BPMNEdge_flow16">
+        <omgdi:waypoint x="335.0" y="317.0"></omgdi:waypoint>
+        <omgdi:waypoint x="380.0" y="317.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow8" id="BPMNEdge_flow8">
+        <omgdi:waypoint x="432.0" y="290.0"></omgdi:waypoint>
+        <omgdi:waypoint x="432.0" y="170.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow15" id="BPMNEdge_flow15">
+        <omgdi:waypoint x="282.0" y="255.0"></omgdi:waypoint>
+        <omgdi:waypoint x="282.0" y="290.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="280.0" y="170.0"></omgdi:waypoint>
+        <omgdi:waypoint x="282.0" y="200.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow18" id="BPMNEdge_flow18">
+        <omgdi:waypoint x="132.0" y="68.0"></omgdi:waypoint>
+        <omgdi:waypoint x="132.0" y="115.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow17" id="BPMNEdge_flow17">
+        <omgdi:waypoint x="485.0" y="142.0"></omgdi:waypoint>
+        <omgdi:waypoint x="520.0" y="142.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow19" id="BPMNEdge_flow19">
+        <omgdi:waypoint x="185.0" y="142.0"></omgdi:waypoint>
+        <omgdi:waypoint x="210.0" y="142.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

@@ -1,0 +1,94 @@
+/**
+ * 
+ */
+package cn.caecc.erp.config;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.web.socket.config.annotation.EnableWebSocket;
+import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
+import cn.caecc.erp.support.websocket.Interceptor.MyWebSocketHandshakeInterceptor;
+import cn.caecc.erp.support.websocket.handler.MyHandshakeHandler;
+import cn.caecc.erp.support.websocket.handler.MyWebSocketHandler;
+
+/**
+ * @author weizhen
+ *
+ */
+@Configuration // 配置类
+@EnableWebSocket // 声明支持websocket
+// @EnableWebSocketMessageBroker
+@PropertySource("classpath:/mq.properties")
+public class WebSocketConfig implements WebSocketConfigurer/* , WebSocketMessageBrokerConfigurer */ {
+
+	@Value("${mq.url}")
+	private String mq_url;
+	@Value("${stomp.port}")
+	private int stomp_port;
+
+	@Override
+	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+
+		// 注册websocket实现类，指定参数访问地址;allowed-origins="*" 允许跨域
+		registry.addHandler(myWebSocketHandler(), "/websocket").addInterceptors(myWebSocketHandshakeInterceptor())
+				.setAllowedOrigins("*");
+		// 允许客户端使用SockJS
+		registry.addHandler(myWebSocketHandler(), "/sockjs/websocket")
+				.addInterceptors(myWebSocketHandshakeInterceptor()).setAllowedOrigins("*").withSockJS();
+	}
+
+	/*
+	 * 服务器要监听的端口，message会从这里进来，要对这里加一个Handler 这样在网页中就可以通过websocket连接上服务了
+	 */
+	/*
+	 * @Override public void registerStompEndpoints(StompEndpointRegistry registry)
+	 * { registry.addEndpoint("/websocketStomp")// websocket 端点
+	 * .setAllowedOrigins("*").setHandshakeHandler(myHandshakeHandler())
+	 * .addInterceptors(myWebSocketHandshakeInterceptor());
+	 * 
+	 * registry.addEndpoint("/sockjs/websocketStomp")// websocket 端点
+	 * .setAllowedOrigins("*").setHandshakeHandler(myHandshakeHandler())
+	 * .addInterceptors(myWebSocketHandshakeInterceptor()).withSockJS(); }
+	 */
+	/*
+	 * 配置broker
+	 */
+	/*
+	 * @Override public void configureMessageBroker(MessageBrokerRegistry registry)
+	 * {
+	 * 
+	 * registry.enableStompBrokerRelay("/topic") // 设置可以订阅的地址，也就是服务器可以发送的地址
+	 * .setRelayHost(mq_url) // activeMq服务器地址 .setRelayPort(stomp_port)// activemq
+	 * 服务器服务端口 .setSystemHeartbeatReceiveInterval(2000) // 设置心跳信息接收时间间隔
+	 * .setSystemHeartbeatSendInterval(2000); // 设置心跳信息发送时间间隔
+	 * 
+	 * registry.setApplicationDestinationPrefixes("/ws"); }
+	 */
+	/*
+	 * 消息传输参数配置
+	 */
+	/*
+	 * @Override public void
+	 * configureWebSocketTransport(WebSocketTransportRegistration registry) {
+	 * registry.setMessageSizeLimit(8192) // 设置消息字节数大小
+	 * .setSendBufferSizeLimit(8192)// 设置消息缓存大小 .setSendTimeLimit(10000); //
+	 * 设置消息发送时间限制毫秒 }
+	 */
+	@Bean
+	public MyHandshakeHandler myHandshakeHandler() {
+		return new MyHandshakeHandler();
+	}
+
+	@Bean
+	public MyWebSocketHandler myWebSocketHandler() {
+		return new MyWebSocketHandler();
+	}
+
+	@Bean
+	public MyWebSocketHandshakeInterceptor myWebSocketHandshakeInterceptor() {
+		return new MyWebSocketHandshakeInterceptor();
+	}
+}

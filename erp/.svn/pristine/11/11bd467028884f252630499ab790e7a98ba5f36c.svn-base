@@ -1,0 +1,15 @@
+•
+sms.product=Dysmsapi
+sms.domain=dysmsapi.aliyuncs.com
+sms.accesskeyId=LTAIYikeMSJWO0O4
+sms.accesskeySecret=KcZD0uk2AWH54ueSPI9c5b7Z8j8ZAk
+sms.signName=\u9B4F\u632F
+sms.loginSign=LoginSmsSign
+sms.updatePasswordSign=UpdatePasswordSmsSign
+sms.sessionKey=SmsSessionKey
+sms.expireTimeMinute=15
+sms.intervalTimeMinute=1
+sms.rejectModel=SMS_132990168
+sms.approveModel=SMS_132995168
+sms.loginModel=SMS_129755391
+sms.updatePasswordModel=SMS_129740417

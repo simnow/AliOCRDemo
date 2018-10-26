@@ -1,0 +1,266 @@
+package cn.caecc.erp.controller;
+
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.util.List;
+import java.util.Map;
+import javax.imageio.ImageIO;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import com.github.pagehelper.PageInfo;
+import cn.caecc.erp.modules.dao.ex.dto.ContractActivitiApplyDto;
+import cn.caecc.erp.modules.dao.mybatis.entity.ContractActivitiApply;
+import cn.caecc.erp.modules.dao.mybatis.entity.ContractGoodsRelationship;
+import cn.caecc.erp.modules.service.ContractActivitiApplyService;
+import cn.caecc.erp.modules.service.ContractGoodsRelationshipService;
+import cn.caecc.erp.support.constant.Contants;
+import cn.caecc.erp.support.message.Message;
+import cn.caecc.erp.support.qrcode.service.QrCoderService;
+import cn.caecc.erp.support.workflow.entity.ProcessInstanceApplyEntity;
+
+@Controller
+@RequestMapping("/api/contract-activiti-apply")
+public class ContractActivitiApplyController {
+
+	@Autowired
+	private ContractActivitiApplyService contractActivitiApplyService;
+	@Autowired 
+	private ContractGoodsRelationshipService contractGoodsRelationshipService;
+	@Autowired
+	private QrCoderService qrCoderService;
+	@ResponseBody
+	@RequestMapping(method = RequestMethod.POST)
+	@RequiresPermissions(Contants.CONTRACT_ADD_PERMISSION)
+	public Message create(@RequestBody ContractActivitiApply contractActivitiApply) {
+		
+		Message message = new Message();
+		message.setSuccess(false);
+		String msg = "该合同编号已存在，不能再使用";
+		try {
+			contractActivitiApply = contractActivitiApplyService.create(contractActivitiApply);
+			if (contractActivitiApply != null) {
+				message.setObj(contractActivitiApply);
+				message.setSuccess(true);
+			}else {
+				message.setMsg("未查询到相关数据");
+			}
+		} catch (Exception e) {
+			message.setMsg(msg);
+		}
+
+		return message;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/{id}",method = RequestMethod.GET)
+	public Message findById(@PathVariable("id")int id){
+		Message message = new Message();
+		message.setSuccess(false);
+		ContractActivitiApply contractActivitiApply = contractActivitiApplyService.findById(id);
+		if (contractActivitiApply != null) {
+			message.setObj(contractActivitiApply);
+			message.setSuccess(true);
+		}else {
+			message.setMsg("未查询到相关数据");
+		}
+		return message;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/code/{code}",method = RequestMethod.GET)
+	@RequiresPermissions(Contants.CONTRACT_SELECT_PERMISSION)
+	public Message findByCode(@PathVariable("code")String code) {
+		Message message = new Message();
+		message.setSuccess(false);
+		ContractActivitiApply contractActivitiApply = contractActivitiApplyService.findByCode(code);
+		if (contractActivitiApply != null) {
+			message.setObj(contractActivitiApply);
+			message.setSuccess(true);
+		}else {
+			message.setMsg("未查询到相关数据");
+		}
+		return message;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/detail/{id}",method = RequestMethod.GET)
+	public Message findDetail(@PathVariable("id")int id) {
+		Message message = new Message();
+		message.setSuccess(false);
+		ContractActivitiApplyDto contractActivitiApplyDto = contractActivitiApplyService.findDetail(id);
+		if (contractActivitiApplyDto != null) {
+			message.setObj(contractActivitiApplyDto);
+			message.setSuccess(true);
+		}else {
+			message.setMsg("未查询到相关数据");
+		}
+		return message;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/list",method = RequestMethod.GET)
+	@RequiresPermissions(Contants.CONTRACT_SELECT_PERMISSION)
+	public Message getList(int pageNo, int pageSize, String drafts, int isSuccess,
+			String operation, Integer userid, String name) {
+		Message message = new Message();
+		message.setSuccess(false);
+		if (pageNo == 0) {
+			message.setMsg("请选中要查询页数");
+		}else if (pageSize == 0) {
+			message.setMsg("页数大小不能为0");
+		}else {
+			PageInfo<ContractActivitiApplyDto> pageInfo = contractActivitiApplyService.getList(userid, pageNo, pageSize, drafts, isSuccess, operation, name);
+			if (pageInfo != null) {
+				message.setSuccess(true);
+				message.setObj(pageInfo);
+			}else {
+				message.setMsg("获取列表失败");
+			}
+		}
+		return message;
+	}
+	
+	@ResponseBody
+	@RequestMapping(method = RequestMethod.PUT)
+	@RequiresPermissions(Contants.CONTRACT_UPDATE_PERMISSION)
+	public Message update(@RequestBody ContractActivitiApply contractActivitiApply) {		
+		Message message = new Message();
+		message.setSuccess(false);
+		String msg = "该合同编号已存在，不能再使用";
+		try {
+			contractActivitiApply = contractActivitiApplyService.update(contractActivitiApply);
+			if (contractActivitiApply != null) {
+				message.setObj(contractActivitiApply);
+				message.setSuccess(true);
+			}else {
+				message.setMsg("未查询到相关数据");
+			}
+		} catch (Exception e) {
+			message.setMsg(msg);
+		}
+		return message;
+	}
+	
+	/**
+	 * 删除
+	 * @param id
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/{id}",method = RequestMethod.DELETE)
+	public Message deleteById(@PathVariable("id")int id) {
+		Message message = new Message();
+		message.setSuccess(false);
+		int result = contractActivitiApplyService.deleteById(id);
+		if (result > 0) {
+			message.setSuccess(true);
+		}else {
+			message.setMsg("删除失败");
+		}
+		return message;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/startprocess",method = RequestMethod.POST)
+	@RequiresPermissions(Contants.CONTRACT_PROCESS_START_PERMISSION)
+	public Message startProcess(@RequestBody ProcessInstanceApplyEntity processInstanceApplyEntity) {
+		String processDefinitionKey = processInstanceApplyEntity.getProcessDefinitionKey();
+		String bussinessKey = processInstanceApplyEntity.getBussinessKey();
+		Map<String, Object> variables = processInstanceApplyEntity.getVariables();
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			int ret = contractActivitiApplyService.startProcess(processDefinitionKey, bussinessKey, variables);
+			if (ret > 0) {
+				message.setSuccess(true);
+			} else {
+				message.setMsg("开启流程失败");
+			}
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;	
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/excel", method = RequestMethod.POST)
+	public Message upload(MultipartFile file, HttpServletRequest request) throws Exception{
+		if(file!=null){
+			Message message = new Message();
+			String contractId=(String) request.getParameter("id");
+			String fileName = file.getOriginalFilename();
+			List<ContractGoodsRelationship> resultList=contractGoodsRelationshipService.exprotExcel(file.getInputStream(), fileName,Integer.parseInt(contractId));
+			message.setObj(resultList);
+			return message;
+		}
+		else{
+			return new Message(false,"文件上传失败");
+		}
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/qr-code/{code}", method = RequestMethod.GET)
+	public void getQrCode(@PathVariable("code") String code,  HttpServletResponse response) {
+		try {
+			ServletOutputStream bos = response.getOutputStream();
+			String imageType = "image/PNG";
+			response.setContentType(imageType);
+			BufferedImage image = qrCoderService.getQrCode(code);
+			ImageIO.write(image, "PNG", bos);
+			bos.flush();
+			bos.close();
+		} catch (Exception ex) {
+		}
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/bar-code/{code}", method = RequestMethod.GET)
+	public void getBarCode(@PathVariable("code") String code,  HttpServletResponse response) {
+		try {
+			ServletOutputStream bos = response.getOutputStream();
+			String imageType = "image/PNG";
+			response.setContentType(imageType);
+			BufferedImage image = qrCoderService.getBarCode(code);
+			ImageIO.write(image, "PNG", bos);
+			bos.flush();
+			bos.close();
+		} catch (Exception ex) {
+		}
+	}
+	
+	
+	@RequestMapping(value = "/export/{id}")
+	@RequiresPermissions(Contants.CONTRACT_SELECT_PERMISSION)
+	public ResponseEntity<byte[]> export(@PathVariable("id")int id,HttpServletRequest request) {
+		ResponseEntity<byte[]> entity = null;
+		try {
+			ByteArrayInputStream is = contractActivitiApplyService.exportContractGoods(id);
+			byte[] body = new byte[is.available()];
+			is.read(body);
+			HttpHeaders headers = new HttpHeaders();           
+			headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+            headers.add("Content-Disposition", "attachment;filename=contractGoods.xls");
+			HttpStatus statusCode = HttpStatus.OK;
+			entity = new ResponseEntity<byte[]>(body, headers, statusCode);
+			is.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return entity;
+	}
+	
+}

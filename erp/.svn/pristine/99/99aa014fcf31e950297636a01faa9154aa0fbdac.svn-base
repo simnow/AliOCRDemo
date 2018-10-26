@@ -1,0 +1,179 @@
+package cn.caecc.erp.controller;
+
+import java.util.Map;
+
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import com.github.pagehelper.PageInfo;
+import cn.caecc.erp.modules.dao.mybatis.entity.EventActivitiApply;
+import cn.caecc.erp.modules.service.EventActivitiApplyService;
+import cn.caecc.erp.support.constant.Contants;
+import cn.caecc.erp.support.message.Message;
+import cn.caecc.erp.support.workflow.entity.ProcessInstanceApplyEntity;
+
+@Controller
+@RequestMapping(value = "/api/event-activiti-apply")
+public class EventActivitiApplyController{
+
+	@Autowired
+	private EventActivitiApplyService eApplyService;
+
+	/**
+	 * FunName:addEventApply Description : 新增申请
+	 * 
+	 * @param：EventActivitiApply
+	 * @return Message
+	 * @Author:shh
+	 * @Create Date: 2018-7-4
+	 */
+	@RequestMapping(method = RequestMethod.POST)
+	@ResponseBody
+	@RequiresPermissions(Contants.EVENT_ADD_PERMISSION)
+	public Message addEventApply(@RequestBody EventActivitiApply eventActivitiApply) {
+		Message message = new Message();
+		message.setSuccess(false);
+		eventActivitiApply = eApplyService.addEventActivitiApply(eventActivitiApply);
+		if (eventActivitiApply != null) {
+			message.setObj(eventActivitiApply);
+			message.setSuccess(true);
+		} else {
+			message.setMsg("未查询到相关数据");
+		}
+		return message;
+	}
+
+	/**
+	 * FunName:updateEventApply Description : 修改申请
+	 * 
+	 * @param：EventActivitiApply
+	 * @return Message
+	 * @Author:shh
+	 * @Create Date: 2018-7-4
+	 */
+	@RequestMapping(method = RequestMethod.PUT)
+	@ResponseBody
+	@RequiresPermissions(Contants.EVALUATE_UPDATE_PERMISSION)
+	public Message updateEventApply(@RequestBody EventActivitiApply eventActivitiApply) {
+		Message message = new Message();
+		message.setSuccess(false);
+		eventActivitiApply = eApplyService.updateEventApply(eventActivitiApply);
+		if (eventActivitiApply != null) {
+			message.setObj(eventActivitiApply);
+			message.setSuccess(true);
+		} else {
+			message.setMsg("未查询到相关数据");
+		}
+		return message;
+	}
+
+	/**
+	 * FunName:deleteEventApply Description : 删除申请
+	 * 
+	 * @param：int
+	 * @return Message
+	 * @Author:shh
+	 * @Create Date: 2018-7-4
+	 */
+	@RequestMapping(value="/{id}",method = RequestMethod.DELETE)
+	@ResponseBody
+	public Message deleteEventApply(@PathVariable("id") int id) {
+
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			int ret = eApplyService.deleteEventActivitiApply(id);
+			if (ret > 0) {
+				message.setSuccess(true);
+			} else {
+				message.setMsg("删除失败");
+			}
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+
+	/**
+	 * FunName:getEventApplyById Description : 查询详情
+	 * 
+	 * @param：int
+	 * @return Message
+	 * @Author:shh
+	 * @Create Date: 2018-7-4
+	 */
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
+	@ResponseBody
+	@RequiresPermissions(Contants.EVALUATE_SELECT_PERMISSION)
+	public Message getEventApplyById(@PathVariable("id") int id) {
+		Message message = new Message();
+		message.setSuccess(false);
+		EventActivitiApply eentActivitiApply = eApplyService.getEventApplyByid(id);
+		if (eentActivitiApply != null) {
+			message.setObj(eentActivitiApply);
+			message.setSuccess(true);
+		} else {
+			message.setMsg("未查询到相关数据");
+		}
+		return message;
+	}
+
+	/**
+	 * FunName:getEventApplyById Description : 申请
+	 * 
+	 * @param：int
+	 * @return Message
+	 * @Author:shh
+	 * @Create Date: 2018-7-4
+	 */
+	@RequestMapping(value = "/list", method = RequestMethod.GET)
+	@ResponseBody
+	@RequiresPermissions(Contants.EVALUATE_SELECT_PERMISSION)
+	public Message getEventApplyList(@RequestParam(value="state",required=true) int state
+			,@RequestParam(value="pagesize",required=true) int pagesize
+			,@RequestParam(value="pageno",required=true) int pageno
+			,@RequestParam(value="uid",required=true) int uid) {
+
+		Message message = new Message();
+		message.setSuccess(false);
+
+		PageInfo<EventActivitiApply> pageInfo = eApplyService.getEventApplyPageList(state,pagesize,pageno,uid);
+		if (pageInfo != null) {
+			message.setSuccess(true);
+			message.setObj(pageInfo);
+		} else {
+			message.setMsg("获取列表失败");
+		}
+
+		return message;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/startprocess", method = RequestMethod.POST)
+	@RequiresPermissions(Contants.EVALUATE_PROCESS_START_PERMISSION)
+	public Message startProcess(@RequestBody ProcessInstanceApplyEntity processInstanceApplyEntity) {
+		String processDefinitionKey = processInstanceApplyEntity.getProcessDefinitionKey();
+		String bussinessKey = processInstanceApplyEntity.getBussinessKey();
+		Map<String, Object> variables = processInstanceApplyEntity.getVariables();
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			int ret = eApplyService.startEventActivitiApply(processDefinitionKey, bussinessKey, variables);
+			if (ret > 0) {
+				message.setSuccess(true);
+			} else {
+				message.setMsg("开启流程失败");
+			}
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+
+	}
+}

@@ -1,0 +1,366 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <title>集成创意</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <link href="resources/css/jquery-ui-themes.css" type="text/css" rel="stylesheet"/>
+    <link href="resources/css/axure_rp_page.css" type="text/css" rel="stylesheet"/>
+    <link href="data/styles.css" type="text/css" rel="stylesheet"/>
+    <link href="files/集成创意/styles.css" type="text/css" rel="stylesheet"/>
+    <link href="files/组织架构/styles.css" type="text/css" rel="stylesheet"/>
+    <link href="resources/css/bodycss.css"  type="text/css" rel="stylesheet"/>
+    <script src="resources/scripts/jquery-1.7.1.min.js"></script>
+    <script src="resources/scripts/jquery-ui-1.8.10.custom.min.js"></script>
+    <script src="resources/scripts/axure/axQuery.js"></script>
+    <script src="resources/scripts/axure/globals.js"></script>
+    <script src="resources/scripts/axutils.js"></script>
+    <script src="resources/scripts/axure/annotation.js"></script>
+    <script src="resources/scripts/axure/axQuery.std.js"></script>
+    <script src="resources/scripts/axure/doc.js"></script>
+    <script src="data/document.js"></script>
+    <script src="resources/scripts/messagecenter.js"></script>
+    <script src="resources/scripts/axure/events.js"></script>
+    <script src="resources/scripts/axure/recording.js"></script>
+    <script src="resources/scripts/axure/action.js"></script>
+    <script src="resources/scripts/axure/expr.js"></script>
+    <script src="resources/scripts/axure/geometry.js"></script>
+    <script src="resources/scripts/axure/flyout.js"></script>
+    <script src="resources/scripts/axure/ie.js"></script>
+    <script src="resources/scripts/axure/model.js"></script>
+    <script src="resources/scripts/axure/repeater.js"></script>
+    <script src="resources/scripts/axure/sto.js"></script>
+    <script src="resources/scripts/axure/utils.temp.js"></script>
+    <script src="resources/scripts/axure/variables.js"></script>
+    <script src="resources/scripts/axure/drag.js"></script>
+    <script src="resources/scripts/axure/move.js"></script>
+    <script src="resources/scripts/axure/visibility.js"></script>
+    <script src="resources/scripts/axure/style.js"></script>
+    <script src="resources/scripts/axure/adaptive.js"></script>
+    <script src="resources/scripts/axure/tree.js"></script>
+    <script src="resources/scripts/axure/init.temp.js"></script>
+    <script src="files/集成创意/data.js"></script>
+    <script src="resources/scripts/axure/legacy.js"></script>
+    <script src="resources/scripts/axure/viewer.js"></script>
+    <script src="resources/scripts/axure/math.js"></script>
+    <script type="text/javascript">
+      $axure.utils.getTransparentGifPath = function() { return 'resources/images/transparent.gif'; };
+      $axure.utils.getOtherPath = function() { return 'resources/Other.html'; };
+      $axure.utils.getReloadPath = function() { return 'resources/reload.html'; };
+    </script>
+    <style>
+		#base {
+			position: relative;
+			margin-top: -207px;
+		}
+		.inport-footer {
+			position: absolute;
+			top:1400px;
+			left: 0px;
+		}
+    	#nav-box {
+    		position: absolute;
+		    left: 379px;
+		    top: 431px;
+		    width: 220px;
+		    height: 300px;
+		    background: #fff;
+		    opacity:1;
+		    margin: 0;
+		    padding: 0;
+    	}
+    	#nav-box li {
+   		    width: 220px;
+		    
+		    background: inherit;
+		    background-color: rgba(242, 242, 242, 1);
+		    border: none;
+		    border-radius: 0px;
+		    margin-bottom: 4px;
+		    list-style:none;
+    	}
+    	#nav-box li p{
+    		display:inline-block;
+    		margin-left: 40px;
+    		height: 46px;
+    		line-height:46px;
+	       font-family: '微软雅黑 Bold', '微软雅黑';
+		   font-weight: 700;
+		   font-style: normal;
+		   font-size: 16px;
+		   color:  #126ACC;
+		   vertical-align: middle;
+		   width:100px;
+    	}
+    	#nav-box li div {
+    		display:inline-block;
+    		margin-left: 40px;
+    		width: 13px;
+    		height: 15px;
+    		vertical-align: middle;
+    		    font-family: 'Arial Normal', 'Arial';
+			   font-weight: 400;
+			   font-style: normal;
+			   font-size: 13px;
+			   color: #333333;
+			   text-align: center;
+			   line-height: normal;
+    	}
+    	#nav-box li div img {
+    		width:100%;
+    	}
+    	#sub-nav-box li {
+		    width: 220px;
+		    
+		    background: inherit;
+		    background-color: rgba(242, 242, 242, 1);
+		    border: none;
+		    border-radius: 0px;
+		    margin-bottom: 4px;
+		    list-style:none;
+    	}
+    	#sub-nav-box li p{
+    		display:inline-block;
+    		margin-left: 40px;
+    		height: 46px;
+    		line-height:46px;
+	       font-family: '微软雅黑 Bold', '微软雅黑';
+		   font-weight: 700;
+		   font-style: normal;
+		   font-size: 16px;
+		   color: #FFFFFF;
+		   vertical-align: middle;
+    	}
+    	#nav-box .sub-nav {
+    		display:none;
+    	}
+    	#nav-box li ul{
+   		    width: 220px;
+		    background: inherit;
+		    background-color: rgba(242, 242, 242, 1);
+		    border: none;
+		    border-radius: 0px;
+		    margin-bottom: 4px;
+		    list-style:none;
+		    margin:0;
+		    padding:0;
+		    padding-top:4px;
+		    background:#fff;
+    	}
+    	#u525 {
+		    position: absolute;
+		    left: 635px;
+		    top: 490px;
+		    width: 341px;
+		    height: 27px;
+		    font-family: '微软雅黑 Bold', '微软雅黑';
+		    font-weight: 700;
+		    font-style: normal;
+		    font-size: 20px;
+		}
+		#u523 {
+		    position: absolute;
+		    left: 635px;
+		    top: 482px;
+		    width: 944px;
+		    height: 933px;
+		}
+		#u527 {
+		    position: absolute;
+		    left: 674px;
+		    top:522px;
+		    width: 864px;
+		    height: 482px;
+		    font-family: '微软雅黑 Regular', '微软雅黑';
+		    font-weight: 400;
+		    font-style: normal;
+		    font-size: 16px;
+		    line-height: 36px;
+		}
+		#u528 {
+		    position: absolute;
+		    left: 0px;
+		    top: 0px;
+		    width: 864px;
+		    word-wrap: break-word;
+		}
+    </style>
+  </head>
+  <body>
+  <div class="body">
+      <div class="move">
+  	 <div id="u525" class="ax_default _一级标题">
+        <div id="u525_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u526" class="text" style="visibility: visible;">
+          <p><span>集成创意</span></p>
+        </div>
+      </div>
+      
+      <div id="u523" class="ax_default box_2">
+        <div id="u523_div" class="" style="height:750px">
+        </div>
+        <!-- Unnamed () -->
+        <div id="u524" class="text" style="display: none; visibility: hidden">
+          <p><span>
+          </span></p>
+        </div>
+      </div>
+      
+      <div id="u527" class="ax_default _文本段落">
+        <div id="u527_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u528" class="text" style="visibility: visible;">
+          <p><span><br></span></p><p>一、目标定位<br>
+				（一）目标<br>
+				&nbsp;&nbsp; &nbsp; &nbsp;1、依托中国航天十二院、航天战略院、八所将创意中心建设成为中国航天文化创意发展的抓总牵头机构，深化文化创意产业理论、实践与政策研究，促进文化创意产业发展。<br>
+				&nbsp;&nbsp; &nbsp; &nbsp;目标建设发展成为“中国航天文化的理论奠基者、顶层设计者、标准制定者、权威发布者、资源整合者、平台提供者、产业推动者”，以文化创意支撑将钱学森智库建设，成为国际一流的国家级高端智库。<br>
+				&nbsp;&nbsp; &nbsp; &nbsp;2、建成“经济、技术、文化”三位一体协同发展创意中心。<br>
+				&nbsp;&nbsp; &nbsp; &nbsp;经济：以市场需求、问题导向发展经济，将创新链、产业链与市场结合，转化培育科技成果产业化，将建设钱学森智库、知识服务、信息化服务、航天文化创意产业成为重要的经济增长点。<br>
+				&nbsp;&nbsp; &nbsp; &nbsp;技术：以综合集成、系统工程思想、理论、方法、技术、管理全链条打造富有航天特色的钱学森智库，建设成为国际一流高端智库。<br>
+				&nbsp;&nbsp; &nbsp; &nbsp;文化：创意中心遵循八所“开放、融合、创新、共享”的文化，发展航天集成创意产业，拉动经济新增长点。<br>
+          </p>
+		  <p><span>（二）定位<br>
+				&nbsp;&nbsp; &nbsp; &nbsp;1、钱学森智库建设业务支撑实施单位。<br>
+				&nbsp;&nbsp; &nbsp; &nbsp;2、航天战略院支撑平台和办事机构。<br>
+				&nbsp;&nbsp; &nbsp; &nbsp;3、技术项目（航天内外集成创意与应用服务平台、航天文化传媒传承平台、集成创意产业化平台等）总体设计与实施单位。<br>
+				&nbsp;&nbsp; &nbsp; &nbsp;4. 专业领域：航天文化、航天精神的弘扬与传播；航天工业设计、工艺美工、文化创意等产业的研究与推动；文化创新、品牌建设、质量管理、知识产权保护等工作；航天科普、航天体验、航天育种、航天产业等发展。<br>
+				&nbsp;&nbsp; &nbsp; &nbsp;5.业务方向：航天文化理论研究与顶层设计；政府决策支撑服务；航天文化公共服务平台建设与项目评估认证；航天文化的弘扬与宣传交流；会议会展与教育培训业务；重大航天文化项目的推动与实施。<br>
+				&nbsp;&nbsp; &nbsp; &nbsp;6. 面向对象：创意中心合作面向国内外，打造党、政、军、企、高校智库总体，推动跨军民、跨地域、跨行业、跨学科的思想集成。</span></p>
+        </div>
+      </div>
+	<div class="inport-header"></div>
+    <div id="base" class="">
+
+      <!-- Unnamed (图片) -->
+      <div id="u3300" class="ax_default image">
+        <img id="u3300_img" class="img " src="images/战略咨询/u2907.jpg"/>
+        <!-- Unnamed () -->
+        <div id="u3301" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+    
+  <!-- 位置 -->
+    <div id="u944" class="ax_default icon">
+            <img id="u944_img" class="img " src="images/战略院简介/u699.png"/>
+            <!-- Unnamed () -->
+            <div id="u945" class="text" style="display: none; visibility: hidden">
+              <p><span></span></p>
+            </div>
+          </div>
+    <!-- Unnamed (矩形) -->
+          <div id="u942" class="ax_default label">
+            <div id="u942_div" class=""></div>
+            <!-- Unnamed () -->
+            <div id="u943" class="text" style="visibility: visible;">
+              <p><span>当前位置＞核心业务＞集成创意</span></p>
+            </div>
+          </div>
+    <ul id="nav-box">
+      	<li class="navs" style ="background: rgba(18, 106, 204, 1)">
+      		<p  style ="color: #fff">核心业务</p> <div></div>
+      		
+      	</li>
+      	<li class="sub-nav">
+      		
+      	</li>
+      	<li class="nav1" >
+      		<p>咨询研究</p>
+      		
+      	</li>
+      	<li class="sub-nav" >
+      		<!-- <ul>
+      			<li><p>院士</p></li>
+      			<li><p>专家</p></li>
+      		</ul> -->
+      	</li>
+      	<li class="nav2">
+      		<p>智慧服务</p>
+      		
+      	</li>
+      	<li class="sub-nav">
+      		<ul>
+      		</ul>
+      	</li>
+      	<li class="nav3">
+      		<p>知识服务</p>
+      		
+      	</li>
+      	<li class="sub-nav">
+      		<ul>
+      		</ul>
+      	</li>
+      	<li class="nav4">
+      		<p>集成创意</p>
+      		
+      	</li>
+	  </ul>
+	</div>
+	<div class="inport-footer"></div>
+	</div>
+	</div>
+  </body>
+  <script src="resources/scripts/load.js"></script>
+  <script type="text/javascript">
+//	上来先展开
+  
+  $('#nav-box .nav2').click(function(){
+	  //转换页面
+	  window.location.href='智慧服务.html';
+  });
+ $('#nav-box .nav3').click(function(){
+	  //转换页面
+	  window.location.href='知识服务.html';
+  });
+ $('#nav-box .nav1').click(function(){
+	  //转换页面
+	  window.location.href='战略咨询.html';
+  });
+  	$(function(){
+  		$('#nav-box .nav').click(function(){
+  			$('#nav-box .nav').each(function() {
+	  			
+	  			$(this).find('p').css('color', '#126ACC');
+	  			$(this).find('div').css({
+
+	  				'webkitTransform':'rotate(0deg)',
+
+	  				'transform':'rotate(0deg)'
+	  				});
+	  		});
+  			$(this).find('div').css({
+
+  				'webkitTransform':'rotate(90deg)',
+
+  				'transform':'rotate(90deg)'
+  				});
+  			$(this).next('li').find('ul').find('p').css('color', '#666666');
+  			console.log($(this).next('li').html());
+  			if ($(this).next('li').is(':hidden')) {
+  				$('#nav-box .sub-nav').each(function() {
+  	  				$(this).hide();
+  	  			});
+  				$(this).next('li').show();
+  			} else {
+  				$(this).next('li').hide();
+  				$(this).find('div').css({
+
+	  				'webkitTransform':'rotate(0deg)',
+
+	  				'transform':'rotate(0deg)'
+	  				});
+  			}
+  		});
+  		
+  		$('#nav-box .sub-nav li').click(function(){
+  			$('#nav-box .sub-nav li').each(function() {
+	  			$(this).find('p').css('color', '#666666');
+	  		});
+  			$(this).find('p').css('color', '#126ACC');
+  		});
+  	});
+  
+  </script>
+</html>

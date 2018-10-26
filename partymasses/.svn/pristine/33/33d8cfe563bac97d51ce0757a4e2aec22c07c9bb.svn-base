@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jms="http://www.springframework.org/schema/jms"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+	http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd
+	http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd">
+     
+    <context:component-scan base-package="com.partymasses.support.mq.service" />   
+        
+    <context:property-placeholder location="classpath:mq.properties" ignore-unresolvable="true"  />
+         
+	<!-- ActiveMQ 真正产生Connection的ConnectionFactory,由对应的 JMS服务厂商提供 -->  
+	<bean id="activeMqConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">  
+		<property name="brokerURL" value="failover://(tcp://${mq.url}:61616)?initialReconnectDelay=100"/>  
+	</bean>  
+	  
+	<!-- 配置spring 管理 connectionFactory -->  
+	<bean id="connectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">  
+		<constructor-arg ref="activeMqConnectionFactory" />  
+	</bean>  
+	  
+    
+        <!--通知主题，用于产生了一条通知消息-->
+    
+    <bean id="noticeTopicDestination" class="org.apache.activemq.command.ActiveMQTopic">
+		<constructor-arg>
+			<value>NoticeTopic</value>
+		</constructor-arg>
+	</bean>
+    
+    <bean id="noticeJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="defaultDestination" ref="noticeTopicDestination" />
+        <property name="pubSubDomain" value="true" />
+    </bean>
+    
+
+   
+	
+    <!--关于通知类消息的消息监听器 -->
+    <bean id="noticeTopicMessageListener"
+        class="com.partymasses.support.mq.service.NoticeMessageCustomerServiceListener" />
+        
+   
+    <!-- 消息监听容器 -->
+    <bean id="jmsContainer"
+        class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="destination" ref="noticeTopicDestination" />
+        <property name="messageListener" ref="noticeMessageCustomerServiceListener" />
+    </bean>
+    
+    
+  </beans>
+  

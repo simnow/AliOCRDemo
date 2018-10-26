@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://caecc.cn/erp">
+  <collaboration id="Collaboration">
+    <participant id="SupplierEvaluatepool" name="供应商评估流程" processRef="EvaluateProcess"></participant>
+  </collaboration>
+  <process id="EvaluateProcess" name="供应商评估流程" isExecutable="true">
+    <laneSet id="laneSet_EvaluateProcess">
+      <lane id="ManagementAndProcurementLane" name="经营采办部">
+        <flowNodeRef>startevent1</flowNodeRef>
+        <flowNodeRef>ApplyTask</flowNodeRef>
+        <flowNodeRef>ManagementAndProcurementEvaluateTask</flowNodeRef>
+        <flowNodeRef>ManagementAndProcurementConfirmTask</flowNodeRef>
+        <flowNodeRef>endevent1</flowNodeRef>
+      </lane>
+      <lane id="BusinessDepartmentLane" name="业务部门">
+        <flowNodeRef>BusinessDepartmentEvaluateTask</flowNodeRef>
+      </lane>
+      <lane id="ManagerLane" name="主管领导">
+        <flowNodeRef>ManagerEvaluateTask</flowNodeRef>
+      </lane>
+      <lane id="AssignedManagerLane" name="分管领导">
+        <flowNodeRef>AssignedManagerEvaluateTask</flowNodeRef>
+      </lane>
+      <lane id="GeneralManagerLane" name="总经理">
+        <flowNodeRef>GeneralManagerEvaluateTask</flowNodeRef>
+      </lane>
+      <lane id="InviteTendersCommitteeLeaderLane" name="招标委员会主任">
+        <flowNodeRef>InviteTendersCommitteeLeaderEvaluateTask</flowNodeRef>
+      </lane>
+    </laneSet>
+    <startEvent id="startevent1" name="Start" activiti:initiator="startUserId"></startEvent>
+    <userTask id="ApplyTask" name="申请" activiti:assignee="${startUserId}"></userTask>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="ApplyTask"></sequenceFlow>
+    <userTask id="BusinessDepartmentEvaluateTask" name="业务部门评估" activiti:candidateUsers="${nextCandidateUsers}"></userTask>
+    <sequenceFlow id="flow2" sourceRef="ApplyTask" targetRef="BusinessDepartmentEvaluateTask"></sequenceFlow>
+    <userTask id="ManagerEvaluateTask" name="主管领导评估" activiti:candidateUsers="${nextCandidateUsers}"></userTask>
+    <sequenceFlow id="flow3" sourceRef="BusinessDepartmentEvaluateTask" targetRef="ManagerEvaluateTask"></sequenceFlow>
+    <userTask id="ManagementAndProcurementEvaluateTask" name="经营采办部评估" activiti:assignee="${startUserId}"></userTask>
+    <sequenceFlow id="flow4" sourceRef="ManagerEvaluateTask" targetRef="ManagementAndProcurementEvaluateTask"></sequenceFlow>
+    <userTask id="AssignedManagerEvaluateTask" name="分管领导评估" activiti:candidateUsers="${nextCandidateUsers}"></userTask>
+    <sequenceFlow id="flow5" sourceRef="ManagementAndProcurementEvaluateTask" targetRef="AssignedManagerEvaluateTask"></sequenceFlow>
+    <sequenceFlow id="flow6" sourceRef="AssignedManagerEvaluateTask" targetRef="GeneralManagerEvaluateTask"></sequenceFlow>
+    <userTask id="InviteTendersCommitteeLeaderEvaluateTask" name="招标委员会主任评估" activiti:candidateUsers="${nextCandidateUsers}"></userTask>
+    <userTask id="ManagementAndProcurementConfirmTask" name="经营采办部确认" activiti:assignee="${startUserId}"></userTask>
+    <sequenceFlow id="flow8" sourceRef="InviteTendersCommitteeLeaderEvaluateTask" targetRef="ManagementAndProcurementConfirmTask"></sequenceFlow>
+    <userTask id="GeneralManagerEvaluateTask" name="总经理评估" activiti:candidateUsers="${nextCandidateUsers}"></userTask>
+    <sequenceFlow id="flow7" sourceRef="GeneralManagerEvaluateTask" targetRef="InviteTendersCommitteeLeaderEvaluateTask"></sequenceFlow>
+    <endEvent id="endevent1" name="End">
+      <extensionElements>
+        <activiti:executionListener event="start" class="cn.caecc.erp.support.workflow.service.listener.ApproveExecutionListener"></activiti:executionListener>
+      </extensionElements>
+    </endEvent>
+    <sequenceFlow id="flow9" sourceRef="ManagementAndProcurementConfirmTask" targetRef="endevent1"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Collaboration">
+    <bpmndi:BPMNPlane bpmnElement="Collaboration" id="BPMNPlane_Collaboration">
+      <bpmndi:BPMNShape bpmnElement="SupplierEvaluatepool" id="BPMNShape_SupplierEvaluatepool">
+        <omgdc:Bounds height="530.0" width="611.0" x="10.0" y="10.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ManagementAndProcurementLane" id="BPMNShape_ManagementAndProcurementLane">
+        <omgdc:Bounds height="87.0" width="591.0" x="30.0" y="10.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="BusinessDepartmentLane" id="BPMNShape_BusinessDepartmentLane">
+        <omgdc:Bounds height="87.0" width="591.0" x="30.0" y="97.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ManagerLane" id="BPMNShape_ManagerLane">
+        <omgdc:Bounds height="87.0" width="591.0" x="30.0" y="184.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="AssignedManagerLane" id="BPMNShape_AssignedManagerLane">
+        <omgdc:Bounds height="87.0" width="591.0" x="30.0" y="271.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="GeneralManagerLane" id="BPMNShape_GeneralManagerLane">
+        <omgdc:Bounds height="87.0" width="591.0" x="30.0" y="358.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="InviteTendersCommitteeLeaderLane" id="BPMNShape_InviteTendersCommitteeLeaderLane">
+        <omgdc:Bounds height="96.0" width="591.0" x="30.0" y="445.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="60.0" y="32.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ApplyTask" id="BPMNShape_ApplyTask">
+        <omgdc:Bounds height="55.0" width="105.0" x="130.0" y="22.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="BusinessDepartmentEvaluateTask" id="BPMNShape_BusinessDepartmentEvaluateTask">
+        <omgdc:Bounds height="55.0" width="105.0" x="130.0" y="108.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ManagerEvaluateTask" id="BPMNShape_ManagerEvaluateTask">
+        <omgdc:Bounds height="55.0" width="105.0" x="130.0" y="200.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ManagementAndProcurementEvaluateTask" id="BPMNShape_ManagementAndProcurementEvaluateTask">
+        <omgdc:Bounds height="55.0" width="105.0" x="270.0" y="22.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="AssignedManagerEvaluateTask" id="BPMNShape_AssignedManagerEvaluateTask">
+        <omgdc:Bounds height="55.0" width="105.0" x="270.0" y="288.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="InviteTendersCommitteeLeaderEvaluateTask" id="BPMNShape_InviteTendersCommitteeLeaderEvaluateTask">
+        <omgdc:Bounds height="55.0" width="141.0" x="390.0" y="470.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ManagementAndProcurementConfirmTask" id="BPMNShape_ManagementAndProcurementConfirmTask">
+        <omgdc:Bounds height="55.0" width="105.0" x="410.0" y="20.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="GeneralManagerEvaluateTask" id="BPMNShape_GeneralManagerEvaluateTask">
+        <omgdc:Bounds height="55.0" width="105.0" x="270.0" y="380.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="560.0" y="30.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="95.0" y="49.0"></omgdi:waypoint>
+        <omgdi:waypoint x="130.0" y="49.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="182.0" y="77.0"></omgdi:waypoint>
+        <omgdi:waypoint x="182.0" y="108.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="182.0" y="163.0"></omgdi:waypoint>
+        <omgdi:waypoint x="182.0" y="200.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="182.0" y="200.0"></omgdi:waypoint>
+        <omgdi:waypoint x="322.0" y="77.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
+        <omgdi:waypoint x="322.0" y="77.0"></omgdi:waypoint>
+        <omgdi:waypoint x="322.0" y="288.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
+        <omgdi:waypoint x="322.0" y="343.0"></omgdi:waypoint>
+        <omgdi:waypoint x="322.0" y="380.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow8" id="BPMNEdge_flow8">
+        <omgdi:waypoint x="460.0" y="470.0"></omgdi:waypoint>
+        <omgdi:waypoint x="462.0" y="75.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7">
+        <omgdi:waypoint x="322.0" y="435.0"></omgdi:waypoint>
+        <omgdi:waypoint x="460.0" y="470.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow9" id="BPMNEdge_flow9">
+        <omgdi:waypoint x="515.0" y="47.0"></omgdi:waypoint>
+        <omgdi:waypoint x="560.0" y="47.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

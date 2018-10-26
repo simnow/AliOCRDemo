@@ -1,0 +1,425 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <title>战略咨询</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <link href="resources/css/jquery-ui-themes.css" type="text/css" rel="stylesheet"/>
+    <link href="resources/css/axure_rp_page.css" type="text/css" rel="stylesheet"/>
+    <link href="data/styles.css" type="text/css" rel="stylesheet"/>
+    <link href="files/战略咨询/styles.css" type="text/css" rel="stylesheet"/>
+    <link href="files/组织架构/styles.css" type="text/css" rel="stylesheet"/>
+    <link href="files/战略院简介/styles.css" type="text/css" rel="stylesheet"/>
+    <script src="resources/scripts/jquery-1.7.1.min.js"></script>
+    <script src="resources/scripts/jquery-ui-1.8.10.custom.min.js"></script>
+    <script src="resources/scripts/axure/axQuery.js"></script>
+    <script src="resources/scripts/axure/globals.js"></script>
+    <script src="resources/scripts/axutils.js"></script>
+    <script src="resources/scripts/axure/annotation.js"></script>
+    <script src="resources/scripts/axure/axQuery.std.js"></script>
+    <script src="resources/scripts/axure/doc.js"></script>
+    <script src="data/document.js"></script>
+    <script src="resources/scripts/messagecenter.js"></script>
+    <script src="resources/scripts/axure/events.js"></script>
+    <script src="resources/scripts/axure/recording.js"></script>
+    <script src="resources/scripts/axure/action.js"></script>
+    <script src="resources/scripts/axure/expr.js"></script>
+    <script src="resources/scripts/axure/geometry.js"></script>
+    <script src="resources/scripts/axure/flyout.js"></script>
+    <script src="resources/scripts/axure/ie.js"></script>
+    <script src="resources/scripts/axure/model.js"></script>
+    <script src="resources/scripts/axure/repeater.js"></script>
+    <script src="resources/scripts/axure/sto.js"></script>
+    <script src="resources/scripts/axure/utils.temp.js"></script>
+    <script src="resources/scripts/axure/variables.js"></script>
+    <script src="resources/scripts/axure/drag.js"></script>
+    <script src="resources/scripts/axure/move.js"></script>
+    <script src="resources/scripts/axure/visibility.js"></script>
+    <script src="resources/scripts/axure/style.js"></script>
+    <script src="resources/scripts/axure/adaptive.js"></script>
+    <script src="resources/scripts/axure/tree.js"></script>
+    <script src="resources/scripts/axure/init.temp.js"></script>
+    <script src="files/战略咨询/data.js"></script>
+    <script src="resources/scripts/axure/legacy.js"></script>
+    <script src="resources/scripts/axure/viewer.js"></script>
+    <script src="resources/scripts/axure/math.js"></script>
+    <script type="text/javascript">
+      $axure.utils.getTransparentGifPath = function() { return 'resources/images/transparent.gif'; };
+      $axure.utils.getOtherPath = function() { return 'resources/Other.html'; };
+      $axure.utils.getReloadPath = function() { return 'resources/reload.html'; };
+    </script>
+    <style>
+      /* #base {
+        position:relative;
+        margin-top: -210px;
+        overflow: hidden;
+        height:1200px;
+      } */
+      #base {
+          position: relative;
+          margin-top: -207px;
+      }
+      .inport-footer {
+          position: absolute;
+          top:2000px;
+          left: 0px;
+      }
+    	#nav-box {
+    		position: absolute;
+		    left: 379px;
+		    top: 431px;
+		    width: 220px;
+		    height: 300px;
+		    background: #fff;
+		    opacity:1;
+		    margin: 0;
+		    padding: 0;
+    	}
+    	#nav-box li {
+   		    width: 220px;
+		    
+		    background: inherit;
+		    background-color: rgba(242, 242, 242, 1);
+		    border: none;
+		    border-radius: 0px;
+		    margin-bottom: 4px;
+		    list-style:none;
+    	}
+    	#nav-box li p{
+    		display:inline-block;
+    		margin-left: 40px;
+    		height: 46px;
+    		line-height:46px;
+	       font-family: '微软雅黑 Bold', '微软雅黑';
+		   font-weight: 700;
+		   font-style: normal;
+		   font-size: 16px;
+		   color:  #126ACC;
+		   vertical-align: middle;
+		   width:100px;
+    	}
+    	#nav-box li div {
+    		display:inline-block;
+    		margin-left: 40px;
+    		width: 13px;
+    		height: 15px;
+    		vertical-align: middle;
+    		    font-family: 'Arial Normal', 'Arial';
+			   font-weight: 400;
+			   font-style: normal;
+			   font-size: 13px;
+			   color: #333333;
+			   text-align: center;
+			   line-height: normal;
+    	}
+    	#nav-box li div img {
+    		width:100%;
+    	}
+    	#sub-nav-box li {
+		    width: 220px;
+		    background: inherit;
+		    background-color: rgba(242, 242, 242, 1);
+		    border: none;
+		    border-radius: 0px;
+		    margin-bottom: 4px;
+		    list-style:none;
+    	}
+    	#sub-nav-box li p{
+    		display:inline-block;
+    		margin-left: 40px;
+    		height: 46px;
+    		line-height:46px;
+	       font-family: '微软雅黑 Bold', '微软雅黑';
+		   font-weight: 700;
+		   font-style: normal;
+		   font-size: 16px;
+		   color: #FFFFFF;
+		   vertical-align: middle;
+    	}
+    	#nav-box .sub-nav {
+    		display:none;
+    	}
+    	#nav-box li ul{
+   		    width: 220px;
+		    background: inherit;
+		    background-color: rgba(242, 242, 242, 1);
+		    border: none;
+		    border-radius: 0px;
+		    margin-bottom: 4px;
+		    list-style:none;
+		    margin:0;
+		    padding:0;
+		    padding-top:4px;
+		    background:#fff;
+    	}
+    </style>
+  </head>
+  <body>
+    <div class="inport-header"></div>
+    <div id="base" class="">
+      <!-- Unnamed (矩形) -->
+      <div id="u2764" class="ax_default label">
+        <div id="u2764_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u2765" class="text" style="visibility: visible;">
+          <p><span>2017年7月12日</span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u2766" class="ax_default _文本段落1">
+        <div id="u2766_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u2767" class="text" style="visibility: visible;">
+          <p><span>星期三</span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u2768" class="ax_default _文本段落1">
+        <div id="u2768_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u2769" class="text" style="visibility: visible;">
+          <p><span><a href="javascript:void(0);" onclick="show_index(window.location);">设为首页</a></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u2770" class="ax_default _文本段落1">
+        <div id="u2770_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u2771" class="text" style="visibility: visible;">
+          <p><span><a href="javascript:void(0);" onclick="show_Favorite(window.location,document.title);">收藏本站</a></span></p>
+        </div>
+      </div>
+
+
+      <!-- Unnamed (组合) -->
+      <div id="u2780" class="ax_default">
+
+        <!-- Unnamed (水平线) -->
+        <div id="u2792" class="ax_default line">
+          <img id="u2792_img" class="img " src="images/index/u380.png"/>
+          <!-- Unnamed () -->
+          <div id="u2793" class="text" style="display: none; visibility: hidden">
+            <p><span></span></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Unnamed (2222) -->
+
+      <!-- Unnamed (图片) -->
+      <div id="u2907" class="ax_default image">
+        <img id="u2907_img" class="img " src="images/战略咨询/u2907.jpg"/>
+        <!-- Unnamed () -->
+        <div id="u2908" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+    
+    
+    <!-- 添加内容 -->
+     <!-- Unnamed (矩形) -->
+      <div id="u519" class="ax_default box_2">
+        <div id="u519_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u520" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u521" class="ax_default box_2">
+        <div id="u521_div" class=""style="height:1345px"></div>
+        <!-- Unnamed () -->
+        <div id="u522" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u523" class="ax_default box_2">
+        <div id="u523_div" class="" style="height:1345px"></div>
+        <!-- Unnamed () -->
+        <div id="u524" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u525" class="ax_default _一级标题">
+        <div id="u525_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u526" class="text" style="visibility: visible;">
+          <p><span>咨询研究</span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u527" class="ax_default _文本段落">
+        <div id="u527_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u528" class="text" style="visibility: visible;">
+          <p><span><br></span></p><p>&nbsp;&nbsp; &nbsp; &nbsp; 航天战略院是中国工程科技知识中心平台中战略性新兴产业专业知识分中心、航天工程专业知识分中心建设、运行、服务工作的总体支撑和具体技术实施单位。在中国工程科技知识中心的统一管理和规划下，构建国家级专业特色知识服务平台，开展专业知识公益和商用服务。
+		  航天战略院是国家工程科技思想库的组成部分，是航天领域国家级战略研究咨询平台。成立以来，航天战略院以“服务决策，适度超前”为指导思想，集聚各领域有权威、影响大的代表人物，围绕国家经济社会、国防安全、航天科技等领域的重大问题开展了近 80 项战略咨询研究，构建了以系统工程为特色的决策咨询理论方法与技术体系，形成了一批论证科学、切实管用的咨询成果，累计向党中央、国务院、中央军委及有关部门报送了国家民用空间基础设施中长期发展战略等 20 余项重大研究成果，现已成为我国以航天为主、特色鲜明的重要资政建言力量。</p>
+     <p>&nbsp;&nbsp; &nbsp; &nbsp; 航天战略院主要研究内容包括：</p>
+     <p>&nbsp;&nbsp; &nbsp; &nbsp; （1）航天发展战略咨询研究</p>
+<p>&nbsp;&nbsp; &nbsp; &nbsp; 研究国家航天事业发展的总体战略、路线图、阶段方案及相关重大产业政策，为提供战略咨询和决策支撑，定期发布技术发展白皮书，提升我国航天工程科技的自主创新能力。</p>
+<p>&nbsp;&nbsp; &nbsp; &nbsp; （2）工程科技发展战略研究</p>
+<p>&nbsp;&nbsp; &nbsp; &nbsp; 把握国内外技术发展趋势，选择战略领域和优先方向，提出需建设的重大科技基础设施以及重点领域工程科技发展路径。为国家工程科技的系统谋划和前瞻部署提供支撑。</p>
+<p>&nbsp;&nbsp; &nbsp; &nbsp; （3）战略性新兴产业培育与发展
+<p>&nbsp;&nbsp; &nbsp; &nbsp; 总结战略性新兴产业发展经验，探索战略性新兴产业发展的重点方向和路线，形成战略性新兴产业发展的战略思想及对策，为国家制定战略性新兴产业发展规划的决策提供参考意见。
+<p>&nbsp;&nbsp; &nbsp; &nbsp; （4）支撑创新驱动发展战略顶层设计
+    <p>&nbsp;&nbsp; &nbsp; &nbsp; 以院士为核心、专家为骨干开展创新驱动发展顶层设计，以全球视野谋划和推动自主创新，着力增强创新驱动发展新动力，加快形成科技发展新方式，推动经济社会科学发展。
+<p>&nbsp;&nbsp; &nbsp; &nbsp; （5）经济社会重大问题研究
+    <p>&nbsp;&nbsp; &nbsp; &nbsp; 研究我国国民经济、社会发展和改革开放中的全局性、战略性、前瞻性、长期性以及热点、难点问题，为中央决策提供政策建议和咨询意见。
+<p>&nbsp;&nbsp; &nbsp; &nbsp; （6）服务国家重大专项
+<p>&nbsp;&nbsp; &nbsp; &nbsp; 服务国家重大战略需求，支持高分辨率对地观测系统、载人航天、探月工程与深空探测、二代导航系统、重型运载火箭等重大科技专项，以及城镇化建设、灾害应急服务体系、生态保护与修复、公共安全、区域发展等经济社会问题的战略研究。
+<p>&nbsp;&nbsp; &nbsp; &nbsp; （7）探索产学研合作新模式
+<p>&nbsp;&nbsp; &nbsp; &nbsp; 建立协同创新战略联盟，探索创新航天工程科技产学研结合的发展模式与机制等。
+<p>&nbsp;&nbsp; &nbsp; &nbsp; （8）咨询方法研究
+<p>&nbsp;&nbsp; &nbsp; &nbsp; 针对工程科技和经济社会发展特点，在实践中探索、创新和发展战略咨询研究的理论、方法和技术，提高咨询研究水平和质量，提升咨询研究能力。
+<p>&nbsp;&nbsp; &nbsp; &nbsp; （9）动态情报产品体系建设
+  <p>&nbsp;&nbsp; &nbsp; &nbsp;    经过多年的探索与实践，我院已经形成了覆盖航天与国防科技工业整体，根据情报研究特点和规律，以每天、每周、每月、双月、每年的周期形成体系化产品，并在跟踪基础上形成数据库产品供研究人员使用。
+
+        </div>
+      </div>
+    
+    <!-- 位置 -->
+    <div id="u944" class="ax_default icon">
+            <img id="u944_img" class="img " src="images/战略院简介/u699.png"/>
+            <!-- Unnamed () -->
+            <div id="u945" class="text" style="display: none; visibility: hidden">
+              <p><span></span></p>
+            </div>
+          </div>
+    <!-- Unnamed (矩形) -->
+          <div id="u942" class="ax_default label">
+            <div id="u942_div" class=""></div>
+            <!-- Unnamed () -->
+            <div id="u943" class="text" style="visibility: visible;">
+              <p><span>当前位置＞核心业务＞咨询研究</span></p>
+            </div>
+          </div>
+    <ul id="nav-box">
+      	<li class="navs na" style ="background: rgba(18, 106, 204, 1)">
+      		<p  style ="color: #fff">核心业务</p> <div></div>
+      		
+      	</li>
+      	<li class="sub-nav">
+      		
+      	</li>
+      	<li class="nav1 na" >
+      		<p>咨询研究</p>
+      		
+      	</li>
+      	<li class="sub-nav" >
+      		<!-- <ul>
+      			<li><p>院士</p></li>
+      			<li><p>专家</p></li>
+      		</ul> -->
+      	</li>
+      	<li class="nav2 na">
+      		<p>智慧服务</p>
+      		
+      	</li>
+      	<li class="sub-nav">
+      		<ul>
+      			<!-- <li><p><a href="#u791">学术委员会</a></p></li>
+      			<li><p><a href="#u796">理事会</a></p></li>
+      			<li><p><a href="#u803">院务委员会</a></p></li>
+      			<li><p><a href="#u811">综合办公室</a></p></li> -->
+      		</ul>
+      	</li>
+      	<li class="nav3 na">
+      		<p>知识服务</p>
+      		
+      	</li>
+      	<li class="sub-nav">
+      		<ul>
+      			<!-- <li><p>2011</p></li>
+      			<li><p>2015</p></li>
+      			<li><p>2016</p></li> -->
+      		</ul>
+      	</li>
+      	<li class="nav4 na">
+      		<p>集成创意</p>
+      		
+      	</li>
+      </ul>
+    </div>
+    <div class="inport-footer"></div>
+  </body>
+  <script src="resources/scripts/load.js"></script>
+  <script type="text/javascript">
+//	上来先展开
+
+    $("#nav-box .na ").on('click',function() {
+        var url = $(this).children('p:first-child').text();
+        console.log(url);
+        if (url == '首页') {
+          url = 'index';
+        } else if (url == '咨询研究') {
+          url = '战略咨询';
+        } else if (url == '关于我们') {
+          url = '战略院简介';
+        } else if (url == '资源优势') {
+          url = '专家库';
+        } else if (url == '核心业务') {
+          url = '战略咨询';
+        } else if (url == '动态资讯') {
+          url = '社会热点';
+        } else if (url == '加入我们') {
+          url = '联系我们';
+        } 
+        window.location.href = url +'.html';
+      });
+
+  	$(function(){
+  		$('#nav-box .nav').click(function(){
+  			$('#nav-box .nav').each(function() {
+	  			
+	  			$(this).find('p').css('color', '#126ACC');
+	  			$(this).find('div').css({
+
+	  				'webkitTransform':'rotate(0deg)',
+
+	  				'transform':'rotate(0deg)'
+	  				});
+	  		});
+  			$(this).find('div').css({
+
+  				'webkitTransform':'rotate(90deg)',
+
+  				'transform':'rotate(90deg)'
+  				});
+  			$(this).next('li').find('ul').find('p').css('color', '#666666');
+  			console.log($(this).next('li').html());
+  			if ($(this).next('li').is(':hidden')) {
+  				$('#nav-box .sub-nav').each(function() {
+  	  				$(this).hide();
+  	  			});
+  				$(this).next('li').show();
+  			} else {
+  				$(this).next('li').hide();
+  				$(this).find('div').css({
+
+	  				'webkitTransform':'rotate(0deg)',
+
+	  				'transform':'rotate(0deg)'
+	  				});
+  			}
+  		});
+  		
+  		$('#nav-box .sub-nav li').click(function(){
+  			$('#nav-box .sub-nav li').each(function() {
+	  			$(this).find('p').css('color', '#666666');
+	  		});
+  			$(this).find('p').css('color', '#126ACC');
+  		});
+  	});
+  
+  </script>
+</html>

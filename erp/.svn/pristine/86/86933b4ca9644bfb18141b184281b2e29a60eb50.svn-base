@@ -1,0 +1,122 @@
+package cn.caecc.erp.support.oss.service.serviceImpl;
+
+import java.util.ArrayList;
+import java.util.List;
+import org.springframework.stereotype.Service;
+import com.aliyun.oss.OSSClient;
+import com.aliyun.oss.model.DeleteObjectsRequest;
+import com.aliyun.oss.model.OSSObjectSummary;
+import com.aliyun.oss.model.ObjectListing;
+import cn.caecc.erp.support.constant.Contants;
+import cn.caecc.erp.support.oss.service.OssService;
+@Service
+public class OssServiceImpl implements OssService {
+
+	private OSSClient open() {
+		String accessKeyId = Contants.OSSACCESSKEYID;
+		String accessKeySecret = Contants.OSSACCESSKEYSECRET;
+		OSSClient ossClient = new OSSClient(Contants.OSSENDPOINT, accessKeyId, accessKeySecret);
+		return ossClient;
+	}
+
+	private void shutdown(OSSClient ossClient) {
+		if (ossClient != null) {
+			ossClient.shutdown();
+		}
+	}
+
+	@Override
+	public boolean doesKeyExist(String key) {
+		// TODO Auto-generated method stub
+		boolean flag = false;
+		OSSClient ossClient = null;
+		try {
+			ossClient = open();
+			flag = ossClient.doesObjectExist(Contants.OSSBUCKET, key);
+		}
+		catch(Exception ex) {
+		}
+		finally {
+			shutdown(ossClient);
+		}
+		return flag;
+	}
+	
+	@Override
+	public List<String> listDirectory(String directory) {
+		// TODO Auto-generated method stub
+		List<String> fileList = new ArrayList<String>();
+		OSSClient ossClient = null;
+		try {
+			ossClient = open();
+			ObjectListing objectListing = ossClient.listObjects(Contants.OSSBUCKET, directory);
+			List<OSSObjectSummary> sums = objectListing.getObjectSummaries();
+			for (OSSObjectSummary s : sums) {
+				fileList.add(s.getKey());
+			}
+		}
+		catch(Exception ex) {
+		}
+		finally {
+			shutdown(ossClient);
+		}
+		return fileList;
+	}
+	
+	@Override
+	public boolean deleteObject(String key) {
+		OSSClient ossClient = null;
+		boolean flag = false;
+		try {
+			ossClient = open();
+			ossClient.deleteObject(Contants.OSSBUCKET, key);
+			flag = true;
+		}
+		catch(Exception ex) {
+		}
+		finally {
+			shutdown(ossClient);
+		}
+		return flag;
+	}
+
+	@Override
+	public void deleteDirectory(String directory) {
+		OSSClient ossClient = null;
+		try {
+			ossClient = open();
+			ObjectListing objectListing = ossClient.listObjects(Contants.OSSBUCKET, directory);
+			List<OSSObjectSummary> sums = objectListing.getObjectSummaries();
+			List<String> keys = new ArrayList<String>();
+			for (OSSObjectSummary s : sums) {
+				keys.add(s.getKey());
+			}
+			ossClient.deleteObjects(new DeleteObjectsRequest(Contants.OSSBUCKET).withKeys(keys));
+		}
+		catch(Exception ex) {
+		}
+		finally {
+			shutdown(ossClient);
+		}
+	}
+
+	
+	@Override
+	public void moveFile(String sourceFileName, String destinationFileName) {
+		// TODO Auto-generated method stub
+		OSSClient ossClient = null;
+		try {
+			ossClient = open();
+			ossClient.copyObject(Contants.OSSBUCKET, sourceFileName, Contants.OSSBUCKET, destinationFileName);
+			ossClient.deleteObject(Contants.OSSBUCKET, sourceFileName);
+		}
+		catch(Exception ex) {
+		}
+		finally {
+			shutdown(ossClient);
+		}
+	}
+	
+	
+
+}

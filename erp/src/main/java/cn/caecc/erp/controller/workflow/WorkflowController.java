@@ -1,0 +1,705 @@
+package cn.caecc.erp.controller.workflow;
+
+/**
+ * @author weizhen
+ *
+ */
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import javax.servlet.http.HttpSession;
+import org.activiti.engine.ActivitiObjectNotFoundException;
+import org.activiti.engine.ActivitiTaskAlreadyClaimedException;
+import org.activiti.engine.task.Attachment;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import com.github.pagehelper.PageInfo;
+import cn.caecc.erp.controller.BaseController;
+import cn.caecc.erp.support.constant.Contants;
+import cn.caecc.erp.support.exception.MyActivitiException;
+import cn.caecc.erp.support.message.Message;
+import cn.caecc.erp.support.workflow.entity.AttachmentEntity;
+import cn.caecc.erp.support.workflow.entity.ProcessDefinitionEntity;
+import cn.caecc.erp.support.workflow.entity.ProcessInstanceHandleEntity;
+import cn.caecc.erp.support.workflow.entity.ProcessIntanceEntity;
+import cn.caecc.erp.support.workflow.entity.TaskAttachmentsEntity;
+import cn.caecc.erp.support.workflow.service.WorkflowService;
+
+@Controller
+@RequestMapping("/api/workflow")
+public class WorkflowController extends BaseController {
+	// private final static Logger logger =
+	// LoggerFactory.getLogger(UserController.class);
+	@Autowired
+	private WorkflowService workflowService;
+
+	@Autowired
+	private HttpSession session;
+	/**
+	 * 查询组成员
+	 * 
+	 * @param groupId
+	 *            组id
+	 * @return
+	 */
+	/*
+	 * @ResponseBody
+	 * 
+	 * @RequestMapping(value = "/identity/{groupId}/users", method =
+	 * RequestMethod.GET) public Message queryGroupMember(@PathVariable("groupId")
+	 * String groupId) { return workflowSevice.queryGroupMemberLocalNameBy(groupId);
+	 * }
+	 */
+
+	/**
+	 * 开始一个流程实例
+	 * 
+	 * @param processDefinitionKey
+	 *            流程定义
+	 * @param bussinessKey
+	 *            业务主键
+	 * @param variables
+	 *            自定义流程变量
+	 * @return
+	 * 
+	 * @ResponseBody
+	 * @RequestMapping(value = "/runtime/process-instances/{processDefinitionKey}",
+	 *                       method = RequestMethod.POST) public Message
+	 *                       startBy(@PathVariable("processDefinitionKey") String
+	 *                       processDefinitionKey, String bussinessKey,
+	 * @RequestBody Map<String, Object> variables) { return
+	 *              workflowSevice.startProcess(processDefinitionKey, bussinessKey,
+	 *              variables); }
+	 */
+
+	@ResponseBody
+	@RequestMapping(value = "/process-definitions", method = RequestMethod.GET)
+	public Message queryProcessDefinitions(@RequestParam(value = "pageNo", required = true) int pageNo,
+			@RequestParam(value = "pageSize", required = true) int pageSize) {
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+
+			PageInfo<ProcessDefinitionEntity> processDefinitionEntityPageInfo = workflowService
+					.queryProcessDefinitions(pageNo, pageSize);
+
+			message.setSuccess(true);
+			message.setObj(processDefinitionEntityPageInfo);
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+			message.setErrorCode(Contants.ErrorCodeEnum.Unknow);
+		}
+		return message;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/runtime/all-process-instance-ids", method = RequestMethod.GET)
+	public Message queryAllRuntimeProcessInstanceId() {
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			List<String> processInstanceIdList = workflowService.queryAllRuntimeProcessInstanceId();
+			message.setSuccess(true);
+			message.setObj(processInstanceIdList);
+
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+			message.setErrorCode(Contants.ErrorCodeEnum.Unknow);
+		}
+		return message;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/history/all-historic-process-instance-ids", method = RequestMethod.GET)
+	public Message queryAllHistoricProcessInstance() {
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			List<String> historicProcessInstanceIdList = workflowService.queryAllHistoricProcessInstance();
+			message.setSuccess(true);
+			message.setObj(historicProcessInstanceIdList);
+
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+			message.setErrorCode(Contants.ErrorCodeEnum.Unknow);
+		}
+		return message;
+	}
+
+	/**
+	 * 获取正在运行流程实例，发件箱和经办箱使用该函数查询
+	 * 
+	 * @param InitiatorId
+	 *            流程发起人 id
+	 * @param processInstanceId
+	 *            流程id
+	 * @param involvedUserId
+	 *            参与人id
+	 * @param processDefinitionKey
+	 *            流程定义
+	 * @param pageNo
+	 *            第几页
+	 * @param pageSize
+	 *            页最大显示数
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/runtime/process-instances", method = RequestMethod.GET)
+	public Message queryRuntimeProcessInstance(
+			@RequestParam(value = "InitiatorId", required = false) String InitiatorId,
+			@RequestParam(value = "processInstanceId", required = false) String processInstanceId,
+			@RequestParam(value = "involvedUserId", required = false) String involvedUserId,
+			@RequestParam(value = "processDefinitionKey", required = false) String processDefinitionKey,
+			@RequestParam(value = "startDate1", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate1,
+			@RequestParam(value = "startDate2", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate2,
+			@RequestParam(value = "pageNo", required = true) int pageNo,
+			@RequestParam(value = "pageSize", required = true) int pageSize) {
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			PageInfo<ProcessIntanceEntity> processIntanceEntityPageInfo = workflowService.queryRuntimeProcessInstance(
+					InitiatorId, processInstanceId, involvedUserId, processDefinitionKey, startDate1, startDate2,
+					pageNo, pageSize);
+			message.setObj(processIntanceEntityPageInfo);
+			message.setSuccess(true);
+		} catch (Exception ex) {
+			message.setErrorCode(Contants.ErrorCodeEnum.Unknow);
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+
+	/**
+	 * 查询我的发件箱
+	 * 
+	 * @param processInstanceId
+	 * @param involvedUserId
+	 * @param processDefinitionKey
+	 * @param startDate1
+	 * @param startDate2
+	 * @param pageNo
+	 *            第几页
+	 * @param pageSize
+	 *            页最大显示数
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/runtime/my-initiated-process-instances", method = RequestMethod.GET)
+	public Message queryMyInitiatedRuntimeProcessInstance(
+			@RequestParam(value = "processInstanceId", required = false) String processInstanceId,
+			@RequestParam(value = "involvedUserId", required = false) String involvedUserId,
+			@RequestParam(value = "processDefinitionKey", required = false) String processDefinitionKey,
+			@RequestParam(value = "startDate1", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate1,
+			@RequestParam(value = "startDate2", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate2,
+			@RequestParam(value = "pageNo", required = true) int pageNo,
+			@RequestParam(value = "pageSize", required = true) int pageSize) {
+		String InitiatorId = ((Integer) session.getAttribute(Contants.LOGINUSERID)).toString();
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			PageInfo<ProcessIntanceEntity> processIntanceEntityPageInfo = workflowService.queryRuntimeProcessInstance(
+					InitiatorId, processInstanceId, involvedUserId, processDefinitionKey, startDate1, startDate2,
+					pageNo, pageSize);
+			message.setObj(processIntanceEntityPageInfo);
+			message.setSuccess(true);
+		} catch (Exception ex) {
+			message.setErrorCode(Contants.ErrorCodeEnum.Unknow);
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+
+	/**
+	 * 查询本人经办箱
+	 * 
+	 * @param InitiatorId
+	 * @param processInstanceId
+	 * @param processDefinitionKey
+	 * @param startDate1
+	 * @param startDate2
+	 * @param pageNo
+	 *            第几页
+	 * @param pageSize
+	 *            页最大显示数
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/runtime/my-involved-process-instances", method = RequestMethod.GET)
+	public Message queryMyInvolvedRuntimeProcessInstance(
+			@RequestParam(value = "InitiatorId", required = false) String InitiatorId,
+			@RequestParam(value = "processInstanceId", required = false) String processInstanceId,
+			@RequestParam(value = "processDefinitionKey", required = false) String processDefinitionKey,
+			@RequestParam(value = "startDate1", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate1,
+			@RequestParam(value = "startDate2", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate2,
+			@RequestParam(value = "pageNo", required = true) int pageNo,
+			@RequestParam(value = "pageSize", required = true) int pageSize) {
+		String involvedUserId = ((Integer) session.getAttribute(Contants.LOGINUSERID)).toString();
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			PageInfo<ProcessIntanceEntity> processIntanceEntityPageInfo = workflowService.queryRuntimeProcessInstance(
+					InitiatorId, processInstanceId, involvedUserId, processDefinitionKey, startDate1, startDate2,
+					pageNo, pageSize);
+			message.setObj(processIntanceEntityPageInfo);
+			message.setSuccess(true);
+		} catch (Exception ex) {
+			message.setErrorCode(Contants.ErrorCodeEnum.Unknow);
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+
+	/**
+	 * 获取历史流程实例，发件箱和经办箱使用该函数查询
+	 * 
+	 * @param InitiatorId
+	 *            流程发起人 id
+	 * @param processInstanceId
+	 *            流程id
+	 * @param involvedUserId
+	 *            参与人id
+	 * @param processDefinitionKey
+	 *            流程定义
+	 * @param pageNo
+	 *            第几页
+	 * @param pageSize
+	 *            页最大显示数
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/history/historic-process-instances", method = RequestMethod.GET)
+	public Message queryHistoricProcessInstance(
+			@RequestParam(value = "InitiatorId", required = false) String InitiatorId,
+			@RequestParam(value = "processInstanceId", required = false) String processInstanceId,
+			@RequestParam(value = "involvedUserId", required = false) String involvedUserId,
+			@RequestParam(value = "processDefinitionKey", required = false) String processDefinitionKey,
+			@RequestParam(value = "startDate1", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate1,
+			@RequestParam(value = "startDate2", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate2,
+			@RequestParam(value = "pageNo", required = true) int pageNo,
+			@RequestParam(value = "pageSize", required = true) int pageSize) {
+
+		Message message = new Message();
+		message.setSuccess(false);
+
+		try {
+
+			PageInfo<ProcessIntanceEntity> processIntanceEntityPageInfo = workflowService.queryHistoricProcessInstance(
+					InitiatorId, processInstanceId, involvedUserId, processDefinitionKey, startDate1, startDate2,
+					pageNo, pageSize);
+			message.setObj(processIntanceEntityPageInfo);
+			message.setSuccess(true);
+		} catch (Exception ex) {
+			message.setErrorCode(Contants.ErrorCodeEnum.Unknow);
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+
+	}
+
+	/**
+	 * 查询历史流程发件箱
+	 * 
+	 * @param processInstanceId
+	 * @param involvedUserId
+	 * @param processDefinitionKey
+	 * @param startDate1
+	 * @param startDate2
+	 * @param pageNo
+	 *            第几页
+	 * @param pageSize
+	 *            页最大显示数
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/history/my-initiated-historic-process-instances", method = RequestMethod.GET)
+	public Message queryMyInitiatedHistoricProcessInstance(
+			@RequestParam(value = "processInstanceId", required = false) String processInstanceId,
+			@RequestParam(value = "involvedUserId", required = false) String involvedUserId,
+			@RequestParam(value = "processDefinitionKey", required = false) String processDefinitionKey,
+			@RequestParam(value = "startDate1", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate1,
+			@RequestParam(value = "startDate2", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate2,
+			@RequestParam(value = "pageNo", required = true) int pageNo,
+			@RequestParam(value = "pageSize", required = true) int pageSize) {
+		String InitiatorId = ((Integer) session.getAttribute(Contants.LOGINUSERID)).toString();
+
+		Message message = new Message();
+		message.setSuccess(false);
+
+		try {
+
+			PageInfo<ProcessIntanceEntity> processIntanceEntityPageInfo = workflowService.queryHistoricProcessInstance(
+					InitiatorId, processInstanceId, involvedUserId, processDefinitionKey, startDate1, startDate2,
+					pageNo, pageSize);
+			message.setObj(processIntanceEntityPageInfo);
+			message.setSuccess(true);
+		} catch (Exception ex) {
+			message.setErrorCode(Contants.ErrorCodeEnum.Unknow);
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+
+	}
+
+	/**
+	 * 查询历史流程本人经办箱
+	 * 
+	 * @param InitiatorId
+	 * @param processInstanceId
+	 * @param processDefinitionKey
+	 * @param startDate1
+	 * @param startDate2
+	 * @param pageNo
+	 *            第几页
+	 * @param pageSize
+	 *            页最大显示数
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/history/my-involved-historic-process-instances", method = RequestMethod.GET)
+	public Message queryMyInvolvedHistoricProcessInstance(
+			@RequestParam(value = "InitiatorId", required = false) String InitiatorId,
+			@RequestParam(value = "processInstanceId", required = false) String processInstanceId,
+			@RequestParam(value = "processDefinitionKey", required = false) String processDefinitionKey,
+			@RequestParam(value = "startDate1", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate1,
+			@RequestParam(value = "startDate2", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate2,
+			@RequestParam(value = "pageNo", required = true) int pageNo,
+			@RequestParam(value = "pageSize", required = true) int pageSize) {
+		String involvedUserId = ((Integer) session.getAttribute(Contants.LOGINUSERID)).toString();
+
+		Message message = new Message();
+		message.setSuccess(false);
+
+		try {
+
+			PageInfo<ProcessIntanceEntity> processIntanceEntityPageInfo = workflowService.queryHistoricProcessInstance(
+					InitiatorId, processInstanceId, involvedUserId, processDefinitionKey, startDate1, startDate2,
+					pageNo, pageSize);
+			message.setObj(processIntanceEntityPageInfo);
+			message.setSuccess(true);
+		} catch (Exception ex) {
+			message.setErrorCode(Contants.ErrorCodeEnum.Unknow);
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+
+	/**
+	 * 获取任务实例
+	 * 
+	 * @param involvedUser
+	 *            参与人
+	 * @param pageNo
+	 *            第几页
+	 * @param pageSize
+	 *            页最大显示数
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/runtime/tasks", method = RequestMethod.GET)
+	public Message queryTasks(@RequestParam(value = "involvedUserId", required = false) String involvedUserId,
+			@RequestParam(value = "processInstanceId", required = false) String processInstanceId,
+			@RequestParam(value = "processDefinitionKey", required = false) String processDefinitionKey,
+			@RequestParam(value = "pageNo", required = true) int pageNo,
+			@RequestParam(value = "pageSize", required = true) int pageSize) {
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+
+			PageInfo<ProcessIntanceEntity> processIntanceEntityPageInfo = workflowService
+					.queryRuntimeTasks(involvedUserId, processInstanceId, processDefinitionKey, pageNo, pageSize);
+			message.setSuccess(true);
+			message.setObj(processIntanceEntityPageInfo);
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+			message.setErrorCode(Contants.ErrorCodeEnum.Unknow);
+		}
+		return message;
+	}
+
+	/**
+	 * 查询我的任务
+	 * 
+	 * @param processInstanceId
+	 * @param processDefinitionKey
+	 * @param pageNo
+	 * @param pageSize
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/runtime/my-tasks", method = RequestMethod.GET)
+	public Message queryMyTasks(@RequestParam(value = "processInstanceId", required = false) String processInstanceId,
+			@RequestParam(value = "processDefinitionKey", required = false) String processDefinitionKey,
+			@RequestParam(value = "pageNo", required = true) int pageNo,
+			@RequestParam(value = "pageSize", required = true) int pageSize) {
+		String involvedUserId = ((Integer) session.getAttribute(Contants.LOGINUSERID)).toString();
+
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+
+			PageInfo<ProcessIntanceEntity> processIntanceEntityPageInfo = workflowService
+					.queryRuntimeTasks(involvedUserId, processInstanceId, processDefinitionKey, pageNo, pageSize);
+			message.setSuccess(true);
+			message.setObj(processIntanceEntityPageInfo);
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+			message.setErrorCode(Contants.ErrorCodeEnum.Unknow);
+		}
+		return message;
+	}
+
+	/**
+	 * 查询我的任务个数
+	 * 
+	 * @param processInstanceId
+	 * @param processDefinitionKey
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/runtime/my-tasks/count", method = RequestMethod.GET)
+	public Message queryMyTasksCount(
+			@RequestParam(value = "processInstanceId", required = false) String processInstanceId,
+			@RequestParam(value = "processDefinitionKey", required = false) String processDefinitionKey) {
+		String involvedUserId = ((Integer) session.getAttribute(Contants.LOGINUSERID)).toString();
+		long count = workflowService.queryRuntimeTasksCount(involvedUserId, processInstanceId, processDefinitionKey);
+		Message message = new Message();
+		message.setSuccess(true);
+		message.setObj(count);
+		return message;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/runtime/my-initiated-process-instances/count", method = RequestMethod.GET)
+	public Message queryMyInitiatedRuntimeProcessInstanceCount(
+			@RequestParam(value = "involvedUserId", required = false) String involvedUserId,
+			@RequestParam(value = "processInstanceId", required = false) String processInstanceId,
+			@RequestParam(value = "processDefinitionKey", required = false) String processDefinitionKey) {
+		String initiatorId = ((Integer) session.getAttribute(Contants.LOGINUSERID)).toString();
+		long count = workflowService.queryRuntimeProcessInstanceCount(initiatorId, involvedUserId, processInstanceId,
+				processDefinitionKey);
+		Message message = new Message();
+		message.setSuccess(true);
+		message.setObj(count);
+		return message;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/runtime/my-handled-process-instances/count", method = RequestMethod.GET)
+	public Message queryMyHandledRuntimeProcessInstanceCount(
+			@RequestParam(value = "initiatorId", required = false) String initiatorId,
+			@RequestParam(value = "processInstanceId", required = false) String processInstanceId,
+			@RequestParam(value = "processDefinitionKey", required = false) String processDefinitionKey) {
+		String involvedUserId = ((Integer) session.getAttribute(Contants.LOGINUSERID)).toString();
+		long count = workflowService.queryRuntimeProcessInstanceCount(initiatorId, involvedUserId, processInstanceId,
+				processDefinitionKey);
+		Message message = new Message();
+		message.setSuccess(true);
+		message.setObj(count);
+		return message;
+	}
+
+	/**
+	 * 获取一个流程实例所有走过的任务
+	 * 
+	 * @param processInstanceId
+	 *            流程
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/process-instance/{processInstanceId}/historic-tasks", method = RequestMethod.GET)
+	public Message queryHistoricTasksBy(@PathVariable("processInstanceId") String processInstanceId) {
+
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			ProcessIntanceEntity processIntanceEntity = workflowService
+					.queryProcessInstanceWithAllHistoricTasks(processInstanceId);
+			message.setObj(processIntanceEntity);
+			message.setSuccess(true);
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+			message.setErrorCode(Contants.ErrorCodeEnum.Unknow);
+		}
+		return message;
+
+	}
+
+	/**
+	 * 查询流程实例详情
+	 * 
+	 * @param processInstanceId
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/process-instance/{processInstanceId}/detail", method = RequestMethod.GET)
+	public Message queryProcessInstanceDetail(@PathVariable("processInstanceId") String processInstanceId) {
+
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			ProcessIntanceEntity processIntanceEntity = workflowService
+					.queryProcessInstanceWithDetailById(processInstanceId);
+			message.setObj(processIntanceEntity);
+			message.setSuccess(true);
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+			message.setErrorCode(Contants.ErrorCodeEnum.Unknow);
+		}
+
+		return message;
+	}
+
+	/**
+	 * 处理一个任务
+	 * 
+	 * @param taskId
+	 *            任务id
+	 * @param attributes
+	 *            自定义流程变量
+	 * @param comments
+	 *            批注
+	 * @param result
+	 *            同意或拒绝
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/runtime/tasks/{taskId}", method = RequestMethod.PUT)
+	public Message handleTask(@PathVariable("taskId") String taskId,
+			@RequestBody ProcessInstanceHandleEntity handleEntity) {
+		Map<String, Object> variables = handleEntity.getVariables();
+		String comments = handleEntity.getComments();
+		int isApprove = handleEntity.getIsApprove();
+		Message message = new Message();
+		message.setSuccess(false);
+		if (taskId != null && variables != null && comments != null) {
+			try {
+				workflowService.handleRuntimeTask(taskId, variables, comments, isApprove);
+				message.setSuccess(true);
+			} catch (ActivitiObjectNotFoundException ex) {
+				message.setErrorCode(Contants.ErrorCodeEnum.ActivitiObjectNotFound);
+				message.setMsg(ex.getMessage());
+			} catch (ActivitiTaskAlreadyClaimedException ex) {
+				message.setErrorCode(Contants.ErrorCodeEnum.ActivitiTaskAlreadyClaimed);
+				message.setMsg(ex.getMessage());
+			} catch (MyActivitiException ex) {
+				message.setErrorCode(ex.getErrorCode());
+				message.setMsg(ex.getMessage());
+			} catch (Exception ex) {
+				message.setErrorCode(Contants.ErrorCodeEnum.Unknow);
+				message.setMsg(ex.getMessage());
+			}
+		} else {
+			message.setErrorCode(Contants.ErrorCodeEnum.Unknow);
+			message.setMsg("参数错误");
+		}
+		return message;
+
+	}
+
+	/**
+	 * 上传oss附件
+	 * 
+	 * @param taskId
+	 * @param attachmentName
+	 * @param attachmentDescription
+	 * @param url
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/runtime/tasks/oss-attachments", method = RequestMethod.POST)
+	public Message addOssAttachments(@RequestBody TaskAttachmentsEntity taskAttachmentsEntity) {
+
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			String taskId = taskAttachmentsEntity.getTaskId();
+			String attachmentName = taskAttachmentsEntity.getAttachmentName();
+			String attachmentDescription = taskAttachmentsEntity.getAttachmentDescription();
+			String url = taskAttachmentsEntity.getUrl();
+			Attachment attachment = workflowService.createOssAttachment(taskId, attachmentName, attachmentDescription,
+					url);
+			message.setObj(attachment);
+			message.setSuccess(true);
+		} catch (Exception ex) {
+			message.setErrorCode(Contants.ErrorCodeEnum.Unknow);
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/runtime/tasks/oss-attachments", method = RequestMethod.DELETE)
+	public Message deleteOssAttachments(String attachmentId, String ossKey) {
+
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			workflowService.deleteOssAttachment(attachmentId, ossKey);
+			message.setSuccess(true);
+		} catch (Exception ex) {
+			message.setErrorCode(Contants.ErrorCodeEnum.Unknow);
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+
+	/**
+	 * 获取oss url路径
+	 * 
+	 * @param taskId
+	 * @param attachmentName
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/runtime/tasks/oss-attachments/url", method = RequestMethod.GET)
+	public Message getAttachmentOssKey(String taskId, String processDefinitionKey, String attachmentName) {
+		String key = workflowService.getAttachmentOssKey(taskId, processDefinitionKey, attachmentName);
+		Message message = new Message();
+		message.setSuccess(true);
+		message.setObj(key);
+		return message;
+	}
+
+	/**
+	 * 清除附件上传临时目录
+	 * 
+	 * @param processDefinitionKey
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/runtime/oss-attachments/{processDefinitionKey}/tmp", method = RequestMethod.DELETE)
+	public Message clearAttachmentOssTempSessionProcessDirectory(
+			@PathVariable("processDefinitionKey") String processDefinitionKey) {
+		Message message = new Message();
+		message.setSuccess(true);
+		workflowService.clearAttachmentOssTempSessionProcessDirectory(processDefinitionKey);
+		return message;
+	}
+	
+	
+	
+	@ResponseBody
+	@RequestMapping(value = "/history/historic-process-instances/attachment", method = RequestMethod.GET)
+	public Message queryAttachmentiListByProcessInstanceId(String processInstanceId) {
+
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			List<AttachmentEntity> attachmentEntityList = workflowService.queryAttachmentyListByProcessInstanceId(processInstanceId);
+			message.setObj(attachmentEntityList);
+			message.setSuccess(true);
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+			message.setErrorCode(Contants.ErrorCodeEnum.Unknow);
+		}
+
+		return message;
+	}
+}

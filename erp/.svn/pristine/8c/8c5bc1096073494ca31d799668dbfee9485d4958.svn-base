@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="cn.caecc.erp.modules.dao.ex.mapper.SupplierGoodsRelationshipExMapper">
+	<resultMap
+		type="cn.caecc.erp.modules.dao.ex.dto.SupplierGoodsRelationshipExDto"
+		id="supplierGoodsRelationshipExDto">
+		<result column="SupplierID" property="supplierid" jdbcType="INTEGER" />
+		<result column="GoodCode" property="goodcode" jdbcType="VARCHAR" />
+		<result column="sname" property="sname" jdbcType="VARCHAR" />
+		<result column="serviceContent" property="serviceContent"
+			jdbcType="VARCHAR" />
+		<result column="stelephone" property="stelephone" jdbcType="VARCHAR" />
+		<result column="saddress" property="saddress" jdbcType="VARCHAR" />
+		<result column="scontacts" property="scontacts" jdbcType="VARCHAR" />
+		<result column="isQualified" property="isQualified" jdbcType="INTEGER" />
+		<result column="gname" property="gname" jdbcType="VARCHAR" />
+		<result column="model" property="model" jdbcType="VARCHAR" />
+		<result column="unit" property="unit" jdbcType="VARCHAR" />
+		<result column="remarks" property="remarks" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<!-- 批量新增 -->
+	<insert id="batchAdd">
+		insert into supplier_goods_relationship(SupplierID, GoodCode)
+		values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.supplierid},#{item.goodcode})
+		</foreach>
+	</insert>
+
+	<!-- 按条件获取分页列表 -->
+	<select id="getList" resultMap="supplierGoodsRelationshipExDto">
+		select sgr.*,s.name sname,s.serviceContent serviceContent,s.telephone
+		stelephone,s.address saddress,
+		s.contacts scontacts,s.isQualified
+		isQualified,g.name gname,g.model model,g.unit
+		unit,g.remarks remarks
+		from supplier_goods_relationship sgr
+		left join supplier s
+		on(sgr.supplierid = s.id)
+		left join goods g
+		on(sgr.goodcode = g.code)
+		<where>
+			<if test="isQualified != null">
+				s.isQualified = #{isQualified}
+			</if>
+			<if test="lists != null">
+				and sgr.goodcode in
+				<foreach collection="lists" index="index" item="item"
+					separator="," open="(" close=")">
+					#{item.goodcode,jdbcType=VARCHAR}
+				</foreach>
+			</if>
+		</where>
+
+	</select>
+
+	<!-- 批量修改 -->
+<!-- 	<update id="batchUpdate" parameterType="java.util.List">
+		update supplier_goods_relationship
+		<trim prefix="set" suffixOverrides=",">
+			<trim prefix="goodcode =case" suffix="end,">
+				<foreach collection="ulist" item="item" index="index">
+					<if test="item.goodcode != null and item.goodcode != ''">
+						when supplierid=#{item.supplierid} then
+						#{item.goodcode}
+					</if>
+				</foreach>
+			</trim>
+		</trim>
+		where supplierid in
+		<foreach collection="ulist" index="index" item="item"
+			separator="," open="(" close=")">
+			#{item.supplierid,jdbcType=INTEGER}
+		</foreach>
+	</update> -->
+</mapper>

@@ -1,0 +1,153 @@
+/**
+ * 
+ */
+package cn.caecc.erp.support.workflow.approver.service.serviceImpl;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import cn.caecc.erp.modules.dao.mybatis.entity.User;
+import cn.caecc.erp.modules.service.DeptmentService;
+import cn.caecc.erp.modules.service.UserService;
+import cn.caecc.erp.support.constant.Contants;
+import cn.caecc.erp.support.workflow.approver.service.OfficesupplyApproverService;
+import cn.caecc.erp.support.workflow.service.WorkflowService;
+
+/**
+ * @author weizhen
+ *
+ */
+@Service
+public class OfficesupplyApproverServiceImpl extends BaseApproverService implements OfficesupplyApproverService {
+
+	/**
+	 * 
+	 */
+	@Autowired
+	private UserService userService;
+	
+	@Autowired
+	private DeptmentService deptMentService;
+	
+	@Autowired
+	private WorkflowService workflowService;
+	
+	@Autowired
+	private HttpSession session;
+	public OfficesupplyApproverServiceImpl() {
+		// TODO Auto-generated constructor stub
+	}
+
+	/* (non-Javadoc)
+	 * @see cn.caecc.erp.support.workflow.approver.service.OfficesupplyApproverService#getApplyTaskNextApprover()
+	 */
+	@Override
+	public List<User> getApplyTaskNextApprover() {
+		// TODO Auto-generated method stub
+		List<User> userList = userService.getList();
+		return super.preProcessUsers(userList);
+	}
+
+	/* (non-Javadoc)
+	 * @see cn.caecc.erp.support.workflow.approver.service.OfficesupplyApproverService#getDepartmentTaskNextApprover()
+	 */
+	@Override
+	public List<User> getDepartmentTaskNextApprover() {
+		// TODO Auto-generated method stub
+		Integer userId = (Integer)session.getAttribute(Contants.LOGINUSERID);
+		User user = userService.findDtoById(userId);
+		List<User> userList = new ArrayList<User>();
+		userList.add(user);
+		return super.preProcessUsers(userList);
+	}
+
+	/* (non-Javadoc)
+	 * @see cn.caecc.erp.support.workflow.approver.service.OfficesupplyApproverService#getGeneralManagerOfficeConfirmTaskNextApprover()
+	 */
+	@Override
+	public List<User> getGeneralManagerOfficeConfirmTaskNextApprover() {
+		// TODO Auto-generated method stub
+		Integer userId = (Integer)session.getAttribute(Contants.LOGINUSERID);
+		List<User> userList = userService.findDepartmentLeader(userId);
+		return super.preProcessUsers(userList);
+	}
+
+	/* (non-Javadoc)
+	 * @see cn.caecc.erp.support.workflow.approver.service.OfficesupplyApproverService#getGeneralManagerOfficeLeaderTaskNextApprover(java.lang.String)
+	 */
+	@Override
+	public List<User> getGeneralManagerOfficeLeaderTaskNextApprover(String processInstanceId , Integer isGeneralManager) {
+		// TODO Auto-generated method stub
+		List<User> userList = null;
+		if (isGeneralManager == 0) {
+			String strStartUserId = workflowService.queryHistoryTaskOfRuntimeInstanceAssigneeId(processInstanceId,
+					"ApplyTask");
+			if (strStartUserId != null) {
+				int iStartUserId = Integer.parseInt(strStartUserId);
+				userList = userService.findAssignedManagerLeader(iStartUserId);
+				List<User> tmpUserList = userService.findManagerLeader(iStartUserId);
+				userList.addAll(tmpUserList);
+			}
+		} else {
+			userList = deptMentService.getDepartmentUsers(Contants.GENERALMENERALMANAGER);
+			return userList;
+		}
+		
+		return super.preProcessUsers(userList);
+	}
+
+	/* (non-Javadoc)
+	 * @see cn.caecc.erp.support.workflow.approver.service.OfficesupplyApproverService#getLeaderTaskNextApprover()
+	 */
+	@Override
+	public List<User> getLeaderTaskNextApprover() {
+		// TODO Auto-generated method stub
+		List<User> userList = deptMentService.getDepartmentUsers(Contants.GENERALMENERALMANAGER);
+		return super.preProcessUsers(userList);
+	}
+
+	/* (non-Javadoc)
+	 * @see cn.caecc.erp.support.workflow.approver.service.OfficesupplyApproverService#getGeneralManagerTaskNextApprover()
+	 */
+	@Override
+	public List<User> getGeneralManagerTaskNextApprover(String processInstanceId, Integer money) {
+		// TODO Auto-generated method stub
+		List<User> userList = null;
+		if (money > 30000) {
+			userList = deptMentService.getDepartmentUsers(Contants.CHAIRMAN);
+		} else {
+			String strStartUserId = workflowService.queryHistoryTaskOfRuntimeInstanceAssigneeId(processInstanceId,
+					"ApplyTask");
+			if (strStartUserId != null) {
+				userList = new ArrayList<User>();
+				User user = userService.findDtoById(Integer.parseInt(strStartUserId));
+				userList.add(user);
+			}
+		}
+		return super.preProcessUsers(userList);
+	}
+
+	/* (non-Javadoc)
+	 * @see cn.caecc.erp.support.workflow.approver.service.OfficesupplyApproverService#getChairmanTaskNextApprover()
+	 */
+	@Override
+	public List<User> getChairmanTaskNextApprover(String processInstanceId) {
+		// TODO Auto-generated method stub
+		List<User> userList = null;
+		String strStartUserId = workflowService.queryHistoryTaskOfRuntimeInstanceAssigneeId(processInstanceId,
+				"ApplyTask");
+		if (strStartUserId != null) {
+			userList = new ArrayList<User>();
+			User user = userService.findDtoById(Integer.parseInt(strStartUserId));
+			userList.add(user);
+		}
+		return super.preProcessUsers(userList);
+
+	}
+
+}

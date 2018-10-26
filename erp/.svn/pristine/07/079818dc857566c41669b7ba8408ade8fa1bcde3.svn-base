@@ -1,0 +1,156 @@
+package cn.caecc.erp.controller;
+
+import java.io.ByteArrayInputStream;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import cn.caecc.erp.modules.dao.ex.dto.GoodsDto;
+import cn.caecc.erp.modules.dao.mybatis.entity.Goods;
+import cn.caecc.erp.modules.service.GoodsService;
+import cn.caecc.erp.support.constant.Contants;
+import cn.caecc.erp.support.message.Message;
+
+@Controller
+@RequestMapping("/api/goods")
+public class GoodsController extends BaseController {
+
+	@Autowired
+	private GoodsService goodsService;
+
+	@ResponseBody
+	@RequestMapping(method = RequestMethod.POST)
+	@RequiresPermissions(Contants.GOODS_ADD_PERMISSION)
+	public Message create(@RequestBody Goods goods) {
+		Message message = new Message();
+		message.setSuccess(false);
+		int result = 0;
+		try {
+			result = goodsService.create(goods);
+			if (result > 0) {
+				message.setSuccess(true);
+			} else {
+				message.setMsg("插入失败");
+			}
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/list", method = RequestMethod.GET)
+	@RequiresPermissions(Contants.GOODS_SELECT_PERMISSION)
+	public Message getGoodsList() {
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			List<GoodsDto> list = goodsService.findGoodsList();
+			message.setSuccess(true);
+			if (list == null) {
+				message.setMsg("未查询到相关数据");
+			} else {
+				message.setObj(list);
+			}
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/{code}", method = RequestMethod.GET)
+	@RequiresPermissions(Contants.GOODS_SELECT_PERMISSION)
+	public Message findByCode(@PathVariable("code") String code) {
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			Goods goods = goodsService.findByCode(code);
+			if (goods == null) {
+				message.setMsg("未查询到该条记录");
+			} else {
+				message.setObj(goods);
+				message.setSuccess(true);
+			}
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+
+	@ResponseBody
+	@RequestMapping(method = RequestMethod.PUT)
+	@RequiresPermissions(Contants.GOODS_UPDATE_PERMISSION)
+	public Message updateByCode(@RequestBody Goods goods) {		
+		Message message = new Message();
+		message.setSuccess(false);
+		int result = 0;
+		try {
+			result = goodsService.updateByCode(goods);
+			if (result > 0) {
+				message.setSuccess(true);
+			} else {
+				message.setMsg("更新失败");
+			}
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/{code}", method = RequestMethod.DELETE)
+	@RequiresPermissions(Contants.GOODS_DELETE_PERMISSION)
+	public Message delByCode(@PathVariable("code") String code) {		
+		Message message = new Message();
+		message.setSuccess(false);
+		String msg = "该物品已产生过相关信息，不能删除";
+		int result = 0;
+		try {
+			result = goodsService.delByCode(code);
+			if (result > 0) {
+				message.setSuccess(true);
+			} else {
+				message.setMsg("删除失败");
+			}
+		} catch (Exception ex) {
+			message.setMsg(msg);
+		}
+		return message;
+	}
+
+	@RequestMapping(value = "/export")
+	@RequiresPermissions(Contants.GOODS_SELECT_PERMISSION)
+	public ResponseEntity<byte[]> export(HttpServletRequest request) {
+		ResponseEntity<byte[]> entity = null;
+		try {
+			ByteArrayInputStream is = goodsService.exportGoods();
+			byte[] body = new byte[is.available()];
+			is.read(body);
+			HttpHeaders headers = new HttpHeaders();           
+			headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+            headers.add("Content-Disposition", "attachment;filename=goods.xls");
+			HttpStatus statusCode = HttpStatus.OK;
+			entity = new ResponseEntity<byte[]>(body, headers, statusCode);
+			is.close();
+		} catch (Exception ex) {
+
+		}
+		return entity;
+
+	}
+
+}

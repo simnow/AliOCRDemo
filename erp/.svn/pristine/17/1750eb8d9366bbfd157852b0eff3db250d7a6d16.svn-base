@@ -1,0 +1,148 @@
+package cn.caecc.erp.controller;
+
+import java.util.Date;
+
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import cn.caecc.erp.modules.dao.mybatis.entity.WellDxDaily;
+import cn.caecc.erp.modules.dao.mybatis.entity.WellDxInfo;
+import cn.caecc.erp.modules.service.DxWellInfoService;
+import cn.caecc.erp.modules.service.WellDxDailyService;
+import cn.caecc.erp.support.message.Message;
+import cn.caecc.erp.support.util.DateUtil;
+import cn.caecc.erp.support.constant.Contants;
+
+/**
+ * 定向井日报
+ * @author GaiNing
+ *
+ */
+@Controller
+@RequestMapping(value="api/dxlog")
+public class DxWellDailyController {
+
+	@Autowired
+	public WellDxDailyService wellDxDailyService;
+	@Autowired
+	public DxWellInfoService dxWellInfoService;
+	/**
+	 * 新增
+	 * @param wellDxDaily
+	 * @return
+	 */
+	@RequestMapping(method=RequestMethod.POST)
+	@ResponseBody
+	@RequiresPermissions(Contants.DIRECTED_DAILY_LIST_ADD_PERMISSION)
+	public Message insertDxWellDaily(@RequestBody WellDxDaily wellDxDaily){
+		if(null==wellDxDaily.getWellid()){
+			return new Message(false,"井号为空");
+		}
+		//添加部门
+		WellDxInfo dxinfo= dxWellInfoService.selectDxWellInfoById(wellDxDaily.getWellid());
+		if(dxinfo!=null){
+			wellDxDaily.setDid(dxinfo.getDid());
+		}
+		Message result= wellDxDailyService.insertDxWellDaily(wellDxDaily);
+		if(result.isSuccess()){
+			//更新井深
+			if(null!=wellDxDaily.getJs()){
+				if(!dxWellInfoService.updateDxWellDepthById(wellDxDaily.getWellid(), wellDxDaily.getJs())){
+					result.setSuccess(false);
+					result.setMsg("操作失败");
+				}
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * 修改
+	 * @param wellDxDaily
+	 * @return
+	 */
+	@RequestMapping(method=RequestMethod.PUT)
+	@ResponseBody
+	@RequiresPermissions(Contants.DIRECTED_DAILY_LIST_UPDATE_PERMISSION)
+	public Message updateDxWellDaily(@RequestBody WellDxDaily wellDxDaily){
+		/*if(!DateUtil.getcurrentDate().equals(wellDxDaily.getLogdate())){
+			return new Message(false,"只允许修改当日日报");
+		}*/
+		Message message= wellDxDailyService.updateDxWellDaily(wellDxDaily);
+		if(message.isSuccess()){
+			if(!dxWellInfoService.updateDxWellDepthById(wellDxDaily.getWellid(), wellDxDaily.getJs())){
+				message.setSuccess(false);
+				message.setMsg("操作失败");
+			}
+		}
+		return message;
+	}
+	
+	/**
+	 * 查看一条
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value="/{id}",method=RequestMethod.GET)
+	@ResponseBody
+	public Message selectDxWellDailyById(@PathVariable("id") int id){
+		return wellDxDailyService.selectDxWellDaily(id);
+	}
+	
+	/**
+	 * 删除
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value="/{id}",method=RequestMethod.DELETE)
+	@ResponseBody
+	@RequiresPermissions(Contants.DIRECTED_DAILY_LIST_DELETE_PERMISSION)
+	public Message delDxWellDailyById(@PathVariable("id") int id){
+		return wellDxDailyService.deleteDxWellDaily(id);
+	}
+	
+	/**
+	 * 查询所有:井+时间筛选
+	 * @return
+	 */
+	@RequestMapping(value="/list",method=RequestMethod.GET)
+	@ResponseBody
+	public Message getLogList(String startDate,String endDate,int wellId,int pageNo,int pageSize){
+		return wellDxDailyService.selectAllDxWellDailyByWellId(startDate,endDate, wellId, pageNo, pageSize);
+	}
+	
+	/**
+	 * 根据logDate,wellId查看
+	 * @return
+	 */
+	@RequestMapping(value="/record",method=RequestMethod.GET)
+	@ResponseBody
+	public Message selectDxWellDaily(Date logDate,Integer wellId){
+		return wellDxDailyService.selectDxWellDaily(logDate, wellId);
+	}
+	
+	/**
+	 * 插入之前，查询下基础数据中的井深
+	 */
+	@RequestMapping(value="/getJs",method=RequestMethod.GET)
+	@ResponseBody
+	public Message selectJs(int wellId){
+		Message message=new Message();
+		//取昨天的井深
+		//日(<=)
+		WellDxDaily welldxLog=wellDxDailyService.getLessThanOrEqualTo(DateUtil.getSubDay("day"),wellId);
+		if(null!=welldxLog){
+			message.setObj(welldxLog.getJs());
+		}else{
+			message.setObj(0.00);
+		}		
+		return message;
+	}
+	
+}

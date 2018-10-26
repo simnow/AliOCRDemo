@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="cn.caecc.erp.modules.dao.ex.mapper.WorkloadActivitiApplyExMapper">
+	<resultMap
+		type="cn.caecc.erp.modules.dao.ex.dto.WorkloadActivitiApplyDto"
+		id="workloadActivitiApplyDto">
+		<id column="Id" property="id" jdbcType="INTEGER" />
+		<result column="ProcessInstanceId" property="processinstanceid"
+			jdbcType="VARCHAR" />
+		<result column="UId" property="uid" jdbcType="INTEGER" />
+		<result column="DId" jdbcType="INTEGER" property="did" />
+		<result column="WellInfoId" jdbcType="INTEGER"
+			property="wellinfoid" />
+		<result column="TaskDescription" property="taskdescription"
+			jdbcType="VARCHAR" />
+		<result column="GCode" property="gcode" jdbcType="VARCHAR" />
+		<result column="CGId" property="cgid" jdbcType="INTEGER" />
+		<result column="ServiceTime" jdbcType="TIMESTAMP"
+			property="servicetime" />
+		<result column="Implement" property="implement"
+			jdbcType="VARCHAR" />
+		<result column="ImplementTime" property="implementtime"
+			jdbcType="TIMESTAMP" />
+		<result column="Remark" property="remark" jdbcType="VARCHAR" />
+		<result column="ContractCost" property="contractcost"
+			jdbcType="INTEGER" />
+		<result column="ContractConstDescription"
+			property="contractconstdescription" jdbcType="VARCHAR" />
+		<result column="CreateUserId" property="createuserid"
+			jdbcType="INTEGER" />
+		<result column="CreateTime" property="createtime"
+			jdbcType="TIMESTAMP" />
+		<result column="IsSuccess" property="issuccess"
+			jdbcType="INTEGER" />
+		<result column="uname" property="uname" jdbcType="VARCHAR" />
+		<result column="dname" property="dname" jdbcType="VARCHAR" />
+		<result column="dcode" property="dcode" jdbcType="VARCHAR" />
+		<result column="gname" property="gname" jdbcType="VARCHAR" />
+		<result column="contractName" property="contractName"
+			jdbcType="VARCHAR" />
+		<result column="cname" property="cname" jdbcType="VARCHAR" />
+		<result column="ccode" property="ccode" jdbcType="VARCHAR" />
+		<result column="partyb" property="partyb" jdbcType="VARCHAR" />
+		<result column="wellcode" property="wellcode"
+			jdbcType="VARCHAR" />
+	</resultMap>
+
+	<!-- 查询劳务详情 -->
+	<select id="findDetail" resultMap="workloadActivitiApplyDto">
+		select w.*,u.name uname,d.name dname,d.code dcode,g.name
+		gname,caa.name contractName,c.name
+		cname,caa.code ccode,caa.partyb
+		partyb,wi.wellcode wellcode
+		from
+		workload_activiti_apply w
+		left join user
+		u
+		on(w.uid = u.id)
+		left join department d
+		on(w.did = d.id)
+		left join goods
+		g
+		on(w.gcode = g.code)
+		left join user c
+		on(w.createuserid = c.id)
+		left
+		join
+		contract_goods_relationship cg
+		on(w.cgid = cg.id)
+		left join
+		contract_activiti_apply
+		caa
+		on(cg.cid = caa.id)
+		left join
+		well_info wi
+		on(w.wellinfoid = wi.id)
+		<where>
+			<if test="id != null">
+				w.id = #{id}
+			</if>
+		</where>
+	</select>
+
+	<!-- 按条件获取分页列表 -->
+	<select id="getList" resultMap="workloadActivitiApplyDto">
+		select w.*,u.name uname,d.name dname,d.code dcode,g.name
+		gname,caa.name contractName,c.name
+		cname,caa.code ccode,caa.partyb
+		partyb,wi.wellcode wellcode
+		from
+		workload_activiti_apply w
+		left join user
+		u
+		on(w.uid = u.id)
+		left join department d
+		on(w.did = d.id)
+		left join goods
+		g
+		on(w.gcode = g.code)
+		left join user c
+		on(w.createuserid = c.id)
+		left
+		join
+		contract_goods_relationship cg
+		on(w.cgid = cg.id)
+		left join
+		contract_activiti_apply
+		caa
+		on(cg.cid = caa.id)
+		left join
+		well_info wi
+		on(w.wellinfoid = wi.id)
+		<where>
+			<if test="userid != null">
+				w.createuserid = #{userid}
+			</if>
+			<if test="drafts == 'drafts'">
+				and w.processinstanceid is null
+			</if>
+			<if test="isSuccess != null">
+				and w.issuccess = #{isSuccess}
+			</if>
+		</where>
+	</select>
+</mapper>

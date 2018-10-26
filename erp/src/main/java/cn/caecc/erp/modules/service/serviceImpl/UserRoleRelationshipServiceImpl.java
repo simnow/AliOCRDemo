@@ -1,0 +1,205 @@
+package cn.caecc.erp.modules.service.serviceImpl;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import cn.caecc.erp.modules.dao.ex.dto.InputRole;
+import cn.caecc.erp.modules.dao.ex.dto.MenuDto;
+import cn.caecc.erp.modules.dao.ex.dto.OutputRole;
+import cn.caecc.erp.modules.dao.ex.dto.UserDto;
+import cn.caecc.erp.modules.dao.ex.mapper.DepartmentRoleRelationshipExMapper;
+import cn.caecc.erp.modules.dao.ex.mapper.UserRoleRelationshipExMapper;
+import cn.caecc.erp.modules.dao.mybatis.entity.Permission;
+import cn.caecc.erp.modules.dao.mybatis.entity.Role;
+import cn.caecc.erp.modules.dao.mybatis.entity.UserRoleRelationshipExample;
+import cn.caecc.erp.modules.dao.mybatis.entity.UserRoleRelationshipExample.Criteria;
+import cn.caecc.erp.modules.dao.mybatis.entity.UserRoleRelationshipKey;
+import cn.caecc.erp.modules.dao.mybatis.mapper.UserRoleRelationshipMapper;
+import cn.caecc.erp.modules.service.RoleService;
+import cn.caecc.erp.modules.service.UserRoleRelationshipService;
+
+@Service
+public class UserRoleRelationshipServiceImpl implements UserRoleRelationshipService {
+
+	@Autowired
+	private UserRoleRelationshipMapper urMapper;
+	@Autowired
+	private UserRoleRelationshipExMapper urExMapper;
+	@Autowired
+	private DepartmentRoleRelationshipExMapper drExMapper;
+	@Autowired
+	private RoleService roleService;
+	
+	private Map<String, List<MenuDto>> generalMenuMap(List<MenuDto> menuDtoList) {
+
+		Map<String, List<MenuDto>> resultFunctionMap = new LinkedHashMap<String, List<MenuDto>>();
+
+		/**
+		 * 由于最终生成的是数组，而且需要分堆，所以使用一个中间临时map用于分堆，将子菜单放置到父菜单之下
+		 */
+		Map<String, Map<String, MenuDto>> tmpFunctionMap = new LinkedHashMap<String, Map<String, MenuDto>>();
+
+		for (MenuDto menu : menuDtoList) {
+			String functionName = menu.getFunctionname();
+			if (!tmpFunctionMap.containsKey(functionName)) {
+				tmpFunctionMap.put(functionName, new LinkedHashMap<String, MenuDto>());
+			}
+			Map<String, MenuDto> tmpMenuMap = (Map<String, MenuDto>) tmpFunctionMap.get(functionName);
+			String pMenuName = menu.getpMenuName().trim();
+			// 如果没有父节点
+			if ("".equals(pMenuName)) {
+				String name = menu.getName();
+				if (!tmpMenuMap.containsKey(pMenuName)) {
+					MenuDto tmpMenu = new MenuDto();
+					tmpMenu.setMenuid(menu.getMenuid());
+					tmpMenu.setName(menu.getName());
+					tmpMenu.setAction(menu.getAction());
+					tmpMenu.setIcon(menu.getIcon());
+					tmpMenuMap.put(name, tmpMenu);
+				}
+
+			} else { //如果有父菜单，则将该父菜单加入其中
+				if (!tmpMenuMap.containsKey(pMenuName)) {
+					MenuDto tmpMenu = new MenuDto();
+					tmpMenu.setMenuid(menu.getPmenuid());
+					tmpMenu.setName(menu.getpMenuName());
+					tmpMenu.setAction(menu.getpAction());
+					tmpMenu.setIcon(menu.getpIcon());
+					tmpMenuMap.put(pMenuName, tmpMenu);
+				}
+				MenuDto tmpMenu = tmpMenuMap.get(pMenuName);
+				if (tmpMenu.getSubMenuMap() == null) {
+					tmpMenu.setSubMenuMap(new LinkedHashMap<String, MenuDto>());
+				}
+				Map<String, MenuDto> subMenuMap = tmpMenu.getSubMenuMap();
+				subMenuMap.put(menu.getName(), menu);
+			}
+		}
+		for (String tmpFunctionKey : tmpFunctionMap.keySet()) {
+			Map<String, MenuDto> tmpMenuMap = tmpFunctionMap.get(tmpFunctionKey);
+			List<MenuDto> resultMenuList = new ArrayList<MenuDto>();
+			for (String tmpMenuKey : tmpMenuMap.keySet()) {
+				MenuDto tmpMenu = tmpMenuMap.get(tmpMenuKey);
+				Map<String, MenuDto> subMenuMap = tmpMenu.getSubMenuMap();
+				List<MenuDto> subMenuList = new ArrayList<MenuDto>();
+				for (String menuKey : subMenuMap.keySet()) {
+					subMenuList.add(subMenuMap.get(menuKey));
+				}
+				tmpMenu.setSubMenuList(subMenuList);
+				tmpMenu.setSubMenuMap(null);
+				resultMenuList.add(tmpMenu);
+			}
+			resultFunctionMap.put(tmpFunctionKey, resultMenuList);
+
+		}
+		return resultFunctionMap;
+	}
+
+	@Override
+	public UserDto findUrByUserId(int userId) {
+		UserDto userDto1 = urExMapper.findUserRoleRelationshipByUserId(userId);
+		UserDto userDto2 = drExMapper.findUserRoleRelationshipByUserId(userId);
+		List<Role> roleList = userDto1.getRoleList();
+		roleList.addAll(userDto2.getRoleList());
+		List<Permission> permissionList = userDto1.getPermissionList();
+		permissionList.addAll(userDto2.getPermissionList());
+		List<MenuDto> menuList = userDto1.getMenuList();
+		menuList.addAll(userDto2.getMenuList());
+		
+		Map<String, Role> roleMap = new LinkedHashMap<String, Role>();
+		for (Role role : roleList) {
+			roleMap.put(role.getName(), role);
+		}
+
+		Map<String, Permission> permissionMap = new LinkedHashMap<String, Permission>();
+		for (Permission permission : permissionList) {
+			permissionMap.put(permission.getName(), permission);
+		}
+		userDto1.setRoleMap(roleMap);
+		userDto1.setPermissionMap(permissionMap);
+
+		Map<String, List<MenuDto>> functionMap = generalMenuMap(userDto1.getMenuList());
+		userDto1.setFunctionMap(functionMap);
+		return userDto1;
+	}
+
+	@Override
+	public int deleteUrBynd(int userid, int roleid) {
+		// TODO Auto-generated method stub
+		UserRoleRelationshipExample ur = new UserRoleRelationshipExample();
+		Criteria criteria = ur.createCriteria();
+		criteria.andIdEqualTo(userid);
+		criteria.andRidEqualTo(roleid);
+		int i = urMapper.deleteByExample(ur);
+		return i;
+	}
+
+	@Override
+	public int batchAdd(Map<String, Object> params) {
+		// TODO Auto-generated method stub
+		return urExMapper.batchAdd(params);
+	}
+
+	@Override
+	public int add(UserRoleRelationshipKey urKey) {
+		// TODO Auto-generated method stub
+		return urExMapper.add(urKey);
+	}
+	
+
+	@Override
+	public List<OutputRole> getUserCanmodifyOutputRole(int userId) {
+		List<Role> roleList = roleService.getRoleByCanmodify();
+		List<UserRoleRelationshipKey> userRoleList = urExMapper.findUserRoleByUserId(userId);
+		List<OutputRole> OutputRoleList = new ArrayList<OutputRole>();
+		
+		Map<Integer, UserRoleRelationshipKey> tmpUserRoleMap = new LinkedHashMap<Integer, UserRoleRelationshipKey>();
+		for (UserRoleRelationshipKey uRKey : userRoleList) {
+			Integer rId = uRKey.getRid();
+			tmpUserRoleMap.put(rId, uRKey);
+		}
+		for (Role role : roleList) {
+			Integer rId = role.getId();
+			OutputRole OutputRole = new OutputRole(role.getDescription(), false, rId, userId);
+			if (tmpUserRoleMap.containsKey(rId)) {
+				OutputRole.setExist(true);
+			}
+			OutputRoleList.add(OutputRole);
+		}
+		return OutputRoleList;
+	}
+	
+
+	@Override
+	public boolean modifyUserRoles(InputRole InputRole) {
+		Map<String, Object> parameterMap = new LinkedHashMap<String, Object>();
+		Integer uId = InputRole.getId();
+		List<Role> canDeleteRoleList = roleService.getRoleByCanmodify();
+		List<Integer> canDeleteRIdList = new ArrayList<Integer>();
+		for (Role role : canDeleteRoleList) {
+			canDeleteRIdList.add(role.getId());
+		}
+		parameterMap.put("uId", uId);
+		parameterMap.put("RIdList", canDeleteRIdList);
+		urExMapper.deleteCanModifyUR(parameterMap);
+		List<UserRoleRelationshipKey> urList = new ArrayList<UserRoleRelationshipKey>();
+		if (InputRole.getRoleIds() != null) {
+			for (Integer rid : InputRole.getRoleIds()) {
+				UserRoleRelationshipKey ur = new UserRoleRelationshipKey();
+				ur.setId(InputRole.getId());
+				ur.setRid(rid);
+				urList.add(ur);
+			}
+		}
+		if (urList != null && urList.size() > 0) {
+			urExMapper.insertRoles(urList);
+		}
+		return true;
+	}
+
+	
+}

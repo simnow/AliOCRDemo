@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.caecc.erp.modules.dao.ex.mapper.GoodsExMapper">
+	<resultMap type="cn.caecc.erp.modules.dao.ex.dto.GoodsDto"
+		id="goods_dto">
+		<id column="Code" jdbcType="VARCHAR" property="code" />
+		<result column="PCode" jdbcType="VARCHAR" property="pcode" />
+		<result column="Id" jdbcType="INTEGER" property="id" />
+		<result column="Grade" jdbcType="INTEGER" property="grade" />
+		<result column="Name" jdbcType="VARCHAR" property="name" />
+		<result column="Model" jdbcType="VARCHAR" property="model" />
+		<result column="Unit" jdbcType="VARCHAR" property="unit" />
+		<result column="Remarks" jdbcType="VARCHAR" property="remarks" />
+		<collection property="children" column="Code"
+			ofType="cn.caecc.erp.modules.dao.ex.dto.GoodsDto" select="findGoodsByPCode"></collection>
+	</resultMap>
+	<resultMap type="cn.caecc.erp.modules.dao.mybatis.entity.Goods"
+		id="goods">
+		<id column="Code" jdbcType="VARCHAR" property="code" />
+		<result column="PCode" jdbcType="VARCHAR" property="pcode" />
+		<result column="Id" jdbcType="INTEGER" property="id" />
+		<result column="Grade" jdbcType="INTEGER" property="grade" />
+		<result column="Name" jdbcType="VARCHAR" property="name" />
+		<result column="Model" jdbcType="VARCHAR" property="model" />
+		<result column="Unit" jdbcType="VARCHAR" property="unit" />
+		<result column="Remarks" jdbcType="VARCHAR" property="remarks" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		Code, PCode, Id, Grade, Name, Model, Unit, Remarks
+	</sql>
+	<!-- 查询所有 -->
+	<select id="findGoodsList" resultMap="goods_dto">
+		select
+		<include refid="Base_Column_List"></include>
+		from goods where Grade=1
+	</select>
+	<!-- 通过父id查询 -->
+	<select id="findGoodsByPCode" parameterType="string"
+		resultMap="goods_dto">
+		select
+		<include refid="Base_Column_List"></include>
+		from goods where PCode=#{Code}
+	</select>
+	
+	<select id="findByPCode" parameterType="string"
+		resultMap="goods">
+		select
+		<include refid="Base_Column_List"></include>
+		from goods where PCode=#{Code} order by Id DESC
+	</select>
+	
+	<select id="findByGrade" parameterType="int"
+		resultMap="goods">
+		select
+		<include refid="Base_Column_List"></include>
+		from goods where Grade=#{Grade} order by Id DESC
+	</select>
+</mapper>

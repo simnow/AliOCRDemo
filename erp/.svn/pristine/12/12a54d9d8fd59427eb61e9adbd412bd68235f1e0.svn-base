@@ -1,0 +1,122 @@
+package cn.caecc.erp.controller;
+
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import cn.caecc.erp.modules.dao.ex.dto.TaskDto;
+import cn.caecc.erp.modules.dao.mybatis.entity.Task;
+import cn.caecc.erp.modules.service.TaskService;
+import cn.caecc.erp.support.constant.Contants;
+import cn.caecc.erp.support.message.Message;
+
+@Controller
+@RequestMapping(value="/api/task")
+public class TaskController extends BaseController{
+	
+	@Autowired
+	private TaskService taskService;
+	
+
+	/** 
+	* FunName:addTask
+	* Description : 新增
+	* @param：Task
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-06-27
+	*/ 
+	@RequestMapping(method=RequestMethod.POST)
+	@RequiresPermissions(Contants.TASK_ADD_PERMISSION)
+	@ResponseBody
+	public Message  addTask(@RequestBody Task task){
+		
+		 Message message=new Message(); 
+		 Task saveTask=taskService.addTask(task);	 
+		 message.setObj(saveTask); 
+		 return message;
+		
+	}
+	/** 
+	* FunName:UpdateTask
+	* Description : 修改
+	* @param：Task
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-06-21
+	*/ 
+	@RequestMapping(method=RequestMethod.PUT)
+	@ResponseBody
+	@RequiresPermissions(Contants.TASK_UPDATE_PERMISSION)
+	public Message  updateTask(@RequestBody Task task){
+		
+		 Message message=new Message(); 
+		 Task updateTask=taskService.updateTask(task);	 
+		 message.setObj(updateTask); 
+		 return message;
+	}
+	/** 
+	* FunName:deleteTask
+	* Description : 删除
+	* @param：SealActivitiApply 
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-06-21
+	*/ 
+	@RequestMapping(method=RequestMethod.DELETE)
+	@ResponseBody
+	@RequiresPermissions(Contants.TASK_DELETE_PERMISSION)
+	public Message  deleteTask(int id){
+		
+		 if(taskService.deleteTask(id)>0){
+			 
+			 return new Message();
+		 }
+		 else{
+			 return new Message(false,"记录不存在");
+		 }
+		
+	}
+	/** 
+	* FunName:getTaskById
+	* Description : 详情
+	* @param：SealActivitiApply 
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-06-21
+	*/ 
+	@RequestMapping(value="/{id}",method=RequestMethod.GET)
+	@ResponseBody
+	public Message getTaskById(@PathVariable("id") int id){
+		
+		 Message message=new Message(); 
+		 TaskDto taskDto=taskService.getTaskById(id);	 
+		 message.setObj(taskDto); 
+		 return message;
+		
+	}
+	/** 
+	* FunName:getTaskById
+	* Description : 详情
+	* @param：SealActivitiApply 
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-06-21
+	*/ 
+	@RequestMapping(value="/pagelist",method=RequestMethod.GET)
+	@ResponseBody
+	public Message getTaskPageList(@RequestParam(value="pagesize",required=true) int pagesize,@RequestParam(value="pageno",required=true) int pageno){
+		
+		 Message message=new Message(); 
+		
+		 message.setObj(taskService.getTaskListByCondition(pagesize, pageno)); 
+		 return message;
+		
+	}
+}

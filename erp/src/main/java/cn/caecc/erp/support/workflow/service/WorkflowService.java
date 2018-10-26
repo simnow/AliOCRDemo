@@ -1,0 +1,348 @@
+package cn.caecc.erp.support.workflow.service;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import org.activiti.engine.task.Attachment;
+import com.github.pagehelper.PageInfo;
+
+import cn.caecc.erp.support.workflow.entity.AttachmentEntity;
+import cn.caecc.erp.support.workflow.entity.ProcessDefinitionEntity;
+import cn.caecc.erp.support.workflow.entity.ProcessIntanceEntity;
+
+/**
+ * @author weizhen
+ *
+ */
+
+public interface WorkflowService {
+	/**
+	 * 通过运行时任务id查询任务定义
+	 * 
+	 * @param taskId
+	 * @return
+	 */
+	public String queryTaskDefinitionKeyByRuntimTaskId(String taskId);
+
+	/**
+	 * 通过运行时任务id查询流程定义
+	 * 
+	 * @param taskId
+	 * @return
+	 */
+	public String queryProcessDefinitionKeyByRuntimTaskId(String taskId);
+
+	/**
+	 * 通过流程实例id查询流程定义key
+	 * 
+	 * @param processInstanceId
+	 * @return
+	 */
+	public String queryProcessDefinitionKeyByRuntimeProcessInstanceId(String processInstanceId);
+
+	/**
+	 * 通过历史流程实例id获取流程定义key
+	 * 
+	 * @param processInstanceId
+	 * @return
+	 */
+	public String queryProcessDefinitionKeyByHistoricProcessInstanceId(String processInstanceId);
+
+	/**
+	 * 通过运行时任务id获取其所属流程的开始人id
+	 * 
+	 * @param taskId
+	 * @return
+	 */
+	public String queryStartUserIdByRuntimeProcessInstanceId(String processInstanceId);
+
+	/**
+	 * 通过流程实例id查询流程定义名称,此处分成两个函数，是因为在流程事件中，有时候不能通过运行时流程获取其定义
+	 * 
+	 * @param processInstanceId
+	 * @return
+	 */
+	public String queryProcessDefinitionNameByRuntimeProcessInstanceId(String processInstanceId);
+
+	public String queryProcessDefinitionNameByHistoricProcessInstanceId(String processInstanceId);
+
+	/**
+	 * 获取当前执行流中最后一个任务的备注消息
+	 * 
+	 * @param processInstanceId
+	 * @return
+	 */
+	public String queryLastTaskCommentMessageByRuntimeExecutionId(String executionId);
+
+	/**
+	 * 查询执行流中最后一个任务的执行结果
+	 * 
+	 * @param executionId
+	 * @return
+	 */
+	public String queryLastHistoricTaskResultByRuntimeExecutionId(String executionId);
+
+	/**
+	 * 获取上一个任务的完成人
+	 * 
+	 * @param processInstanceId
+	 * @return
+	 */
+	public String queryLastRuntimeTaskAssigneeByRuntimeExecutionId(String executionId);
+	
+	
+	/**
+	 * 查询执行流变量
+	 * @param executionId
+	 * @return
+	 */
+	public Object queryRuntimeExecutionLocalVariable(String executionId, String variableName);
+
+
+	/**
+	 * 获取任务所属流程id
+	 * 
+	 * @param taskId
+	 * @return
+	 */
+	public String queryRuntimeProcessInstanceIdByTaskId(String taskId);
+
+	
+	/**
+	 * 获取运行时任务所在执行流
+	 * @param taskId
+	 * @return
+	 */
+	public String queryRuntimeTaskInstanceExecutionId(String taskId);
+	
+	/**
+	 * 查找流程最后一次的附件信息
+	 * @param processInstanceId
+	 * @return
+	 */
+	public AttachmentEntity queryLastAttachmentyByProcessInstanceId(String processInstanceId);
+	
+	
+	/**
+	 * 所有附件信息
+	 * @param processInstanceId
+	 * @return
+	 */
+	public List<AttachmentEntity> queryAttachmentyListByProcessInstanceId(String processInstanceId);
+
+
+	/**
+	 * 生成oss附件路径
+	 * 
+	 * @param processInstanceId
+	 * @return
+	 */
+	public String getAttachmentOssKey(String taskId, String processDefinitionKey, String attachmentName);
+
+	/**
+	 * 添加附件
+	 * 
+	 * @param taskId
+	 * @param processInstanceId
+	 * @param attachmentName
+	 * @param attachmentDescription
+	 * @param url
+	 * @return
+	 */
+	public Attachment createOssAttachment(String taskId, String attachmentName, String attachmentDescription,
+			String url);
+	
+	/**
+	 * 删除附件
+	 * @param taskId
+	 * @param attachmentName
+	 * @param attachmentDescription
+	 * @param url
+	 * @return
+	 */
+	public void deleteOssAttachment(String attachmentId, String ossKey);
+
+	/**
+	 * 启动一个流程实例
+	 * 
+	 * @param processDefinitionKey
+	 *            流程定义名称
+	 * @param bussinessKey
+	 *            业务表主键
+	 * @param variables
+	 *            自定义变量，与流程相关的变量
+	 * @return
+	 * @throws 1
+	 *             ActivitiObjectNotFoundException 流程定义未找到 2 Exception 其他未知异常
+	 */
+	public String startProcess(String processDefinitionKey, String bussinessKey, Map<String, Object> variables)
+			throws Exception;
+
+	/**
+	 * 查询所有的流程定义
+	 * 
+	 * @return
+	 */
+	public PageInfo<ProcessDefinitionEntity> queryProcessDefinitions(int pageNo, int pageSize);
+
+	
+	
+	
+	
+	/**
+	 * 查询所有运行时流程实例
+	 * @return
+	 */
+	public List<String> queryAllRuntimeProcessInstanceId();
+	
+	
+	/**
+	 * 查询所有历史流程实例
+	 * @return
+	 */
+	public List<String> queryAllHistoricProcessInstance();
+
+		
+	/**
+	 * 查询一个正在运行的流程实例列表，当查询发件箱和经办箱时调用
+	 * 
+	 * @param InitiatorId
+	 *            流程启动人
+	 * @param processInstanceId
+	 *            流程id
+	 * @param involvedUserId
+	 *            流程参与人
+	 * @param processDefinitionKey
+	 *            流程定义
+	 * @param pageNo
+	 *            第几页
+	 * @param pageSize
+	 *            页最大显示数
+	 * @return
+	 */
+	public PageInfo<ProcessIntanceEntity> queryRuntimeProcessInstance(String InitiatorId, String processInstanceId,
+			String involvedUserId, String processDefinitionKey, Date startDate1, Date startDate2, int pageNo,
+			int pageSize);
+	
+	/**
+	 * 查询我发起的流程
+	 * @param involvedUserId
+	 * @param processInstanceId
+	 * @param processDefinitionKey
+	 * @return
+	 */
+	public long queryRuntimeProcessInstanceCount(String InitiatorId, String involvedUserId, String processInstanceId, String processDefinitionKey);
+
+
+	/**
+	 * 查询历史流程实例列表 ，当在历史信息中查询发件箱和经办箱时使用
+	 * 
+	 * @param InitiatorId
+	 *            流程发起人
+	 * @param processInstanceId
+	 *            流程id
+	 * @param involvedUserId
+	 *            流程参与人
+	 * @param processDefinitionKey
+	 *            流程定义
+	 * @param pageNo
+	 *            第几页
+	 * @param pageSize
+	 *            页最大显示数
+	 * @return
+	 */
+	public PageInfo<ProcessIntanceEntity> queryHistoricProcessInstance(String InitiatorId, String processInstanceId,
+			String involvedUserId, String processDefinitionKey, Date startDate1, Date startDate2, int pageNo,
+			int pageSize);
+
+	/**
+	 * 查询任务列表
+	 * 
+	 * @param involvedUser
+	 *            任务参与人
+	 * @param pageNo
+	 *            第几页
+	 * @param pageSize
+	 *            页最大显示数
+	 * @return
+	 */
+	public PageInfo<ProcessIntanceEntity> queryRuntimeTasks(String involvedUserId, String processInstanceId,
+			String processDefinitionKey, int pageNo, int pageSize);
+
+	/**
+	 * 查询当前任务个数
+	 * 
+	 * @param involvedUserId
+	 * @param processInstanceId
+	 * @param processDefinitionKey
+	 * @return
+	 */
+	public long queryRuntimeTasksCount(String involvedUserId, String processInstanceId, String processDefinitionKey);
+
+	/**
+	 * 查询一个流程实例详情,包括运行时和历史流程
+	 * 
+	 * @param processInstanceId
+	 *            流程实例id
+	 * @return
+	 */
+	public ProcessIntanceEntity queryProcessInstanceWithDetailById(String processInstanceId);
+
+	/**
+	 * 查询历史任务审批人
+	 * 
+	 * @param processInstanceId
+	 * @param taskDefinitionKey
+	 * @return
+	 */
+	public String queryHistoryTaskOfRuntimeInstanceAssigneeId(String processInstanceId, String taskDefinitionKey);
+
+	/**
+	 * 处理一个任务
+	 * 
+	 * @param taskId
+	 *            任务id
+	 * @param attributes
+	 *            自定义变量
+	 * @param comments
+	 *            批注
+	 * @param result
+	 *            同意还是拒绝
+	 * @return
+	 */
+	public void handleRuntimeTask(String taskId, Map<String, Object> attributes, String comments, int isApprove)
+			throws Exception;
+
+	/**
+	 * 获取一个流程实例，携带所有历史信息
+	 * 
+	 * @param processInstanceId
+	 * @return
+	 */
+	public ProcessIntanceEntity queryProcessInstanceWithAllHistoricTasks(String processInstanceId);
+
+	/*
+	 * public Message queryApproversByRuntimeTaskId(String taskId);
+	 * 
+	 * public Message queryApprovers(String processDefinitionKey, String
+	 * taskDefinitionKey, int userId);
+	 */
+
+	/**
+	 * 清理会话某个具体流程临时数据
+	 * @param processDefinitionKey
+	 */
+	public void clearAttachmentOssTempSessionProcessDirectory(String processDefinitionKey);
+
+	/*
+	 * 清理oss整体临时目录
+	 */
+	public void clearAttachmentOssTempDirectoryDaily();
+
+	/**
+	 * 清理附件会话临时目录
+	 * 
+	 */
+	public void clearAttachmentOssTempSessionData();
+
+}

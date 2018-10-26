@@ -1,0 +1,249 @@
+package cn.caecc.erp.support.statistics.service.serviceImpl;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.session.mgt.eis.SessionDAO;
+import org.redisson.api.RLock;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+import cn.caecc.erp.modules.dao.ex.dto.UserDto;
+import cn.caecc.erp.modules.dao.mybatis.entity.LoginLog;
+import cn.caecc.erp.modules.service.LoginLogService;
+import cn.caecc.erp.modules.service.UserService;
+import cn.caecc.erp.support.constant.Contants;
+import cn.caecc.erp.support.redis.service.RedisService;
+import cn.caecc.erp.support.redis.service.RedissonService;
+import cn.caecc.erp.support.statistics.entity.OnlineDepartmentUserEntity;
+import cn.caecc.erp.support.statistics.entity.OnlineUserEntity;
+import cn.caecc.erp.support.statistics.service.StatisticsService;
+import cn.caecc.erp.support.util.DateUtil;
+
+/**
+ * @author weizhen
+ */
+@Service
+public class SessionStatisticsServiceImpl implements StatisticsService {
+	private final static Logger logger = LoggerFactory.getLogger(SessionStatisticsServiceImpl.class);
+
+	@Autowired
+	private RedisService redisService;
+	@Autowired
+	private RedissonService redissonService;
+	@Autowired
+	private LoginLogService loginLogService;
+	@Autowired
+	private UserService userService;
+	@Autowired
+	@Qualifier("redisSessionDAO")
+	private SessionDAO sessionDAO;
+	/*
+	 * 近似在线人数
+	 */
+	private int similarOnlineUserCount;
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public void addLoginUser(Object s) {
+		// TODO Auto-generated method stub
+
+		Session session = (Session) s;
+		Integer loginUserId = (Integer) session.getAttribute(Contants.LOGINUSERID);
+		if (loginUserId == null) {
+			return;
+		}
+		String strLoginUserId = loginUserId.toString();
+		String ipAddr = session.getHost();
+		LoginLog loginLog = new LoginLog();
+		loginLog.setUid(loginUserId);
+		loginLog.setSessionid(session.getId().toString());
+		loginLog.setLogintime(DateUtil.getcurrentDateTime());
+		loginLog.setIpaddress(ipAddr);
+		loginLogService.addLoginLog(loginLog);
+		Integer loginLogId = loginLog.getId();
+		session.setAttribute(Contants.LOGINLOGID, loginLogId);
+
+		RLock redisLock = redissonService.getRLock(Contants.LOGINUSERID);
+		try {
+			redisLock.lock();
+			/**
+			 * 第一个String 为userid 第二个String 为loginlog表的id
+			 */
+			Map<String, Map<String, LoginLog>> redisLoginUserMap = null;
+			if (redisService.hasKey(Contants.REDIS_LOGINUSERS_BY_SESSION)) {
+				redisLoginUserMap = (Map<String, Map<String, LoginLog>>) redisService
+						.get(Contants.REDIS_LOGINUSERS_BY_SESSION);
+			} else {
+				redisLoginUserMap = new HashMap<String, Map<String, LoginLog>>();
+			}
+			if (!redisLoginUserMap.containsKey(strLoginUserId)) {
+				redisLoginUserMap.put(strLoginUserId, new HashMap<String, LoginLog>());
+			}
+			Map<String, LoginLog> internalLoginLogMap = redisLoginUserMap.get(strLoginUserId);
+			internalLoginLogMap.put(loginLogId.toString(), loginLog);
+			redisService.set(Contants.REDIS_LOGINUSERS_BY_SESSION, redisLoginUserMap);
+			// System.out.println(JacksonUtil.objectToJson(redisLoginUserMap));
+
+		} catch (Exception ex) {
+			logger.warn(ex.getMessage());
+		} finally {
+			redisLock.unlock();
+		}
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public Map<String, Map<String, LoginLog>> getLoginUsers() {
+		// TODO Auto-generated method stub
+		RLock redisLock = redissonService.getRLock(Contants.LOGINUSERID);
+		Map<String, Map<String, LoginLog>> redisLoginUserMap = null;
+		try {
+			redisLock.lock();
+			if (redisService.hasKey(Contants.REDIS_LOGINUSERS_BY_SESSION)) {
+				redisLoginUserMap = (Map<String, Map<String, LoginLog>>) redisService
+						.get(Contants.REDIS_LOGINUSERS_BY_SESSION);
+
+				List<String> toDeleteLoginUserKeyList = new ArrayList<String>();
+				for (String loginUserKey : redisLoginUserMap.keySet()) {
+					Map<String, LoginLog> loginUserItem = redisLoginUserMap.get(loginUserKey);
+					List<String> toDeleteKeyList = new ArrayList<String>();
+					for (String loginLogKey : loginUserItem.keySet()) {
+						LoginLog loginLog = loginUserItem.get(loginLogKey);
+						String sessionId = loginLog.getSessionid();
+						try {
+							sessionDAO.readSession(sessionId);
+						} catch (Exception ex) {
+							toDeleteKeyList.add(loginLogKey);
+						}
+					}
+					for (String toDeleteKey : toDeleteKeyList) {
+						Integer loginLogId = loginUserItem.get(toDeleteKey).getId();
+						loginLogService.updateLogoutLog(loginLogId);
+						loginUserItem.remove(toDeleteKey);
+					}
+					if (loginUserItem.size() == 0) {
+						toDeleteLoginUserKeyList.add(loginUserKey);
+					}
+				}
+				for (String toDeleteLoginUserKey : toDeleteLoginUserKeyList) {
+					redisLoginUserMap.remove(toDeleteLoginUserKey);
+				}
+
+				redisService.set(Contants.REDIS_LOGINUSERS_BY_SESSION, redisLoginUserMap);
+			}
+
+		} catch (Exception ex) {
+			logger.warn(ex.getMessage());
+		} finally {
+			redisLock.unlock();
+		}
+		return redisLoginUserMap;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public void removeLoginUser(Object s) {
+
+		// TODO Auto-generated method stub
+		Session session = (Session) s;
+		if (session == null) {
+			return;
+		}
+		Integer loginUserId = (Integer) session.getAttribute(Contants.LOGINUSERID);
+		if (loginUserId == null) {
+			return;
+		}
+		String strLoginId = loginUserId.toString();
+		Integer loginlogId = (Integer) session.getAttribute(Contants.LOGINLOGID);
+		if (loginlogId == null) {
+			return;
+		}
+		loginLogService.updateLogoutLog(loginlogId);
+		RLock redisLock = redissonService.getRLock(Contants.LOGINUSERID);
+		try {
+			redisLock.lock();
+			if (redisService.hasKey(Contants.REDIS_LOGINUSERS_BY_SESSION)) {
+				Map<String, Map<String, LoginLog>> redisLoginUserMap = (Map<String, Map<String, LoginLog>>) redisService
+						.get(Contants.REDIS_LOGINUSERS_BY_SESSION);
+
+				if (redisLoginUserMap != null && redisLoginUserMap.containsKey(strLoginId)) {
+					Map<String, LoginLog> internalLoginLogMap = redisLoginUserMap.get(strLoginId);
+					String strLoginlogId = loginlogId.toString();
+					if (internalLoginLogMap != null && internalLoginLogMap.containsKey(loginlogId.toString())) {
+						internalLoginLogMap.remove(strLoginlogId);
+						if (internalLoginLogMap.size() == 0) {
+							redisLoginUserMap.remove(strLoginId);
+						}
+						redisService.set(Contants.REDIS_LOGINUSERS_BY_SESSION, redisLoginUserMap);
+					}
+				}
+				// System.out.println(JacksonUtil.objectToJson(redisLoginUserMap));
+			}
+
+		} catch (Exception ex) {
+			logger.warn(ex.getMessage());
+		} finally {
+			redisLock.unlock();
+
+		}
+
+	}
+
+	@Override
+	public List<OnlineDepartmentUserEntity> getOnlineDepartmentUserList() {
+		// TODO Auto-generated method stub
+		Map<String, List<OnlineUserEntity>> onlineUserMap = new HashMap<String, List<OnlineUserEntity>>();
+		Map<String, Map<String, LoginLog>> loginUserMap = this.getLoginUsers();
+		for (String loginUserKey : loginUserMap.keySet()) {
+			Map<String, LoginLog> loginUserItem = loginUserMap.get(loginUserKey);
+			for (String loginLogKey : loginUserItem.keySet()) {
+				LoginLog loginLog = loginUserItem.get(loginLogKey);
+				int uId = loginLog.getUid();
+				UserDto user = userService.findById(uId);
+				String dName = user.getDname();
+				if (!onlineUserMap.containsKey(dName)) {
+					onlineUserMap.put(dName, new ArrayList<OnlineUserEntity>());
+				}
+				List<OnlineUserEntity> onlineUserEntityList = onlineUserMap.get(dName);
+				OnlineUserEntity onlineUserEntity = new OnlineUserEntity();
+				SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				Date logintime = loginLog.getLogintime();
+				String dateString = null;
+				if (logintime != null) {
+					dateString = formatter.format(logintime);
+					onlineUserEntity.setLogintime(dateString);
+				}
+				onlineUserEntity.setDepartmentName(dName);
+				onlineUserEntity.setIpAddress(loginLog.getIpaddress());
+				onlineUserEntity.setUserName(user.getName());
+				onlineUserEntityList.add(onlineUserEntity);
+			}
+		}
+		int onlineUserCount = 0;
+		List<OnlineDepartmentUserEntity> onlineDepartmentUserEntityList = new ArrayList<OnlineDepartmentUserEntity>();
+		for (String loginUserKey : onlineUserMap.keySet()) {
+			OnlineDepartmentUserEntity onlineDepartmentUserEntity = new OnlineDepartmentUserEntity();
+			onlineDepartmentUserEntity.setDepartmentName(loginUserKey);
+			List<OnlineUserEntity> onlineUserEntityList = onlineUserMap.get(loginUserKey);
+			onlineUserCount += onlineUserEntityList.size();
+			onlineDepartmentUserEntity.setOnlineUserEntityList(onlineUserEntityList);
+			onlineDepartmentUserEntityList.add(onlineDepartmentUserEntity);
+		}
+		this.similarOnlineUserCount = onlineUserCount;
+		return onlineDepartmentUserEntityList;
+	}
+
+	@Override
+	public int getSimilarOnlineUserCount() {
+		// TODO Auto-generated method stub
+		return this.similarOnlineUserCount;
+	}
+
+}

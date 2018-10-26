@@ -1,0 +1,60 @@
+package cn.caecc.erp.controller;
+
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+
+import cn.caecc.erp.modules.dao.ex.dto.MaterialGoodsRelationshipActivitiApplyDto;
+import cn.caecc.erp.modules.dao.mybatis.entity.MaterialGoodsRelationshipActivitiApply;
+import cn.caecc.erp.modules.service.MaterialGoodsRelationshipActivitiApplyService;
+import cn.caecc.erp.support.constant.Contants;
+import cn.caecc.erp.support.message.Message;
+
+@Controller
+@RequestMapping("/api/material-goods-relationship-activiti-apply")
+public class MaterialGoodsRelationshipActivitiApplyController {
+	
+	@Autowired
+	private MaterialGoodsRelationshipActivitiApplyService materialGoodsRelationshipActivitiApplyService;
+
+	@ResponseBody
+	@RequestMapping(value = "/detail/{id}",method = RequestMethod.GET)
+	@RequiresPermissions(Contants.MATERIAL_SELECT_PERMISSION)
+	public Message findDetail(@PathVariable("id")int id) {
+		Message message = new Message();
+		message.setSuccess(false);
+		MaterialGoodsRelationshipActivitiApplyDto mgrDto = materialGoodsRelationshipActivitiApplyService.findDetail(id);
+		if (mgrDto != null) {
+			message.setObj(mgrDto);
+			message.setSuccess(true);
+		}else {
+			message.setMsg("未查询到相关数据");
+		}
+		return message;
+	}
+	@ResponseBody
+	@RequestMapping(value = "/excel", method = RequestMethod.POST)
+	@RequiresPermissions(Contants.MATERIAL_ADD_PERMISSION)
+	public Message upload(MultipartFile file, HttpServletRequest request) throws Exception{
+		if(file!=null){
+			Message message = new Message();
+			String fileName = file.getOriginalFilename();
+			List<MaterialGoodsRelationshipActivitiApply> resultList=materialGoodsRelationshipActivitiApplyService.exportExcel(file.getInputStream(),fileName);
+			message.setObj(resultList);
+			return message;
+		}
+		else{
+			return new Message(false,"文件上传失败");
+		}
+	}
+	
+}

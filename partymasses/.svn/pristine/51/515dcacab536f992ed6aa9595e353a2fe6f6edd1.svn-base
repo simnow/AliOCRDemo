@@ -1,0 +1,16 @@
+package com.partymasses.modules.service;
+
+import java.io.InputStream;
+
+import com.aliyuncs.auth.sts.AssumeRoleResponse.Credentials;
+
+
+public interface OSSService {
+	
+	public String putNewsImage(Integer uintId, Integer newId, String strPath) throws Exception;
+	public String putNewsImage(Integer uintId, Integer newId, InputStream inputStream ) throws Exception;
+
+	public void deleteNewsImages(Integer uintId, Integer newId) throws Exception;
+	public Credentials getSTSOSSAssumeRole();
+
+}

@@ -1,0 +1,210 @@
+package cn.caecc.erp.controller;
+
+import java.util.List;
+import java.util.Map;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import com.github.pagehelper.PageInfo;
+import cn.caecc.erp.modules.dao.ex.dto.MaterialActivitiApplyDto;
+import cn.caecc.erp.modules.dao.ex.dto.MaterialActivitiApplyExDto;
+import cn.caecc.erp.modules.dao.mybatis.entity.MaterialActivitiApply;
+import cn.caecc.erp.modules.service.MaterialActivitiApplyService;
+import cn.caecc.erp.support.constant.Contants;
+import cn.caecc.erp.support.message.Message;
+import cn.caecc.erp.support.workflow.entity.ProcessInstanceApplyEntity;
+@Controller
+@RequestMapping("/api/material-activiti-apply")
+public class MaterialActivitiApplyController {
+
+	@Autowired
+	private MaterialActivitiApplyService materialActivitiApplyService;
+
+	/**
+	 * 新建
+	 * @param materialActivitiApply
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(method = RequestMethod.POST)
+	@RequiresPermissions(Contants.MATERIAL_ADD_PERMISSION)
+	public Message create(@RequestBody MaterialActivitiApplyExDto materialActivitiApplyExDto) {
+		Message message = new Message();
+		message.setSuccess(false);
+		materialActivitiApplyExDto =  materialActivitiApplyService.create(materialActivitiApplyExDto);
+		if (materialActivitiApplyExDto != null) {
+			message.setObj(materialActivitiApplyExDto);
+			message.setSuccess(true);
+		} else {
+			message.setMsg("未查询到相关数据");
+		}
+		return message;
+	}
+
+	/**
+	 * 通过id查询
+	 * @param id
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
+	@RequiresPermissions(Contants.MATERIAL_SELECT_PERMISSION)
+	public Message findById(@PathVariable("id") int id) {
+		Message message = new Message();
+		message.setSuccess(false);
+		MaterialActivitiApply materialActivitiApply = materialActivitiApplyService.findById(id);
+		if (materialActivitiApply != null) {
+			message.setObj(materialActivitiApply);
+			message.setSuccess(true);
+		} else {
+			message.setMsg("未查询到相关数据");
+		}
+		return message;
+	}
+	
+	/**
+	 * 查询详情
+	 * @param id
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/detail/{id}", method = RequestMethod.GET)
+	@RequiresPermissions(Contants.MATERIAL_SELECT_PERMISSION)
+	public Message findDetail(@PathVariable("id") int id) {
+		Message message = new Message();
+		message.setSuccess(false);
+		MaterialActivitiApplyDto materialActivitiApplyDto = materialActivitiApplyService.findDetail(id);
+		if (materialActivitiApplyDto != null) {
+			message.setObj(materialActivitiApplyDto);
+			message.setSuccess(true);
+		} else {
+			message.setMsg("未查询到相关数据");
+		}
+		return message;
+	}
+	
+	/**
+	 * 按条件获取分页列表
+	 * @param pageNo
+	 * @param pageSize
+	 * @param drafts
+	 * @param isSuccess
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/list",method = RequestMethod.GET)
+	@RequiresPermissions(Contants.MATERIAL_SELECT_PERMISSION)
+	public Message getList(Integer userid, int pageNo, int pageSize, String drafts, int isSuccess, Integer did, String accruingAmounts, Integer wid) {
+		Message message = new Message();
+		message.setSuccess(false);
+		if (pageNo == 0) {
+			message.setMsg("请选中要查询的页数");
+		} else if (pageSize == 0) {
+			message.setMsg("每页显示大小不能为0");
+		} else {
+			PageInfo<MaterialActivitiApplyDto> pageInfo = materialActivitiApplyService.getList(userid, pageNo,
+					pageSize, drafts, isSuccess, did, accruingAmounts, wid);
+			if (pageInfo != null) {
+				message.setObj(pageInfo);
+				message.setSuccess(true);
+			} else {
+				message.setMsg("获取列表失败");
+			}		
+		}
+		return message;
+	}
+	
+	/**
+	 * 更新
+	 * @param materialActivitiApply
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(method = RequestMethod.PUT)
+	@RequiresPermissions(Contants.MATERIAL_UPDATE_PERMISSION)
+	public Message update(@RequestBody MaterialActivitiApplyExDto materialActivitiApplyExDto) {		
+		Message message = new Message();
+		message.setSuccess(false);
+		materialActivitiApplyExDto = materialActivitiApplyService.update(materialActivitiApplyExDto);
+		if (materialActivitiApplyExDto != null) {
+			message.setObj(materialActivitiApplyExDto);
+			message.setSuccess(true);
+		} else {
+			message.setMsg("未查询到相关数据");
+		}
+		return message;
+	}
+	
+	/**
+	 * 删除
+	 * @param id
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/{id}",method = RequestMethod.DELETE)
+	public Message deleteById(@PathVariable("id")int id) {
+		Message message = new Message();
+		message.setSuccess(false);
+		int result = materialActivitiApplyService.deleteById(id);
+		if (result > 0) {
+			message.setSuccess(true);
+		}else {
+			message.setMsg("删除失败");
+		}
+		return message;
+	}
+	
+	/**
+	 * 开始流程
+	 * @param processInstanceApplyEntity
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/startprocess",method = RequestMethod.POST)
+	@RequiresPermissions(Contants.MATERIAL_PROCESS_START_PERMISSION)
+	public Message startProcess(@RequestBody ProcessInstanceApplyEntity processInstanceApplyEntity) {
+		String processDefinitionKey = processInstanceApplyEntity.getProcessDefinitionKey();
+		String bussinessKey = processInstanceApplyEntity.getBussinessKey();
+		Map<String, Object> variables = processInstanceApplyEntity.getVariables();
+		
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			int ret = materialActivitiApplyService.startProcess(processDefinitionKey, bussinessKey, variables);
+			if (ret > 0) {
+				message.setSuccess(true);
+			} else {
+				message.setMsg("开启流程失败");
+			}
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+	
+	/**
+	 * 通过查询当月累计金额获取下一步审批人参数
+	 * @param accruingAmountsDto
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/accruingamounts",method = RequestMethod.GET)
+	public Message findAccruingAmounts(@RequestParam("did") int did, @RequestParam("list") List<String> gnameList) {
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			Integer count = materialActivitiApplyService.findAccruingAmounts(did, gnameList);
+			message.setObj(count);
+			message.setSuccess(true);
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+}

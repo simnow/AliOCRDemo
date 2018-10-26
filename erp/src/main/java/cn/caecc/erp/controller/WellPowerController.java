@@ -1,0 +1,124 @@
+package cn.caecc.erp.controller;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import cn.caecc.erp.modules.dao.mybatis.entity.WellInfo;
+import cn.caecc.erp.modules.dao.mybatis.entity.WellPower;
+import cn.caecc.erp.modules.service.WellPowerService;
+import cn.caecc.erp.modules.service.WellinfoService;
+import cn.caecc.erp.support.message.Message;
+
+/**
+ * 动力性能
+ * @author GaiNing
+ *
+ */
+@RequestMapping(value="api/wellpower")
+@Controller
+public class WellPowerController {
+
+	@Autowired
+	public WellPowerService wellPowerService;
+	@Autowired
+	public WellinfoService wellInfoService;
+	/**
+	 * 新增
+	 * @param wellPower
+	 * @return
+	 */
+	@RequestMapping(method=RequestMethod.POST)
+	@ResponseBody
+	public Message insertWellPower(@RequestBody WellPower wellPower){
+		if(null==wellPower.getWellid()){
+			return new Message(false,"井号为空");
+		}
+		//存储井队编号
+		WellInfo wellInfo=wellInfoService.selectWellInfoById(wellPower.getWellid());
+		if(wellInfo!=null){
+			wellPower.setDid(wellInfo.getDid());
+		}
+		if(wellPowerService.insertWellPower(wellPower)){
+			return new Message();
+		}else{
+			Message message=new Message();
+			message.setSuccess(false);
+			message.setMsg("存储失败");
+			return message;
+		}
+	}
+	/**
+	 * 删除
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value="/{id}",method=RequestMethod.DELETE)
+	@ResponseBody
+	public Message deleteWellPower(@PathVariable("id") int id){
+		if(wellPowerService.deleteWellPower(id)){
+			return new Message();
+		}else{
+			Message message=new Message();
+			message.setSuccess(false);
+			message.setMsg("删除失败");
+			return message;
+		}
+	}
+	/**
+	 * 查看
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value="/{id}",method=RequestMethod.GET)
+	@ResponseBody
+	public Message selectWellPowerById(@PathVariable("id") int id){
+		Message message=new Message();
+		message.setObj(wellPowerService.getWellPowerById(id));
+		return message;
+	}
+	/**
+	 * 查询列表
+	 * @param startDate
+	 * @param endDate
+	 * @param wellId
+	 * @param pageNo
+	 * @param pageSize
+	 * @return
+	 */
+	@RequestMapping(value="/list",method=RequestMethod.GET)
+	@ResponseBody
+	public Message getWellPowerList(String startDate,String endDate,int wellId,int pageNo,int pageSize){
+		return wellPowerService.listWellPower(startDate, endDate, wellId, pageNo, pageSize);
+	}
+	
+	/**
+	 * 修改
+	 * @param wellPower
+	 * @return
+	 */
+	@RequestMapping(method=RequestMethod.PUT)
+	@ResponseBody
+	public Message updateWellPower(@RequestBody WellPower wellPower){
+		Message message=new Message();
+		//只能修改当天的
+		/*if(!DateUtil.getcurrentDate().equals(wellPower.getLogdate())){
+			message.setSuccess(false);
+			message.setMsg("只可当日进行修改");
+		}*/
+		if(StringUtils.isBlank(wellPower.getId()+"")){
+			message.setSuccess(false);
+			message.setMsg("缺少数据");
+		}
+		if(wellPowerService.updateWellPower(wellPower)){
+			return new Message();
+		}
+		message.setSuccess(false);
+		message.setMsg("操作失败");
+		return message;
+	}
+}

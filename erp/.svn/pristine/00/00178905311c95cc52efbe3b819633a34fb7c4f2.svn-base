@@ -1,0 +1,21 @@
+package cn.caecc.erp.modules.dao.ex.mapper;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
+import cn.caecc.erp.modules.dao.ex.dto.ContractGoodsRelationshipDto;
+import cn.caecc.erp.modules.dao.mybatis.entity.ContractGoodsRelationship;
+
+public interface ContractGoodsRelationshipExMapper {
+
+	ContractGoodsRelationship findDetail(@Param("id")Integer id);
+
+	List<ContractGoodsRelationshipDto> getList(@Param("gcode")String gcode);
+
+	int batchAdd(@Param("list")List<ContractGoodsRelationship> list);
+
+	int batchUpdate(@Param("ulist")List<ContractGoodsRelationship> list);
+
+	List<ContractGoodsRelationship> batchFind(@Param("flist")List<Integer> list);
+}

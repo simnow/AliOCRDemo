@@ -1,0 +1,310 @@
+package cn.caecc.erp.controller;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import cn.caecc.erp.modules.dao.mybatis.entity.WellDaily;
+import cn.caecc.erp.modules.dao.mybatis.entity.WellInfo;
+import cn.caecc.erp.modules.dao.mybatis.entity.WellLog;
+import cn.caecc.erp.modules.dao.mybatis.entity.WellMud;
+import cn.caecc.erp.modules.dao.mybatis.entity.WellPower;
+import cn.caecc.erp.modules.service.WellLogService;
+import cn.caecc.erp.modules.service.WellMudService;
+import cn.caecc.erp.modules.service.WellPowerService;
+import cn.caecc.erp.modules.service.WelldailyService;
+import cn.caecc.erp.modules.service.WellinfoService;
+import cn.caecc.erp.support.message.Message;
+import cn.caecc.erp.support.util.DateUtil;
+import cn.caecc.erp.support.constant.Contants;
+
+/**
+ * 钻井日志
+ * @author GaiNing
+ *
+ */
+@RequestMapping(value="api/welllog")
+@Controller
+public class WellLogController {
+
+	@Autowired
+	public WellLogService wellLogService;
+	@Autowired
+	public WellinfoService wellInfoService;
+	@Autowired
+	public WelldailyService wellDailyService;
+	@Autowired
+	public WellMudService wellMudService;
+	@Autowired
+	public WellPowerService wellPowerService;
+	
+	/**
+	 * 插入钻井日志(当日只允许一条记录)
+	 * @param welllog
+	 * @return
+	 */
+	@RequestMapping(method=RequestMethod.POST)
+	@ResponseBody
+	@RequiresPermissions(Contants.DRILLING_DAILY_LIST_ADD_PERMISSION)
+	public Message insertLog(@RequestBody WellLog welllog){
+		if(null==welllog.getWellid()){
+			return new Message(false,"井号为空");
+		}
+		Message message=new Message();
+		if(null==welllog.getLogdate()||null==welllog.getWellid()){
+			message.setSuccess(false);
+			message.setMsg("有为空项");
+			return message;
+		}
+		//存储井队编号
+		WellInfo wellInfo=wellInfoService.selectWellInfoById(welllog.getWellid());
+		if(wellInfo!=null){
+			welllog.setDid(wellInfo.getDid());
+		}
+
+		int result=wellLogService.insertWellLog(welllog);
+		if(result>0){
+			//新增汇总表
+			boolean result2=doSaveWellDaily(welllog,0,wellInfo);
+			if(!result2){
+				//删除刚刚存储的
+				wellLogService.deleteByWellIdDate(welllog.getWellid(),welllog.getLogdate());
+				message.setSuccess(false);
+				message.setMsg("存储失败");
+			}
+		}else{
+			message.setSuccess(false);
+			message.setMsg("存储失败");
+		}
+		return message;
+	}
+	
+	/**
+	 * 
+	 * @param welllog
+	 * @param type(0:新增，1:更新)
+	 * @return
+	 */
+	private boolean doSaveWellDaily(WellLog welllog,int type,WellInfo wellinfo) {
+		WellDaily daily=new WellDaily();
+		daily.setCreatetime(DateUtil.getcurrentDateTime());
+		//查询井的基础信息
+		if(null==wellinfo){
+			wellinfo=wellInfoService.selectWellInfoById(welllog.getWellid());
+		}
+		daily.setDid(wellinfo.getDid()); //井队
+		daily.setJb(wellinfo.getJb());//井别
+		daily.setKzrq(wellinfo.getFirstkzsj());//开钻井日期
+		daily.setZjdt(wellinfo.getZjdt());//钻井动态
+		
+		if(welllog.getLogdate()!=null&&wellinfo.getFirstkzsj()!=null){
+			daily.setSjt((int)DateUtil.getDaySub(wellinfo.getFirstkzsj(),welllog.getLogdate()));//实际天（当日日报时间-第一次开钻时间）
+		}
+		if(welllog.getLogdate()!=null&&wellinfo.getWjrq()!=null){
+			daily.setSyt((int)DateUtil.getDaySub(wellinfo.getWjrq(),welllog.getLogdate()));//试油天数（当日日报时间-完井时间）
+		}
+		daily.setZbt(wellinfo.getHtzq());//中标天-基础信息合同周期
+		
+		//井深
+		daily.setSjjs(wellinfo.getSjjs());//基础数据设计井深
+		daily.setTdepth(welllog.getTdepth()); //实际井深
+		daily.setJdcw(welllog.getJdcw());//井底层位
+		if(StringUtils.isNotBlank(welllog.getZtwj())){
+			daily.setZtcc(welllog.getZtwj());
+			if(StringUtils.isNotBlank(welllog.getZtxh())){
+				daily.setZtcc(welllog.getZtwj()+"|"+welllog.getZtxh());//日报-钻头尺寸-外径 | 型号
+			}
+		}else{
+			daily.setZtcc(welllog.getZtxh());
+		}
+		if(null==welllog.getNljjc()){
+			daily.setNljjc(0.00); //日报-年累计进尺
+		}else{
+			daily.setNljjc(welllog.getNljjc()); //日报-年累计进尺
+		}
+		if(null==welllog.getYjc()){
+			daily.setYjc(0.00);//日报-月进尺
+		}else{
+			daily.setYjc(welllog.getYjc());//日报-月进尺
+		}
+		if(null==welllog.getRjc()){
+			daily.setRjc(0.00); //日报 -日进尺
+		}else{
+			daily.setRjc(welllog.getRjc()); //日报 -日进尺
+		}
+		
+		//钻井参数
+		daily.setPl(welllog.getPl());//日报 -排量
+		daily.setPy(welllog.getPy());//日报 -泵压
+		daily.setZs(welllog.getZs());//日报-转速
+		daily.setZy(welllog.getZy());//日报-钻压
+
+		if(null!=wellinfo.getWzrq()){ //没有完钻井时间的都是开钻井
+			//完钻井数量，井号
+			daily.setWzjjh(wellinfo.getWellcode());//完钻井井号
+			daily.setWzjsl(1);//完钻井数量
+			daily.setKzjsl(0);//开钻井数量
+		}else{
+			daily.setKzjjh(wellinfo.getWellcode());//开钻井井号
+			daily.setKzjsl(1);//开钻井数量
+			daily.setWzjsl(0);//完钻井数量
+		}
+		if(null!=wellinfo.getJjrq()&&wellinfo.getJjrq().equals(welllog.getLogdate())){
+			daily.setJjjh(wellinfo.getWellcode());//交井井号
+			daily.setJjsl(1);//交井数量
+		}else{
+			daily.setJjsl(0);//交井数量
+		}
+		
+//		daily.setSumnlj(sumnlj); //合计年累计
+//		daily.setSumrjc(sumrjc);//合计日进尺
+//		daily.setSumylj(sumylj);//合计月累计
+		
+		//井身结构
+		daily.setZjzh(welllog.getZjzh());//日报-钻具组合
+		daily.setGk(welllog.getGcgk());//工程概况
+		String ztcx="";
+		if(StringUtils.isNotBlank(wellinfo.getZtcxone())){
+			ztcx=wellinfo.getZtcxone();
+		}
+		if(StringUtils.isNotBlank(wellinfo.getZtcxtwo())){
+			ztcx="|"+wellinfo.getZtcxtwo();
+		}
+		if(StringUtils.isNotBlank(wellinfo.getZtcxthree())){
+			ztcx="|"+wellinfo.getZtcxthree();
+		}
+		if(StringUtils.isNotBlank(wellinfo.getZtcxfour())){
+			ztcx="|"+wellinfo.getZtcxfour();
+		}
+		if(StringUtils.isNotBlank(wellinfo.getZtcxfive())){
+			ztcx="|"+wellinfo.getZtcxfive();
+		}
+		if(StringUtils.isNotBlank(wellinfo.getZtcxsix())){
+			ztcx="|"+wellinfo.getZtcxsix();
+		}
+		daily.setZtcx(ztcx);//基础数据 -钻头程序1,2,3..
+		//更新井当前井深
+		if(null!=welllog.getTdepth()){
+			if(!wellInfoService.updateWellDepthById(wellinfo.getId(), welllog.getTdepth())){
+				return false;
+			}
+		}
+		//判断是新增0还是更新1
+		daily.setWellid(welllog.getWellid());
+		daily.setLogdate(welllog.getLogdate());
+		if(0==type){ //新增
+			int result=wellDailyService.insertDailyWell(daily);
+			if(result>0){
+				return true;
+			}
+		}else{
+			if(wellDailyService.updateDailyWell(daily)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * 删除
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value="/{id}",method=RequestMethod.DELETE)
+	@ResponseBody
+	@RequiresPermissions(Contants.DRILLING_DAILY_LIST_DELETE_PERMISSION)
+	public Message deleteBy(@PathVariable("id") int id){
+		Message message=new Message();
+		if(!wellLogService.deleteById(id)){
+			message.setSuccess(false);
+			message.setMsg("删除失败");
+		}
+		return message;
+	}
+	/**
+	 * 查询所有:井+时间筛选
+	 * @return
+	 */
+	@RequestMapping(value="/list",method=RequestMethod.GET)
+	@ResponseBody
+	public Message getLogList(String startDate,String endDate,int wellId,int pageNo,int pageSize){
+		return wellLogService.getWellLogList(startDate,endDate, wellId, pageNo, pageSize);
+	}
+	/**
+	 * 获取单个
+	 * @return
+	 */
+	@RequestMapping(value="/{id}",method=RequestMethod.GET)
+	@ResponseBody
+	public Message getLogInfo(@PathVariable("id") int id){
+		Message message=new Message();
+		WellLog logInfo= wellLogService.getWellInfoById(id);
+		message.setObj(logInfo);
+		return message;
+	}
+	
+	/**
+	 * 更新
+	 */
+	@RequestMapping(method=RequestMethod.PUT)
+	@ResponseBody
+	@RequiresPermissions(Contants.DRILLING_DAILY_LIST_UPDATE_PERMISSION) 
+	public Message updateLogInfo(@RequestBody WellLog welllog){
+		Message message=new Message();
+		//只能修改当天的
+		/*if(!DateUtil.getcurrentDate().equals(welllog.getLogdate())){
+			message.setSuccess(false);
+			message.setMsg("只可当日进行修改");
+		}*/
+		if(StringUtils.isBlank(welllog.getId()+"")){
+			message.setSuccess(false);
+			message.setMsg("缺少数据");
+		}
+		//先更新，然后在更新daily
+		if(wellLogService.updateWellLog(welllog)){
+			//更新日报
+			if(doSaveWellDaily(welllog,1,null)){
+				//更新动力性能（主要工作、目前进度、钻头外径、泵压、钻速）
+				doUpdate(welllog,"wellpower");
+				//更新泥浆性能(层位)
+				doUpdate(welllog,"wellmud");
+				return message;
+			}
+		}
+		message.setSuccess(false);
+		message.setMsg("操作失败");
+		return message;
+	}
+
+	private boolean doUpdate(WellLog welllog, String type) {
+		//更新动力性能(主要工作、目前进度、钻头外径、泵压、钻速）
+		//更新泥浆性能(层位)
+		if("wellpower".equals(type)){
+			WellPower power=new WellPower();
+			power.setWellid(welllog.getWellid());
+			power.setLogdate(welllog.getLogdate());
+			power.setZygz(welllog.getZygz());
+			power.setMqjd(welllog.getMqjd());
+			power.setZtwj(welllog.getZtwj());
+			power.setPy(welllog.getPy());
+			power.setZs(welllog.getZs());
+			wellPowerService.updateWellPowerByWellIdAndDate(power);
+		}
+		if("wellmud".equals(type)){
+			WellMud mud=new WellMud();
+			mud.setWellid(welllog.getWellid());
+			mud.setLogdate(welllog.getLogdate());
+			mud.setJdcw(welllog.getJdcw());
+			wellMudService.updateWellPowerByWellIdAndDate(mud);
+		}
+		return true;
+	}
+	
+	
+}

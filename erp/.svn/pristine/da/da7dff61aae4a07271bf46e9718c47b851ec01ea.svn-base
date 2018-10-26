@@ -1,0 +1,29 @@
+package cn.caecc.erp.modules.service;
+
+import java.util.Date;
+
+import cn.caecc.erp.modules.dao.mybatis.entity.WellMud;
+import cn.caecc.erp.support.message.Message;
+
+/**
+ * 泥浆
+ * @author GaiNing
+ *
+ */
+public interface WellMudService {
+
+	public int insertWellMud(WellMud wellMud);
+	
+	public boolean updateWellMud(WellMud wellMud);
+	
+	public boolean deleteById(int id);
+	
+	public WellMud selectById(int id);
+	
+	public Message getWellMudList(String startdate,String endDate, Integer wellId, int pageNo, int pageSize);
+	public Message getWellMudListNoPage(String startdate,String endDate, Integer wellId);
+
+	public void deleteByWellIdDate(Integer wellid, Date logdate);
+
+	public WellMud getOneDay(Date getcurrentDate, int wellId);
+}

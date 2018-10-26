@@ -1,0 +1,60 @@
+package cn.caecc.erp.modules.service;
+
+import java.util.Map;
+import com.github.pagehelper.PageInfo;
+import cn.caecc.erp.modules.dao.ex.dto.QualityfeedbackActivitiApplyDto;
+import cn.caecc.erp.modules.dao.mybatis.entity.QualityfeedbackActivitiApply;
+
+public interface QualityfeedbackActivitiApplyService {
+
+	/**
+	 * 新建
+	 * @param qualityfeedbackActivitiApply
+	 * @return
+	 */
+	QualityfeedbackActivitiApply create(QualityfeedbackActivitiApply qualityfeedbackActivitiApply);
+
+	/**
+	 * 查询详情
+	 * @param id
+	 * @return
+	 */
+	QualityfeedbackActivitiApplyDto findDeatil(int id);
+
+	/**
+	 * 按条件获取分页列表
+	 * @param loginUserId
+	 * @param pageNo
+	 * @param pageSize
+	 * @param drafts
+	 * @param isSuccess
+	 * @return
+	 */
+	PageInfo<QualityfeedbackActivitiApplyDto> getList(Integer userid, int pageNo, int pageSize, String drafts,
+			int isSuccess, Integer sid);
+
+	/**
+	 * 更新
+	 * @param qualityfeedbackActivitiApply
+	 * @return
+	 */
+	QualityfeedbackActivitiApply update(QualityfeedbackActivitiApply qualityfeedbackActivitiApply);
+
+	/**
+	 * 开始流程
+	 * @param processDefinitionKey
+	 * @param bussinessKey
+	 * @param variables
+	 * @return
+	 */
+	int startProcess(String processDefinitionKey, String bussinessKey, Map<String, Object> variables)  throws Exception ;
+
+	void setSuccess(int id);
+
+	/**
+	 * 删除
+	 * @param id
+	 * @return
+	 */
+	int deleteById(int id);
+}

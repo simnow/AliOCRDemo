@@ -1,0 +1,597 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <title>战略院大事记</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <link href="resources/css/jquery-ui-themes.css" type="text/css" rel="stylesheet"/>
+    <link href="resources/css/axure_rp_page.css" type="text/css" rel="stylesheet"/>
+    <link href="data/styles.css" type="text/css" rel="stylesheet"/>
+    <link href="files/战略院大事记/styles.css" type="text/css" rel="stylesheet"/>
+    <link href="resources/css/bodycss.css"  type="text/css" rel="stylesheet"/>
+    <script src="resources/scripts/jquery-1.7.1.min.js"></script>
+    <script src="resources/scripts/jquery-ui-1.8.10.custom.min.js"></script>
+    <script src="resources/scripts/axure/axQuery.js"></script>
+    <script src="resources/scripts/axure/globals.js"></script>
+    <script src="resources/scripts/axutils.js"></script>
+    <script src="resources/scripts/axure/annotation.js"></script>
+    <script src="resources/scripts/axure/axQuery.std.js"></script>
+    <script src="resources/scripts/axure/doc.js"></script>
+    <script src="data/document.js"></script>
+    <script src="resources/scripts/messagecenter.js"></script>
+    <script src="resources/scripts/axure/events.js"></script>
+    <script src="resources/scripts/axure/recording.js"></script>
+    <script src="resources/scripts/axure/action.js"></script>
+    <script src="resources/scripts/axure/expr.js"></script>
+    <script src="resources/scripts/axure/geometry.js"></script>
+    <script src="resources/scripts/axure/flyout.js"></script>
+    <script src="resources/scripts/axure/ie.js"></script>
+    <script src="resources/scripts/axure/model.js"></script>
+    <script src="resources/scripts/axure/repeater.js"></script>
+    <script src="resources/scripts/axure/sto.js"></script>
+    <script src="resources/scripts/axure/utils.temp.js"></script>
+    <script src="resources/scripts/axure/variables.js"></script>
+    <script src="resources/scripts/axure/drag.js"></script>
+    <script src="resources/scripts/axure/move.js"></script>
+    <script src="resources/scripts/axure/visibility.js"></script>
+    <script src="resources/scripts/axure/style.js"></script>
+    <script src="resources/scripts/axure/adaptive.js"></script>
+    <script src="resources/scripts/axure/tree.js"></script>
+    <script src="resources/scripts/axure/init.temp.js"></script>
+    <script src="files/战略院大事记/data.js"></script>
+    <script src="resources/scripts/axure/legacy.js"></script>
+    <script src="resources/scripts/axure/viewer.js"></script>
+    <script src="resources/scripts/axure/math.js"></script>
+    <script type="text/javascript">
+      $axure.utils.getTransparentGifPath = function() { return 'resources/images/transparent.gif'; };
+      $axure.utils.getOtherPath = function() { return 'resources/Other.html'; };
+      $axure.utils.getReloadPath = function() { return 'resources/reload.html'; };
+    </script>
+    <style>
+       
+      #base {
+          position: relative;
+          margin-top: -387px;
+      }
+      .inport-footer {
+          position: absolute;
+          top:2800px;
+          left: 0px;
+      }
+    	#nav-box {
+    		position: absolute;
+		    left: 379px;
+		    top: 431px;
+		    width: 220px;
+		    height: 300px;
+		    background: #fff;
+		    opacity:1;
+		    margin: 0;
+		    padding: 0;
+    	}
+    	#nav-box li {
+   		    width: 220px;
+		    
+		    background: inherit;
+		    background-color: rgba(242, 242, 242, 1);
+		    border: none;
+		    border-radius: 0px;
+		    margin-bottom: 4px;
+		    list-style:none;
+    	}
+    	#nav-box li p{
+    		display:inline-block;
+    		margin-left: 40px;
+    		height: 46px;
+    		line-height:46px;
+	       font-family: '微软雅黑 Bold', '微软雅黑';
+		   font-weight: 700;
+		   font-style: normal;
+		   font-size: 16px;
+		   color:  #126ACC;
+		   vertical-align: middle;
+		   width:100px;
+    	}
+    	#nav-box li div {
+    		display:inline-block;
+    		margin-left: 40px;
+    		width: 13px;
+    		height: 15px;
+    		vertical-align: middle;
+    		    font-family: 'Arial Normal', 'Arial';
+			   font-weight: 400;
+			   font-style: normal;
+			   font-size: 13px;
+			   color: #333333;
+			   text-align: center;
+			   line-height: normal;
+    	}
+    	#nav-box li div img {
+    		width:100%;
+    	}
+    	#sub-nav-box li {
+		    width: 220px;
+		    
+		    background: inherit;
+		    background-color: rgba(242, 242, 242, 1);
+		    border: none;
+		    border-radius: 0px;
+		    margin-bottom: 4px;
+		    list-style:none;
+    	}
+    	#sub-nav-box li p{
+    		display:inline-block;
+    		margin-left: 40px;
+    		height: 46px;
+    		line-height:46px;
+	       font-family: '微软雅黑 Bold', '微软雅黑';
+		   font-weight: 700;
+		   font-style: normal;
+		   font-size: 16px;
+		   color: #FFFFFF;
+		   vertical-align: middle;
+    	}
+    	#nav-box .sub-nav {
+    		display:none;
+    	}
+    	#nav-box li ul{
+   		    width: 220px;
+		    background: inherit;
+		    background-color: rgba(242, 242, 242, 1);
+		    border: none;
+		    border-radius: 0px;
+		    margin-bottom: 4px;
+		    list-style:none;
+		    margin:0;
+		    padding:0;
+		    padding-top:4px;
+		    background:#fff;
+		   
+      }
+      #nav-box .sub-nav p{
+        font-weight: 400;
+      }
+      #nav-box a {
+        text-decoration: none;
+      }
+    	#nav-box .sub-nav.nav-list {
+        display: block;
+      }
+      #nav-box li.nav div {
+        transform:rotate(90deg);
+      }
+      #nav-box .sub-nav.nav-list p{
+        display:inline-block;
+        margin-left: 40px;
+        height: 46px;
+        line-height:46px;
+        font-family: '微软雅黑 Bold', '微软雅黑';
+        font-weight: 400;
+        font-style: normal;
+        font-size: 16px;
+        color: #666666;
+        vertical-align: middle;
+      }
+    </style>
+  </head>
+  <body>
+  <div class="body">
+      <div class="move">
+      <div class="inport-header"></div>
+    <div id="base" class="">
+
+      <!-- Unnamed (组合) -->
+      <div id="u1522" class="ax_default">
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1523" class="ax_default box_2">
+          <div id="u1523_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1524" class="text" style="display: none; visibility: hidden">
+            <p><span></span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1525" class="ax_default box_2">
+          <div id="u1525_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1526" class="text" style="display: none; visibility: hidden">
+            <p><span></span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1527" class="ax_default _文本段落">
+          <div id="u1527_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1528" class="text" style="visibility: visible;">
+            <p style="font-size:16px;"><span style="color:#FFFFFF;"><br></span></p><p style="font-size:13px;"><span>&nbsp;&nbsp; &nbsp;&nbsp; </span></p><p style="font-size:13px;"><span>中国航天工程科技发展战略研究院于2011年12月成立。</span></p><p style="font-size:13px;"><span>中国航天工程科技发展战略研究院（简称航天战略院）于2011年12月成立，由中国工程院和中国航天科技集团公司联合国内优势单位共建，是国家工程科技思想库的重要组成部分，是我国航天领域首个国家级战略研究咨询机构。</span></p><p style="font-size:13px;"><span><br></span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1529" class="ax_default box_2">
+          <div id="u1529_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1530" class="text" style="display: none; visibility: hidden">
+            <p><span></span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1531" class="ax_default _文本段落">
+          <div id="u1531_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1532" class="text" style="visibility: visible;">
+            <p style="font-size:16px;"><span style="color:#FFFFFF;">&nbsp; 中国航天发展蓝皮书</span></p><p style="font-size:13px;"><span>&nbsp;&nbsp; &nbsp;&nbsp; </span></p><p style="font-size:13px;"><span>于2015年11月发布了《中国航天发展蓝皮书》</span></p><p style="font-size:13px;"><span>为进一步增进世人对中国航天事业的了解，中国工程院、中国航天基金会、中国航天科技集团公司、中国航天工程科技发展战略研究院组织航天领域相关专家，研究发布了《中国航天发展蓝皮书》，从航天活动基本情况、航天应用产业发展、航天对经济社会的贡献、航天国际合作、航天人才培养与科普教育以及未来展望等多个层面、多个视角，对中国航天事业取得的最新成果进行全景式的介绍。</span></p><p style="font-size:13px;"><span><br></span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1533" class="ax_default _文本段落">
+          <div id="u1533_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1534" class="text" style="visibility: visible;">
+            <p style="font-size:16px;"><span style="color:#FFFFFF;"><br></span></p><p style="font-size:13px;"><span><br></span></p><p style="font-size:13px;"><span>于2015年承接了中国工程院战略性新兴产业专业知识服务系统建设任务。</span></p><p style="font-size:13px;"><span>中国工程科技战略性新兴产业知识中心是中国工程院中国工程科技知识中心重要组成部分，是国家级战略性新兴产业知识服务平台。战新知识中心依托中国航天工程科技发展战略研究院，以创新驱动、服务社会、服务决策为指导思想，集成中国航天系统科学与工程研究院及经济社会相关资源，深入挖掘相关信息数据，创造各类产品和服务，提供具有权威性、多元性、广泛性、深刻性的战略性新兴产业知识服务，为国家规划和发展战略性新兴产业、经济社会各方面提供专业性、权威性、全面性的智力支持。</span></p><p style="font-size:13px;"><span><br></span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1535" class="ax_default _文本段落">
+          <div id="u1535_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1536" class="text" style="visibility: visible;">
+            <p style="font-size:16px;line-height:25px;"><span style="color:#FFFFFF;"><br></span></p><p style="font-size:13px;"><span><br></span></p><p style="font-size:13px;"><span>于2016年承接了中国工程院航天工程专业知识服务系统建设任务。</span></p><p style="font-size:13px;"><span>围绕航天产业的技术发展路径与技术网络，构建跨行业、跨区域、跨系统、跨平台的专业技术数据服务平台和协同服务环境，建立国家级航天工程专业知识服务平台，以公益服务和成本补偿服务相结合的社会服务运行机制，为国家规划和发展航天产业提供智力支持。</span></p><p style="font-size:13px;line-height:28px;"><span><br></span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (图片) -->
+        <div id="u1537" class="ax_default image">
+          <img id="u1537_img" class="img " src="images/战略院大事记/u1537.png"/>
+          <!-- Unnamed () -->
+          <div id="u1538" class="text" style="display: none; visibility: hidden">
+            <p><span></span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1539" class="ax_default label">
+          <div id="u1539_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1540" class="text" style="visibility: visible;">
+            <p><span>http://sei.ckcest.cn/</span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1541" class="ax_default box_2">
+          <div id="u1541_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1542" class="text" style="display: none; visibility: hidden">
+            <p><span></span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1543" class="ax_default box_2">
+          <div id="u1543_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1544" class="text" style="display: none; visibility: hidden">
+            <p><span></span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1545" class="ax_default _三级标题">
+          <div id="u1545_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1546" class="text" style="visibility: visible;">
+            <p><span>2011</span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1547" class="ax_default _三级标题">
+          <div id="u1547_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1548" class="text" style="visibility: visible;">
+            <p><span>2015.11</span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1549" class="ax_default box_2">
+          <div id="u1549_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1550" class="text" style="display: none; visibility: hidden">
+            <p><span></span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1551" class="ax_default _三级标题">
+          <div id="u1551_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1552" class="text" style="visibility: visible;">
+            <p><span>2016</span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (图片) -->
+        <div id="u1553" class="ax_default image">
+          <img id="u1553_img" class="img " src="images/战略院大事记/u1553.jpg"/>
+          <!-- Unnamed () -->
+          <div id="u1554" class="text" style="display: none; visibility: hidden">
+            <p><span></span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (图片) -->
+        <div id="u1555" class="ax_default image">
+          <img id="u1555_img" class="img " src="images/战略院大事记/u1555.jpg"/>
+          <!-- Unnamed () -->
+          <div id="u1556" class="text" style="display: none; visibility: hidden">
+            <p><span></span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (图片) -->
+        <div id="u1557" class="ax_default image">
+          <img id="u1557_img" class="img " src="images/战略院大事记/u1557.png"/>
+          <!-- Unnamed () -->
+          <div id="u1558" class="text" style="display: none; visibility: hidden">
+            <p><span></span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (图片) -->
+        <div id="u1559" class="ax_default image">
+          <img id="u1559_img" class="img " src="images/战略院大事记/u1559.jpg"/>
+          <!-- Unnamed () -->
+          <div id="u1560" class="text" style="display: none; visibility: hidden">
+            <p><span></span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (图片) -->
+        <div id="u1561" class="ax_default image">
+          <img id="u1561_img" class="img " src="images/战略院大事记/u1561.png"/>
+          <!-- Unnamed () -->
+          <div id="u1562" class="text" style="display: none; visibility: hidden">
+            <p><span></span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1563" class="ax_default box_2">
+          <div id="u1563_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1564" class="text" style="display: none; visibility: hidden">
+            <p><span></span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1565" class="ax_default label">
+          <div id="u1565_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1566" class="text" style="visibility: visible;">
+            <p><span>http://aerospace.ckcest.cn/</span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1567" class="ax_default box_2">
+          <div id="u1567_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1568" class="text" style="display: none; visibility: hidden">
+            <p><span></span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1569" class="ax_default _三级标题">
+          <div id="u1569_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1570" class="text" style="visibility: visible;">
+            <p><span>2011.12</span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1571" class="ax_default label">
+          <div id="u1571_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1572" class="text" style="visibility: visible;">
+            <p><span>&nbsp; 中国航天战略院成立</span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1573" class="ax_default box_2">
+          <div id="u1573_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1574" class="text" style="display: none; visibility: hidden">
+            <p><span></span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1575" class="ax_default _三级标题">
+          <div id="u1575_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1576" class="text" style="visibility: visible;">
+            <p><span>2015</span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1577" class="ax_default box_2">
+          <div id="u1577_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1578" class="text" style="display: none; visibility: hidden">
+            <p><span></span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1579" class="ax_default _三级标题">
+          <div id="u1579_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1580" class="text" style="visibility: visible;">
+            <p><span>2015</span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1581" class="ax_default label">
+          <div id="u1581_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1582" class="text" style="visibility: visible;">
+            <p><span>&nbsp; 中国工程科技战略性新兴产业知识中心</span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1583" class="ax_default box_2">
+          <div id="u1583_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1584" class="text" style="display: none; visibility: hidden">
+            <p><span></span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1585" class="ax_default _三级标题">
+          <div id="u1585_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1586" class="text" style="visibility: visible;">
+            <p><span>2016</span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1587" class="ax_default label">
+          <div id="u1587_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1588" class="text" style="visibility: visible;">
+            <p><span>&nbsp; 中国工程科技航天工程知识中心</span></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Unnamed (水平线) -->
+      <div id="u1589" class="ax_default line">
+        <img id="u1589_img" class="img " src="images/index/u380.png"/>
+        <!-- Unnamed () -->
+        <div id="u1590" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+
+      <ul id="nav-box">
+      	<li class="navs" style ="background: rgba(18, 106, 204, 1)">
+      		<p  style ="color: #fff">关于我们</p> <div></div>
+      		
+      	</li>
+      	<li class="sub-nav">
+      		
+      	</li>
+      	<li class="nav1" >
+      		<p>战略院简介</p><div>></div>
+      		
+      	</li>
+      	<li class="sub-nav" >
+      	</li>
+      	<li class="nav2">
+      		<p>组织架构</p><div>></div>
+      		
+      	</li>
+      	<li class="sub-nav">
+      		<ul>
+      			<li><p>学术委员会</p></li>
+      			<li><p>理事会</p></li>
+      			<li><p>院务委员会</p></li>
+      			<li><p>综合办公室</p></li>
+      		</ul>
+      	</li>
+      	<li class="nav">
+      		<p>战略院大事记</p><div>></div>
+      		
+      	</li>
+      	<li class="sub-nav nav-list">
+      		<ul>
+      			<li><p><a href="#u1523">2011</a></p></li>
+      			<li><p><a href="#u1573">2015</a></p></li>
+      			<li><p><a href="#u1529">2016</a></p></li>
+      		</ul>
+      	</li>
+      	
+      </ul>
+    </div>
+    <div class="inport-footer"></div>
+    </div>
+    </div>
+  </body>
+  <script src="resources/scripts/load.js"></script>
+  <script>
+  $('#nav-box .nav2').click(function(){
+	  //转换页面
+	  window.location.href='组织架构.html';
+  });
+ $('#nav-box .nav1').click(function(){
+	  //转换页面
+	  window.location.href='战略院简介.html';
+  });
+  	$(function(){
+  		$('#nav-box .nav').click(function(){
+  			$('#nav-box .nav').each(function() {
+	  			
+	  			$(this).find('p').css('color', '#126ACC');
+	  			$(this).find('div').css({
+
+	  				'webkitTransform':'rotate(0deg)',
+
+	  				'transform':'rotate(0deg)'
+	  				});
+	  		});
+  			$(this).find('div').css({
+
+  				'webkitTransform':'rotate(90deg)',
+
+  				'transform':'rotate(90deg)'
+  				});
+  			
+  			
+  			$(this).next('li').find('ul').find('p').css('color', '#666666');
+  			console.log($(this).next('li').html());
+  			if ($(this).next('li').is(':hidden')) {
+  				$('#nav-box .sub-nav').each(function() {
+  	  				$(this).hide();
+  	  			});
+  				$(this).next('li').show();
+  			} else {
+  				$(this).next('li').hide();
+  				$(this).find('div').css({
+
+	  				'webkitTransform':'rotate(0deg)',
+
+	  				'transform':'rotate(0deg)'
+	  				});
+	  		
+  			}
+
+  		});
+  		
+  		$('#nav-box .sub-nav li').click(function(){
+  			$('#nav-box .sub-nav li').each(function() {
+	  			$(this).find('p').css('color', '#666666');
+	  		});
+  			
+  			$(this).find('p').css('color', '#126ACC');
+  		});
+  	});
+  </script>
+</html>

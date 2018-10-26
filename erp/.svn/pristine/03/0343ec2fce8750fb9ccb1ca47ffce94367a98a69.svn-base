@@ -1,0 +1,194 @@
+package cn.caecc.erp.controller;
+
+import java.util.Map;
+
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.github.pagehelper.PageInfo;
+
+import cn.caecc.erp.modules.dao.ex.dto.CardActivitiApplyDto;
+import cn.caecc.erp.modules.dao.mybatis.entity.CardActivitiApply;
+import cn.caecc.erp.modules.service.CardActivitiApplyService;
+import cn.caecc.erp.support.constant.Contants;
+import cn.caecc.erp.support.message.Message;
+import cn.caecc.erp.support.workflow.entity.ProcessInstanceApplyEntity;
+
+@Controller
+@RequestMapping(value="/api/card-activiti-apply")
+public class CardActivitiApplyController extends BaseController{
+
+	@Autowired
+	private  CardActivitiApplyService  caService;
+	
+	
+	
+	/** 
+	* FunName:AddCardApply
+	* Description : 添加用印申请
+	* @param：SealActivitiApply 
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-06-21
+	*/ 
+	@RequestMapping(method=RequestMethod.POST)
+	@ResponseBody
+	@RequiresPermissions(Contants.CARD_ADD_PERMISSION)
+	public  Message  addCardApply(@RequestBody CardActivitiApply cardActivitiApply){
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			int ret = caService.addCardActivitiApply(cardActivitiApply);
+			if (ret > 0) {
+				message.setSuccess(true);
+				message.setObj(cardActivitiApply);
+			} else {
+				message.setMsg("插入失败");
+			}
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+		
+	}
+	
+	/** 
+	* FunName:AddCardApply
+	* Description : 删除申请
+	* @param： deleteCardApply
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-06-21
+	*/ 
+	@RequestMapping(method=RequestMethod.DELETE)
+	@ResponseBody
+	@RequiresPermissions(Contants.CARD_DELETE_PERMISSION)
+	public  Message  deleteCardApply(@RequestParam int id){
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			int ret = caService.deleteCardActivitiApply(id);
+			if (ret > 0) {
+				message.setSuccess(true);
+			} else {
+				message.setMsg("删除失败");
+			}
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;		
+	}
+	/** 
+	* FunName:getAcApplyPageList
+	* Description : 获取列表
+	* @param：
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-06-21
+	*/ 
+	@RequestMapping(value="/applylist",method=RequestMethod.GET)
+	@ResponseBody
+	@RequiresPermissions(Contants.CONTRACT_SELECT_PERMISSION)
+	public  Message  getAcApplyPageList(@RequestParam(value="state",required=true) int state
+			,@RequestParam(value="pagesize",required=true) int pagesize
+			,@RequestParam(value="pageno",required=true) int pageno
+			){
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			PageInfo<CardActivitiApplyDto> cardActivitiApplyList = caService.getAcApplyPageList(state,pagesize,pageno);
+			message.setObj(cardActivitiApplyList);
+			message.setSuccess(true);
+			
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;			
+	}
+	
+	/** 
+	* FunName:getAcApplyPageList
+	* Description : 获取列表
+	* @param：
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-06-21
+	*/ 
+	@RequestMapping(value="/startprocess",method=RequestMethod.POST)
+	@ResponseBody
+	@RequiresPermissions(Contants.CARD_PROCESS_START_PERMISSION)
+	public  Message  startAcApply(@RequestBody ProcessInstanceApplyEntity processInstanceApplyEntity) {
+		String processDefinitionKey = processInstanceApplyEntity.getProcessDefinitionKey();
+		String bussinessKey = processInstanceApplyEntity.getBussinessKey();
+		Map<String, Object> variables = processInstanceApplyEntity.getVariables();
+		
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			int ret = caService.startCardActivitiApply(processDefinitionKey, bussinessKey, variables);
+			if (ret > 0) {
+				message.setSuccess(true);
+			} else {
+				message.setMsg("开启流程失败");
+			}
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+	/** 
+	* FunName:getCardApplyById
+	* Description : 获取列表
+	* @param：
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-06-27
+	*/ 
+	@RequestMapping(value="/{id}",method=RequestMethod.GET)
+	@ResponseBody
+	@RequiresPermissions(Contants.CONTRACT_SELECT_PERMISSION)
+	public  Message  getCardApplyById(@PathVariable("id") int id) {
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			CardActivitiApplyDto cardActivitiApply = caService.getCardApplyByid(id);
+			message.setObj(cardActivitiApply);
+			message.setSuccess(true);
+			
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;	
+	}
+	/** 
+	* FunName:updateCardApplyById
+	* Description : 获取列表
+	* @param：
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-06-28
+	*/ 
+	@RequestMapping(method=RequestMethod.PUT)
+	@ResponseBody
+	@RequiresPermissions(Contants.CARD_UPDATE_PERMISSION)
+	public  Message  updateCardApplyById(@RequestBody CardActivitiApply cardActivitiApply) {
+		
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			cardActivitiApply = caService.updateCardApply(cardActivitiApply);
+			message.setObj(cardActivitiApply);
+			message.setSuccess(true);
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;	
+	}
+}

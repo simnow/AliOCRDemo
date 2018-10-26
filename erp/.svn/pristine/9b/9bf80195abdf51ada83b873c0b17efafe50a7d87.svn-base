@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="cn.caecc.erp.modules.dao.ex.mapper.DepartmentRoleRelationshipExMapper">
+	<resultMap id="ExResultMap"
+		type="cn.caecc.erp.modules.dao.ex.dto.UserDto">
+
+		<id column="Id" property="id" jdbcType="INTEGER" />
+		<result column="LoginName" property="loginname"
+			jdbcType="VARCHAR" />
+		<result column="Password" property="password"
+			jdbcType="VARCHAR" />
+		<result column="Name" property="name" jdbcType="VARCHAR" />
+		<result column="DId" property="did" jdbcType="INTEGER" />
+		<result column="UnitTelephone" property="unittelephone"
+			jdbcType="VARCHAR" />
+		<result column="Telephone" property="telephone"
+			jdbcType="VARCHAR" />
+		<result column="Landline" property="landline"
+			jdbcType="VARCHAR" />
+		<result column="NetworkCard" property="networkcard"
+			jdbcType="VARCHAR" />
+		<result column="Fax" property="fax" jdbcType="VARCHAR" />
+		<result column="Email" property="email" jdbcType="VARCHAR" />
+		<result column="Sex" property="sex" jdbcType="INTEGER" />
+		<result column="IdNo" property="idno" jdbcType="VARCHAR" />
+		<result column="JobNo" property="jobno" jdbcType="VARCHAR" />
+		<result column="PositionId" property="positionid"
+			jdbcType="INTEGER" />
+		<result column="CreateTime" property="createtime"
+			jdbcType="TIMESTAMP" />
+		<result column="CreateUserId" property="createuserid"
+			jdbcType="INTEGER" />
+		<result column="UpdateTime" property="updatetime"
+			jdbcType="TIMESTAMP" />
+		<result column="UpdateUserId" property="updateuserid"
+			jdbcType="INTEGER" />
+		<result column="EmployTime" property="employtime"
+			jdbcType="TIMESTAMP" />
+		<result column="QuitTime" property="quittime"
+			jdbcType="TIMESTAMP" />
+		<result column="POId" property="poid" jdbcType="INTEGER" />
+		<result column="HeadPortraitPath" property="headportraitpath"
+			jdbcType="VARCHAR" />
+		<result column="DName" property="dname" jdbcType="VARCHAR" />
+		<result column="DCode" property="dcode" jdbcType="VARCHAR" />
+		<collection property="roleList"
+			ofType="cn.caecc.erp.modules.dao.mybatis.entity.Role">
+			<id column="RId" property="id" jdbcType="INTEGER" />
+			<result column="RName" property="name" jdbcType="VARCHAR" />
+			<result column="CanModify" property="canmodify"
+				jdbcType="INTEGER" />
+			<result column="RDescription" property="description"
+				jdbcType="VARCHAR" />
+		</collection>
+		<collection property="permissionList"
+			ofType="cn.caecc.erp.modules.dao.mybatis.entity.Permission">
+			<id column="PId" property="id" jdbcType="INTEGER" />
+			<result column="PName" property="name" jdbcType="VARCHAR" />
+			<result column="PDescription" property="description"
+				jdbcType="VARCHAR" />
+		</collection>
+		<collection property="menuList"
+			ofType="cn.caecc.erp.modules.dao.ex.dto.MenuDto">
+			<id column="MenuId" jdbcType="INTEGER" property="menuid" />
+			<result column="PMenuId" jdbcType="INTEGER" property="pmenuid" />
+			<result column="MenuName" jdbcType="VARCHAR" property="name" />
+			<result column="Action" jdbcType="VARCHAR" property="action" />
+			<result column="Icon" jdbcType="VARCHAR" property="icon" />
+			<result column="FunctionName" jdbcType="VARCHAR"
+				property="functionname" />
+			<result column="PMenuName" jdbcType="VARCHAR"
+				property="pMenuName" />
+			<result column="PAction" jdbcType="VARCHAR" property="pAction" />
+			<result column="PIcon" jdbcType="VARCHAR" property="pIcon" />
+		</collection>
+	</resultMap>
+
+	<resultMap id="ResultDMMap"
+		type="cn.caecc.erp.modules.dao.mybatis.entity.DepartmentRoleRelationshipKey">
+
+		<id column="DId" property="did" jdbcType="INTEGER" />
+		<result column="RId" property="rid" jdbcType="INTEGER" />
+	</resultMap>
+
+	<select id="findUserRoleRelationshipByUserId"
+		resultMap="ExResultMap" parameterType="java.lang.Integer">
+
+		select
+		u.*,
+		d.Name DName,
+		d.Code DCode,
+		r.Id RId, 
+		r.Name RName,
+		r.Description RDescription,
+		r.CanModify CanModify,
+		p.Id PRId, 
+		p.Name PName,
+		p.Description PDescription,
+		m1.MenuId MenuId,
+		m1.PMenuId PMenuId,
+		m1.Name MenuName,
+		m1.Action Action,
+		m1.Icon Icon,
+		m1.FunctionName FunctionName,
+		m2.Name PMenuName,
+		m2.Action PAction,
+		m2.Icon PIcon
+		from
+		user u
+		left join
+		department d
+		on (u.DId=d.Id)
+		left join department_role_relationship dr
+		on (u.DId=dr.DId)
+		left join role r
+		on (dr.RId=r.Id)
+		left join 
+		role_permission_relationship rp
+		on (r.Id=rp.RId)
+		left join permission p
+		on (rp.PId=p.Id)
+		left join menu m1
+		on (p.MenuId=m1.MenuId)
+		left join 
+		menu m2
+		on (m1.PMenuId=m2.MenuId)
+		where
+		u.Id=#{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="findDepartRoleByDepartId" resultMap="ResultDMMap"
+		parameterType="java.lang.Integer">
+		select * from
+		department_role_relationship
+		where
+		DId=#{id,jdbcType=INTEGER}
+	</select>
+
+	<!-- 删除数据，根据userid -->
+	<delete id="deleteCanModifyDR" parameterType="Map">
+		delete from department_role_relationship
+		where DId =
+		#{dId,jdbcType=INTEGER} and RId in
+		<foreach item="RIdItem" collection="RIdList" open="("
+			separator="," close=")">
+			#{RIdItem}
+		</foreach>
+	</delete>
+
+	<!-- 批量插入数据 -->
+	<insert id="insertDMRoles">
+		<selectKey keyProperty="id" order="AFTER"
+			resultType="java.lang.Integer">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert into
+		department_role_relationship
+		values
+		<foreach collection="roles" item="role" separator=",">
+			(#{role.did},
+			#{role.rid}
+			)
+		</foreach>
+	</insert>
+
+</mapper>

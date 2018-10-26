@@ -1,0 +1,37 @@
+package com.partymasses.modules.service.impl;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.partymasses.modules.dao.mybatis.entity.TestUser;
+import com.partymasses.modules.service.TestUserService;
+import com.partymasses.support.message.Message;
+@Service
+public class TestUserServiceImpl implements TestUserService {
+
+	@Override
+	public Message create(TestUser testUser) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<TestUser> findByTestId(int testId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<TestUser> findByUserId(int userId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public TestUser update(TestUser testUser) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

@@ -1,0 +1,8 @@
+package com.bswebsite.support.sts.service;
+
+import com.aliyuncs.auth.sts.AssumeRoleResponse.Credentials;
+
+public interface StsAssumeService {
+	public Credentials getSTSOSSAssumeRole();
+
+}

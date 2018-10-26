@@ -1,0 +1,141 @@
+package cn.caecc.erp.modules.service.serviceImpl;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import cn.caecc.erp.modules.dao.ex.dto.QualityfeedbackActivitiApplyDto;
+import cn.caecc.erp.modules.dao.ex.mapper.QualityfeedbackActivitiApplyExMapper;
+import cn.caecc.erp.modules.dao.mybatis.entity.QualityfeedbackActivitiApply;
+import cn.caecc.erp.modules.dao.mybatis.mapper.QualityfeedbackActivitiApplyMapper;
+import cn.caecc.erp.modules.service.QualityfeedbackActivitiApplyService;
+import cn.caecc.erp.support.constant.Contants;
+import cn.caecc.erp.support.exception.CommonException;
+import cn.caecc.erp.support.workflow.service.WorkflowService;
+
+@Service
+public class QualityfeedbackActivitiApplyServiceImpl implements QualityfeedbackActivitiApplyService {
+
+	@Autowired
+	private QualityfeedbackActivitiApplyMapper qualityfeedbackActivitiApplyMapper;
+	@Autowired
+	private QualityfeedbackActivitiApplyExMapper qualityfeedbackActivitiApplyExMapper;
+	@Autowired
+	private WorkflowService workflowService;
+
+	/**
+	 * 新建
+	 */
+	@Override
+	public QualityfeedbackActivitiApply create(QualityfeedbackActivitiApply qualityfeedbackActivitiApply) {
+		if (qualityfeedbackActivitiApply == null) {
+			throw new CommonException("参数异常");
+
+		} else {
+			Integer loginUserId = (Integer) SecurityUtils.getSubject().getSession().getAttribute(Contants.LOGINUSERID);
+
+			qualityfeedbackActivitiApply.setCreateuserid(loginUserId);
+			qualityfeedbackActivitiApply.setCreatetime(new Date());
+			int result = qualityfeedbackActivitiApplyMapper.insertSelective(qualityfeedbackActivitiApply);
+			if (result <= 0) {
+				throw new CommonException("创建失败");
+
+			}
+
+		}
+		return qualityfeedbackActivitiApply;
+	}
+
+	/**
+	 * 查询详情
+	 */
+	@Override
+	public QualityfeedbackActivitiApplyDto findDeatil(int id) {
+		return qualityfeedbackActivitiApplyExMapper.findDetail(id);
+	}
+
+	/**
+	 * 按条件获取分页列表
+	 */
+	@Override
+	public PageInfo<QualityfeedbackActivitiApplyDto> getList(Integer userid, int pageNo, int pageSize,
+			String drafts, int isSuccess, int sid) {
+		PageHelper.orderBy("CreateTime DESC");
+		PageHelper.startPage(pageNo, pageSize);
+		List<QualityfeedbackActivitiApplyDto> list = qualityfeedbackActivitiApplyExMapper.getList(userid, drafts,
+				isSuccess, sid);
+		PageInfo<QualityfeedbackActivitiApplyDto> pageInfo = new PageInfo<>(list);
+		return pageInfo;
+	}
+
+	/**
+	 * 更新
+	 */
+	@Override
+	public QualityfeedbackActivitiApply update(QualityfeedbackActivitiApply qualityfeedbackActivitiApply) {
+		if (qualityfeedbackActivitiApply == null || qualityfeedbackActivitiApply.getId() == null) {
+			throw new CommonException("参数异常");
+
+		} else {
+			QualityfeedbackActivitiApply selectByPrimaryKey = qualityfeedbackActivitiApplyMapper
+					.selectByPrimaryKey(qualityfeedbackActivitiApply.getId());
+			if (selectByPrimaryKey == null) {
+				throw new CommonException("更新的对象不存在");
+
+			} else {
+				int result = qualityfeedbackActivitiApplyMapper
+						.updateByPrimaryKeySelective(qualityfeedbackActivitiApply);
+				if (result <= 0) {
+					throw new CommonException("更新失败");
+				}
+			}
+		}
+		return qualityfeedbackActivitiApply;
+	}
+
+	/**
+	 * 开始流程
+	 * @throws Exception 
+	 */
+	@Override
+	public int startProcess(String processDefinitionKey, String bussinessKey, Map<String, Object> variables) throws Exception {
+		if (StringUtils.isNotBlank(processDefinitionKey) && StringUtils.isNotBlank(bussinessKey)) {
+			int parseInt = Integer.parseInt(bussinessKey);
+			QualityfeedbackActivitiApply qualityfeedbackActivitiApply = qualityfeedbackActivitiApplyMapper
+					.selectByPrimaryKey(parseInt);
+
+			String processInstanceId = workflowService.startProcess(processDefinitionKey, bussinessKey, variables);
+			if (StringUtils.isNotBlank(processInstanceId)) {
+				qualityfeedbackActivitiApply.setProcessinstanceid(processInstanceId);
+				this.update(qualityfeedbackActivitiApply);
+			} else {
+				throw new CommonException("开始流程失败");
+
+			}
+
+		} else {
+			throw new CommonException("参数异常");
+
+		}
+		return 1;
+	}
+
+	/**
+	 * 重置success
+	 * 
+	 * @param id
+	 */
+	@Override
+	public void setSuccess(int id) {
+		QualityfeedbackActivitiApply qualityfeedbackActivitiApply = new QualityfeedbackActivitiApply();
+		qualityfeedbackActivitiApply.setId(id);
+		qualityfeedbackActivitiApply.setIssuccess(1);
+		qualityfeedbackActivitiApplyMapper.updateByPrimaryKeySelective(qualityfeedbackActivitiApply);
+	}
+
+}

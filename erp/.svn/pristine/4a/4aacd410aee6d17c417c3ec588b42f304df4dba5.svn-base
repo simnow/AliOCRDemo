@@ -1,0 +1,43 @@
+/**
+ * 
+ */
+package cn.caecc.erp.config;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.ImportResource;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+/**
+ * @author weizhen
+ *
+ */
+@Configuration
+@EnableTransactionManagement(proxyTargetClass = true)
+@EnableAspectJAutoProxy
+// @ComponentScan(basePackages = "cn.caecc.erp.**.service")
+@ImportResource("classpath:transaction-aop.xml")
+public class TransactionConfig {
+
+	@Autowired
+	private MybatisConfig mybatisConfig;
+
+	/**
+	 * 
+	 */
+	public TransactionConfig() {
+		// TODO Auto-generated constructor stub
+	}
+
+	@Bean(name = "transactionManager")
+	public DataSourceTransactionManager getTransactionManager() {
+		DataSourceTransactionManager transactionManager = new DataSourceTransactionManager();
+		transactionManager.setDataSource(mybatisConfig.getDataSource());
+		return transactionManager;
+
+	}
+
+}

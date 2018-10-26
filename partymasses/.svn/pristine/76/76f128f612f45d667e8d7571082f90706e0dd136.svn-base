@@ -1,0 +1,171 @@
+package com.partymasses.controller;
+
+import com.aliyuncs.DefaultAcsClient;
+import com.aliyuncs.IAcsClient;
+import com.aliyuncs.dysmsapi.model.v20170525.QuerySendDetailsRequest;
+import com.aliyuncs.dysmsapi.model.v20170525.QuerySendDetailsResponse;
+import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
+import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
+import com.aliyuncs.dysmsapi.transform.v20170525.SendSmsResponseUnmarshaller;
+import com.aliyuncs.exceptions.ClientException;
+import com.aliyuncs.http.FormatType;
+import com.aliyuncs.http.HttpResponse;
+import com.aliyuncs.profile.DefaultProfile;
+import com.aliyuncs.profile.IClientProfile;
+import com.partymasses.modules.dao.mybatis.entity.User;
+import com.partymasses.modules.service.SmsService;
+import com.partymasses.modules.service.UserService;
+import com.partymasses.support.constant.Contants;
+import com.partymasses.support.message.Message;
+import com.partymasses.support.util.DateUtil;
+import com.partymasses.support.util.JacksonUtil;
+
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
+
+import javax.jms.Session;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.apache.ibatis.annotations.Update;
+import org.apache.tomcat.util.bcel.classfile.Constant;
+import org.apache.xmlbeans.impl.xb.ltgfmt.Code;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+/**
+ * Created on 17/6/7.
+ * 短信API产品的DEMO程序,工程中包含了一个SmsDemo类，直接通过
+ * 执行main函数即可体验短信产品API功能(只需要将AK替换成开通了云通信-短信产品功能的AK即可)
+ * 工程依赖了2个jar包(存放在工程的libs目录下)
+ * 1:aliyun-java-sdk-core.jar
+ * 2:aliyun-java-sdk-dysmsapi.jar
+ *
+ * 备注:Demo工程编码采用UTF-8
+ * 国际短信发送请勿参照此DEMO
+ */
+@Controller
+@RequestMapping(value="api")
+public class SmsController {
+    @Autowired
+    private UserService userservice;
+    @Autowired 
+    private SmsService smsService;
+	/** 
+	 * 短信验证发送
+	 * @param string
+	 * @return Message
+	 */
+	@RequestMapping(value="/sms/logininfo/{number}",method=RequestMethod.GET)
+	@ResponseBody
+	public Message userLoginMessage(@PathVariable("number") String phonenumber,HttpServletRequest request) {
+				//判断手机号是否已注册
+				if(phonenumber==null||"".equals(phonenumber)){		
+					return  new Message(false,"请填写手机号");
+				}
+				User user=userservice.getUserByNumber(phonenumber);
+				if(user==null){
+					return  new Message(false,"该手机号未进行注册");		
+				}
+				//获取session 查询时间
+				HttpSession session=request.getSession();
+				String str=(String) session.getAttribute(phonenumber+Contants.LOGINSMS);
+				if(str!=null&&!"".equals(str)){
+					String[] strarr=str.split(",");
+					Long sendtime=Long.parseLong(strarr[1]);
+					Long endtime=DateUtil.getcurrentDateTime().getTime();
+					Long diff=endtime-sendtime;
+					if((diff/(1000)<=60)){
+						return new Message(false,"请稍后重新获取验证码");	
+					}
+				}
+				//生成短信编码
+				String code=makeCode();
+				Map<String, String> map=new HashMap<String,String>();
+				map.put("code",code);
+				try {
+					String mess=JacksonUtil.jsonNode2String(map);
+					try {
+						SendSmsResponse sendSmsRespons=smsService.sendLoginSms(phonenumber,mess);
+						if(sendSmsRespons.getCode() != null && sendSmsRespons.getCode().equals("OK")) {
+								session.setAttribute(phonenumber+Contants.LOGINSMS,code+","+DateUtil.getcurrentDateTime().getTime());
+								return new Message(true,"验证码已发送");
+						}						
+					} catch (ClientException e) {
+						
+					}
+				} catch (IOException e) {	
+					
+				}
+				
+				return new Message(false,"短信发送失败");
+	} 
+	@RequestMapping(value="/sms/updateinfo/{number}",method=RequestMethod.GET)
+	@ResponseBody
+	public Message userUpdateMessage(@PathVariable("number") String phonenumber,HttpServletRequest request) {
+				//判断手机号是否已注册
+				if(phonenumber==null||"".equals(phonenumber)){		
+					return  new Message(false,"请填写手机号");
+				}
+				User user=userservice.getUserByNumber(phonenumber);
+				if(user==null){
+					return  new Message(false,"该手机号未进行注册");		
+				}
+				//获取session 查询时间
+				HttpSession session=request.getSession();
+				String str=(String) session.getAttribute(phonenumber+Contants.UPDATESMS);
+				if(str!=null&&!"".equals(str)){
+					String[] strarr=str.split(",");
+					Long sendtime=Long.parseLong(strarr[1]);
+					Long endtime=DateUtil.getcurrentDateTime().getTime();
+					Long diff=endtime-sendtime;
+					if((diff/(1000)<=60)){
+						return new Message(false,"请稍后重新获取验证码");	
+					}
+				}
+				//生成短信编码
+				String code=makeCode();
+				Map<String, String> map=new HashMap<String,String>();
+				map.put("code",code);
+				try {
+					String mess=JacksonUtil.jsonNode2String(map);
+					try {
+						SendSmsResponse sendSmsRespons=smsService.sendLoginSms(phonenumber,mess);
+						if(sendSmsRespons.getCode() != null && sendSmsRespons.getCode().equals("OK")) {
+								session.setAttribute(phonenumber+Contants.UPDATESMS,code+","+DateUtil.getcurrentDateTime().getTime());
+								return new Message(true,"验证码已发送");
+						}						
+					} catch (ClientException e) {
+						
+					}
+				} catch (IOException e) {	
+					
+				}
+				
+				return new Message(false,"短信发送失败");
+	} 
+    /**
+	 * 生成验证码
+	 * @param id
+	 * @return
+	 */
+	public static String  makeCode(){
+			Random  random=new Random();
+			StringBuffer code=new StringBuffer("");
+			for (int i = 0; i <6; i++) {
+				 code.append(random.nextInt(10));	
+			}
+			return code.toString();
+	
+	}
+}

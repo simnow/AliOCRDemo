@@ -1,0 +1,102 @@
+package com.partymasses.modules.service.impl;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.shiro.SecurityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.github.pagehelper.PageHelper;
+import com.partymasses.modules.dao.ex.mapper.UnitExMapper;
+import com.partymasses.modules.dao.ex.mapper.UnitFunctionExMapper;
+import com.partymasses.modules.dao.mybatis.entity.InputUnit;
+import com.partymasses.modules.dao.mybatis.entity.SelectUnit;
+import com.partymasses.modules.dao.mybatis.entity.Unit;
+import com.partymasses.modules.dao.mybatis.entity.UnitFunction;
+import com.partymasses.modules.dao.mybatis.entity.User;
+import com.partymasses.modules.dao.mybatis.mapper.UnitMapper;
+import com.partymasses.modules.service.UnitService;
+import com.partymasses.support.constant.Contants;
+@Service
+public class UnitServiceImpl implements UnitService{
+	
+	@Autowired
+	private UnitMapper unit;
+	@Autowired
+	private UnitExMapper unitex;
+	@Autowired
+	private UnitFunctionExMapper unitfunctionex;
+	@Override
+	public Unit getById(Integer id) {
+		Unit u=unit.selectByPrimaryKey(id);
+		return u;
+	}
+
+	@Override
+	public List<Unit> select(SelectUnit selectunit) {
+		List<Unit> u=new ArrayList<Unit>();
+		List<Integer> paging=selectunit.getPaging();
+		PageHelper.startPage(paging.get(0),paging.get(1));
+		
+			Unit unit=new Unit();
+			unit.setName("%"+selectunit.getUnitname()+"%");
+			unit.setDistrictid("%"+selectunit.getUnitdistrict()+"%");
+			unit.setCreatetime(selectunit.getBegintime());
+			unit.setUpdatetime(selectunit.getFinishtime());
+			u=unitex.selectBySelectUnit(unit);
+			return u;
+	}
+
+	@Override
+	public Boolean update(InputUnit inputunit) {
+		
+		return true;
+	}
+
+	@Override
+	public boolean create(InputUnit u ) {
+		Unit units=new Unit();
+		units.setLevel(u.getLevel());
+		units.setName(u.getName());
+		units.setDistrictid(u.getDistrictid());
+		units.setParentid(u.getParentid());
+		units.setCreatetime(new Date());
+		User userInfo=(User) SecurityUtils.getSubject().getSession().getAttribute(Contants.LOGINUSER);
+		units.setCreateuser(userInfo.getId());
+		int unitid=unitex.selectMaxId()+1;
+		units.setId(unitid);
+		int n=unit.insert(units);
+		if(n==0){
+			return false;
+		}
+		List<Integer>functionids=u.getFunctionids();
+		List<UnitFunction>listUnitFunction=new ArrayList<UnitFunction>();
+		for (int i=0;i<functionids.size();i++) {
+			listUnitFunction.add(new UnitFunction(unitid,functionids.get(i)));
+		}
+		int lineNumber=unitfunctionex.addUnitFunction(listUnitFunction);
+		if (lineNumber==0) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public boolean deleteById(Integer id) {
+		int n=unit.deleteByPrimaryKey(id);
+		if (n==0) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public List<Unit> selectAllUnit() {
+		List<Unit> u=new ArrayList<Unit>();
+		u =unitex.select();
+		return u;
+	}
+
+}

@@ -1,0 +1,1136 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <title>专家库</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <link href="resources/css/jquery-ui-themes.css" type="text/css" rel="stylesheet"/>
+    <link href="resources/css/axure_rp_page.css" type="text/css" rel="stylesheet"/>
+    <link href="resources/css/pagination.css" type="text/css" rel="stylesheet"/>
+    <link href="data/styles.css" type="text/css" rel="stylesheet"/>
+    <link href="resources/css/bodycss.css"  type="text/css" rel="stylesheet"/>
+    <link href="files/专家库/styles.css" type="text/css" rel="stylesheet"/>
+    <script src="resources/scripts/jquery-1.7.1.min.js"></script>
+    <script src="resources/scripts/jquery.pagination.js"></script>
+    <script src="resources/scripts/jquery-ui-1.8.10.custom.min.js"></script>
+    <script src="resources/scripts/axure/axQuery.js"></script>
+    <script src="resources/scripts/axure/globals.js"></script>
+    <script src="resources/scripts/axutils.js"></script>
+    <script src="resources/scripts/axure/annotation.js"></script>
+    <script src="resources/scripts/axure/axQuery.std.js"></script>
+    <script src="resources/scripts/axure/doc.js"></script>
+    <script src="data/document.js"></script>
+    <script src="resources/scripts/messagecenter.js"></script>
+    <script src="resources/scripts/axure/events.js"></script>
+    <script src="resources/scripts/axure/recording.js"></script>
+    <script src="resources/scripts/axure/action.js"></script>
+    <script src="resources/scripts/axure/expr.js"></script>
+    <script src="resources/scripts/axure/geometry.js"></script>
+    <script src="resources/scripts/axure/flyout.js"></script>
+    <script src="resources/scripts/axure/ie.js"></script>
+    <script src="resources/scripts/axure/model.js"></script>
+    <script src="resources/scripts/axure/repeater.js"></script>
+    <script src="resources/scripts/axure/sto.js"></script>
+    <script src="resources/scripts/axure/utils.temp.js"></script>
+    <script src="resources/scripts/axure/variables.js"></script>
+    <script src="resources/scripts/axure/drag.js"></script>
+    <script src="resources/scripts/axure/move.js"></script>
+    <script src="resources/scripts/axure/visibility.js"></script>
+    <script src="resources/scripts/axure/style.js"></script>
+    <script src="resources/scripts/axure/adaptive.js"></script>
+    <script src="resources/scripts/axure/tree.js"></script>
+    <script src="resources/scripts/axure/init.temp.js"></script>
+    <script src="files/专家库/data.js"></script>
+    <script src="resources/scripts/axure/legacy.js"></script>
+    <script src="resources/scripts/axure/viewer.js"></script>
+    <script src="resources/scripts/axure/math.js"></script>
+    <script type="text/javascript">
+      $axure.utils.getTransparentGifPath = function() { return 'resources/images/transparent.gif'; };
+      $axure.utils.getOtherPath = function() { return 'resources/Other.html'; };
+      $axure.utils.getReloadPath = function() { return 'resources/reload.html'; };
+    </script>
+    <style>
+      #base {
+          position: relative;
+          margin-top: -207px;
+      }
+      .inport-footer {
+          position: absolute;
+          top:1840px;
+          left: 0px;
+      }
+    	#nav-box {
+    		position: absolute;
+		    left: 379px;
+		    top: 431px;
+		    width: 220px;
+		    height: 300px;
+		    background: #fff;
+		    opacity:1;
+		    margin: 0;
+		    padding: 0;
+    	}
+    	#nav-box li {
+   		  width: 220px;
+		    
+		    background: inherit;
+		    background-color: rgba(242, 242, 242, 1);
+		    border: none;
+		    border-radius: 0px;
+		    margin-bottom: 4px;
+		    list-style:none;
+    	}
+    	#nav-box li p{
+    		display:inline-block;
+    		margin-left: 40px;
+    		height: 46px;
+    		line-height:46px;
+	       font-family: '微软雅黑 Bold', '微软雅黑';
+		   font-weight: 700;
+		   font-style: normal;
+		   font-size: 16px;
+		   color:  #126ACC;
+		   vertical-align: middle;
+		   width:100px;
+    	}
+      #nav-box li a {
+        text-decoration: none;
+      }
+    	#nav-box li div {
+    		display:inline-block;
+    		margin-left: 40px;
+    		width: 13px;
+    		height: 15px;
+    		vertical-align: middle;
+    		    font-family: 'Arial Normal', 'Arial';
+			   font-weight: 400;
+			   font-style: normal;
+			   font-size: 13px;
+			   color: #333333;
+			   text-align: center;
+			   line-height: normal;
+    	}
+    	#nav-box li div img {
+    		width:100%;
+    	}
+    	#sub-nav-box li {
+		    width: 220px;
+		    
+		    background: inherit;
+		    background-color: rgba(242, 242, 242, 1);
+		    border: none;
+		    border-radius: 0px;
+		    margin-bottom: 4px;
+		    list-style:none;
+    	}
+    	#sub-nav-box li p{
+    		display:inline-block;
+    		margin-left: 40px;
+    		height: 46px;
+    		line-height:46px;
+	       font-family: '微软雅黑 Bold', '微软雅黑';
+		   font-weight: 700;
+		   font-style: normal;
+		   font-size: 16px;
+		   color: #FFFFFF;
+		   vertical-align: middle;
+    	}
+    	#nav-box .sub-nav {
+    		display:none;
+    	}
+    	#nav-box li ul{
+   		    width: 220px;
+		    background: inherit;
+		    background-color: rgba(242, 242, 242, 1);
+		    border: none;
+		    border-radius: 0px;
+		    margin-bottom: 4px;
+		    list-style:none;
+		    margin:0;
+		    padding:0;
+		    padding-top:4px;
+		    background:#fff;
+		   
+    	}
+      #nav-box .sub-nav.nav-list {
+        display: block;
+      }
+      #nav-box .sub-nav.nav-list p{
+        display:inline-block;
+    		margin-left: 40px;
+    		height: 46px;
+    		line-height:46px;
+	      font-family: '微软雅黑 Bold', '微软雅黑';
+		   font-weight: 400;
+		   font-style: normal;
+		   font-size: 16px;
+		   color: #666666;
+		   vertical-align: middle;
+      }
+      #nav-box li.nav div {
+        transform:rotate(90deg);
+      }
+      #nav-box .sub-nav.nav-list .activited p {
+        color: #126ACC;
+      }
+    	
+      #content-box {
+      background:#fff;
+      position: absolute;
+      left:  628px;
+      /* left:200px; */
+      top: 428px;
+      /* top:900px; */
+      width: 950px;
+      font-family: '微软雅黑 Bold', '微软雅黑';
+      font-weight: 700;
+      font-style: normal;
+      font-size: 18px;
+      height:1220px;
+      border: 1px rgba(242, 242, 242, 1) solid; 
+    }
+    #content-box .bar {
+      width: 920px;
+      height: 33px;
+      background-color: rgba(242, 242, 242, 1);
+      font-family: '微软雅黑 Bold', '微软雅黑';
+      font-weight: 700;
+      font-style: normal;
+      font-size: 16px;
+      color: #126ACC;
+      padding-left: 30px;
+      line-height: 33px;
+    }
+    #content-box  ul {
+      width: 950px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    #content-box li{
+      display:inline-block;
+      vertical-align: top;
+      margin-left:30px;
+      font-family: '微软雅黑 Bold', '微软雅黑';
+      font-weight: 700;
+      font-style: normal;
+      font-size: 18px;
+      width: 145px;
+      word-wrap: break-word;
+      margin-top:43px;
+      margin-right:5px;
+      height:330px;
+    }
+    #content-box li .photo {
+      width: 145px;
+      height: 194px;
+      /* backgroun.d:blueviolet; */
+      margin-bottom:20px;
+    }
+    #content-box li .photo  img {
+      width: 145px;
+      height: 194px;
+    }
+    #content-box li p{
+      font-weight: 400;
+      font-size: 14px;
+      color: #000000;
+    }
+    #content-box li p.name{
+      font-weight: 700;
+      font-style: normal;
+      font-size: 18px;
+    }
+    .M-box2 {
+      position: absolute;
+      width:400px;
+      left: 1000px;
+      top: 1707px;
+    }
+    .M-box2 a, .M-box2 span {
+      display: inline-block;
+      text-decoration: none;
+      width:30px;
+      height:22px;
+    }
+    .M-box2 .next, .M-box2 .prev {
+      width:55px;
+    }
+    .M-box2 .active {
+      color:#126ACC;
+    }
+    .search-people {
+      position: absolute;
+      left: 1360px;
+      top: 375px;
+      width: 202px;
+      height: 36px;
+      background-color: rgba(255, 255, 255, 1);
+      border: none;
+      border-radius: 5px;
+      -moz-box-shadow: 3px 3px 5px rgba(204, 204, 204, 0.647058823529412);
+      -webkit-box-shadow: 3px 3px 5px rgba(204, 204, 204, 0.647058823529412);
+      box-shadow: 3px 3px 5px rgba(204, 204, 204, 0.647058823529412);
+    }
+    .search-people input {
+      position: absolute;
+      left: 10px;
+      top: 0px;
+      width: 172px;
+      height: 34px;
+      font-family: '微软雅黑 Regular', '微软雅黑';
+      font-weight: 400;
+      font-style: normal;
+      font-size: 10px;
+      text-decoration: none;
+      color: #1F4DA3;
+      text-align: left;
+      border-color: transparent;
+      outline-style: none;
+      padding: 1px 0px 1px 0px;
+    }
+    .search-people  div {
+      position: absolute;
+      left: 170px;
+      top: 10px;
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+    .search-people  div img {
+      width: 16px;
+      height: 16px;
+    }
+    	
+    </style>
+  </head>
+  <body>
+  <div class="body">
+      <div class="move">
+      <div class="inport-header"></div>
+    <div id="base" class="">
+      <!-- Unnamed (组合) -->
+      <div id="u1772" class="ax_default">
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1773" class="ax_default label">
+          <div id="u1773_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1774" class="text" style="visibility: visible;">
+            <p><span>当前位置＞资源优势＞专家库</span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (形状) -->
+        <div id="u1775" class="ax_default icon">
+          <img id="u1775_img" class="img " src="images/战略院简介/u699.png"/>
+          <!-- Unnamed () -->
+          <div id="u1776" class="text" style="display: none; visibility: hidden">
+            <p><span></span></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u1777" class="ax_default label">
+        <div id="u1777_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u1778" class="text" style="visibility: visible;">
+          <p style="font-size:18px;"><span style="font-family:'微软雅黑 Bold', '微软雅黑';font-weight:700;">王礼恒</span></p><p style="font-size:14px;"><span style="font-family:'微软雅黑 Regular', '微软雅黑';font-weight:400;">职务职称：高级顾问、工程院院士</span></p><p style="font-size:14px;"><span style="font-family:'微软雅黑 Regular', '微软雅黑';font-weight:400;">专业方向：导弹动力技术和航天工程管理</span></p><p style="font-size:14px;"><span style="font-family:'微软雅黑 Bold', '微软雅黑';font-weight:700;"><br></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (图片) -->
+      <div id="u1779" class="ax_default image">
+        <img id="u1779_img" class="img " src="images/学术委员会/u1192.jpg"/>
+        <!-- Unnamed () -->
+        <div id="u1780" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (图片) -->
+      <div id="u1781" class="ax_default image">
+        <img id="u1781_img" class="img " src="images/学术委员会/u1196.jpg"/>
+        <!-- Unnamed () -->
+        <div id="u1782" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u1783" class="ax_default label">
+        <div id="u1783_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u1784" class="text" style="visibility: visible;">
+          <p style="font-size:18px;"><span style="font-family:'微软雅黑 Bold', '微软雅黑';font-weight:700;">杜善义</span></p><p style="font-size:14px;"><span style="font-family:'微软雅黑 Regular', '微软雅黑';font-weight:400;">职务职称：高级技术顾问、工程院院士</span></p><p style="font-size:14px;"><span style="font-family:'微软雅黑 Regular', '微软雅黑';font-weight:400;">专业方向：力学和复合材料</span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (图片) -->
+      <div id="u1785" class="ax_default image">
+        <img id="u1785_img" class="img " src="images/学术委员会/u1230.jpg"/>
+        <!-- Unnamed () -->
+        <div id="u1786" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+      <!-- Unnamed (图片) -->
+      <div id="u1787" class="ax_default image">
+        <img id="u1787_img" class="img " src="images/学术委员会/u1234.jpg"/>
+        <!-- Unnamed () -->
+        <div id="u1788" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (图片) -->
+      <div id="u1789" class="ax_default image">
+        <img id="u1789_img" class="img " src="images/学术委员会/u1238.jpg"/>
+        <!-- Unnamed () -->
+        <div id="u1790" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u1791" class="ax_default label">
+        <div id="u1791_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u1792" class="text" style="visibility: visible;">
+          <p style="font-size:18px;"><span style="font-family:'微软雅黑 Bold', '微软雅黑';font-weight:700;">于本水</span></p><p style="font-size:14px;"><span style="font-family:'微软雅黑 Regular', '微软雅黑';font-weight:400;">职务职称：科技委员、工程院院士</span></p><p style="font-size:14px;"><span style="font-family:'微软雅黑 Regular', '微软雅黑';font-weight:400;">专业方向：宇航科学与技术</span></p><p style="font-size:14px;"><span style="font-family:'微软雅黑 Bold', '微软雅黑';font-weight:700;"><br></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u1793" class="ax_default label">
+        <div id="u1793_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u1794" class="text" style="visibility: visible;">
+          <p style="font-size:18px;"><span style="font-family:'微软雅黑 Bold', '微软雅黑';font-weight:700;">王子才</span></p><p style="font-size:14px;"><span style="font-family:'微软雅黑 Regular', '微软雅黑';font-weight:400;">职务职称：教授、工程院院士</span></p><p style="font-size:14px;"><span style="font-family:'微软雅黑 Regular', '微软雅黑';font-weight:400;">专业方向：自动控制、系统仿真</span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u1795" class="ax_default label">
+        <div id="u1795_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u1796" class="text" style="visibility: visible;">
+          <p style="font-size:18px;"><span style="font-family:'微软雅黑 Bold', '微软雅黑';font-weight:700;">王永志</span></p><p style="font-size:14px;"><span style="font-family:'微软雅黑 Regular', '微软雅黑';font-weight:400;">职务职称：高级顾问、工程院院士</span></p><p style="font-size:14px;"><span style="font-family:'微软雅黑 Regular', '微软雅黑';font-weight:400;">专业方向：航天技术</span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u1797" class="ax_default label">
+        <div id="u1797_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u1798" class="text" style="visibility: visible;">
+          <p style="font-size:18px;"><span style="font-family:'微软雅黑 Bold', '微软雅黑';font-weight:700;">王希季</span></p><p style="font-size:14px;"><span style="font-family:'微软雅黑 Regular', '微软雅黑';font-weight:400;">职务职称：中科院院士</span></p><p style="font-size:14px;"><span style="font-family:'微软雅黑 Regular', '微软雅黑';font-weight:400;">专业方向：中国卫星与返回技术</span></p><p style="font-size:14px;"><span style="font-family:'微软雅黑 Bold', '微软雅黑';font-weight:700;"><br></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (图片) -->
+      <div id="u1799" class="ax_default image">
+        <img id="u1799_img" class="img " src="images/学术委员会/u1242.jpg"/>
+        <!-- Unnamed () -->
+        <div id="u1800" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (图片) -->
+      <div id="u1801" class="ax_default image">
+        <img id="u1801_img" class="img " src="images/学术委员会/u1246.jpg"/>
+        <!-- Unnamed () -->
+        <div id="u1802" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (图片) -->
+      <div id="u1803" class="ax_default image">
+        <img id="u1803_img" class="img " src="images/学术委员会/u1250.jpg"/>
+        <!-- Unnamed () -->
+        <div id="u1804" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (图片) -->
+      <div id="u1805" class="ax_default image">
+        <img id="u1805_img" class="img " src="images/学术委员会/u1254.jpg"/>
+        <!-- Unnamed () -->
+        <div id="u1806" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u1807" class="ax_default label">
+        <div id="u1807_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u1808" class="text" style="visibility: visible;">
+          <p style="font-size:18px;"><span style="font-family:'微软雅黑 Bold', '微软雅黑';font-weight:700;">包为民</span></p><p style="font-size:14px;"><span style="font-family:'微软雅黑 Regular', '微软雅黑';font-weight:400;">职务职称：科技委主任、中科院院士</span></p><p style="font-size:14px;"><span style="font-family:'微软雅黑 Regular', '微软雅黑';font-weight:400;">专业方向：制导与控制</span></p><p style="font-size:14px;"><span style="font-family:'微软雅黑 Bold', '微软雅黑';font-weight:700;"><br></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u1809" class="ax_default label">
+        <div id="u1809_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u1810" class="text" style="visibility: visible;">
+          <p style="font-size:18px;"><span style="font-family:'微软雅黑 Bold', '微软雅黑';font-weight:700;">龙乐豪</span></p><p style="font-size:14px;"><span style="font-family:'微软雅黑 Regular', '微软雅黑';font-weight:400;">职务职称：总师、工程院院士</span></p><p style="font-size:14px;"><span style="font-family:'微软雅黑 Regular', '微软雅黑';font-weight:400;">专业方向：运载火箭与航天工程技术</span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u1811" class="ax_default label">
+        <div id="u1811_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u1812" class="text" style="visibility: visible;">
+          <p style="font-size:18px;"><span style="font-family:'微软雅黑 Bold', '微软雅黑';font-weight:700;">冯先光</span></p><p style="font-size:14px;"><span style="font-family:'微软雅黑 Regular', '微软雅黑';font-weight:400;">职务职称：副书记、研究员</span></p><p style="font-size:14px;"><span style="font-family:'微软雅黑 Regular', '微软雅黑';font-weight:400;">专业方向：卫星测绘应用</span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (图片) -->
+      <div id="u1813" class="ax_default image">
+        <img id="u1813_img" class="img " src="images/专家库/u1813.jpg"/>
+        <!-- Unnamed () -->
+        <div id="u1814" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (组合) -->
+      <div id="u1815" class="ax_default">
+        <!-- Unnamed (矩形) -->
+        <!-- Unnamed (水平线) -->
+        <div id="u1827" class="ax_default line">
+          <img id="u1827_img" class="img " src="images/index/u380.png"/>
+          <!-- Unnamed () -->
+          <div id="u1828" class="text" style="display: none; visibility: hidden">
+            <p><span></span></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Unnamed (组合) -->
+      <div id="u1930" class="ax_default">
+      </div>
+
+      <!-- Unnamed (组合) -->
+      <div id="u1941" class="ax_default">
+
+        <!-- Unnamed (组合) -->
+        <div id="u1942" class="ax_default">
+
+          <!-- Unnamed (组合) -->
+          <div id="u1943" class="ax_default">
+
+            <!-- Unnamed (矩形) -->
+            <div id="u1944" class="ax_default label">
+              <div id="u1944_div" class=""></div>
+              <!-- Unnamed () -->
+              <div id="u1945" class="text" style="visibility: visible;">
+                <p><span>当前位置＞资源优势＞专家库</span></p>
+              </div>
+            </div>
+
+            <!-- Unnamed (形状) -->
+            <div id="u1946" class="ax_default icon">
+              <img id="u1946_img" class="img " src="images/战略院简介/u699.png"/>
+              <!-- Unnamed () -->
+              <div id="u1947" class="text" style="display: none; visibility: hidden">
+                <p><span></span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1948" class="ax_default box_2">
+          <div id="u1948_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1949" class="text" style="display: none; visibility: hidden">
+            <p><span></span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1950" class="ax_default box_2">
+          <div id="u1950_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1951" class="text" style="display: none; visibility: hidden">
+            <p><span></span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1952" class="ax_default box_2">
+          <div id="u1952_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1953" class="text" style="display: none; visibility: hidden">
+            <p><span></span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1954" class="ax_default _一级标题">
+          <div id="u1954_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1955" class="text" style="visibility: visible;">
+            <p><span>资源优势</span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1956" class="ax_default _一级标题">
+          <div id="u1956_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1957" class="text" style="visibility: visible;">
+            <p><span>专家库</span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1958" class="ax_default _一级标题">
+          <div id="u1958_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1959" class="text" style="visibility: visible;">
+            <p><span>院士</span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (组合) -->
+        <div id="u1960" class="ax_default">
+
+          <!-- Unnamed (菱形) -->
+          <div id="u1961" class="ax_default box_2">
+            <img id="u1961_img" class="img " src="images/战略院简介/u714.png"/>
+            <!-- Unnamed () -->
+            <div id="u1962" class="text" style="display: none; visibility: hidden">
+              <p><span></span></p>
+            </div>
+          </div>
+
+          <!-- Unnamed (菱形) -->
+          <div id="u1963" class="ax_default box_2">
+            <img id="u1963_img" class="img " src="images/战略院简介/u716.png"/>
+            <!-- Unnamed () -->
+            <div id="u1964" class="text" style="display: none; visibility: hidden">
+              <p><span></span></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Unnamed (组合) -->
+        <div id="u1965" class="ax_default">
+
+          <!-- Unnamed (菱形) -->
+          <div id="u1966" class="ax_default box_2">
+            <img id="u1966_img" class="img " src="images/战略院简介/u719.png"/>
+            <!-- Unnamed () -->
+            <div id="u1967" class="text" style="display: none; visibility: hidden">
+              <p><span></span></p>
+            </div>
+          </div>
+
+          <!-- Unnamed (菱形) -->
+          <div id="u1968" class="ax_default box_2">
+            <img id="u1968_img" class="img " src="images/战略院简介/u721.png"/>
+            <!-- Unnamed () -->
+            <div id="u1969" class="text" style="display: none; visibility: hidden">
+              <p><span></span></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1970" class="ax_default box_2">
+          <div id="u1970_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1971" class="text" style="display: none; visibility: hidden">
+            <p><span></span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1972" class="ax_default box_2">
+          <div id="u1972_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1973" class="text" style="display: none; visibility: hidden">
+            <p><span></span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1974" class="ax_default box_2">
+          <div id="u1974_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1975" class="text" style="display: none; visibility: hidden">
+            <p><span></span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1976" class="ax_default _一级标题">
+          <div id="u1976_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1977" class="text" style="visibility: visible;">
+            <p><span>专家</span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1978" class="ax_default _一级标题">
+          <div id="u1978_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1979" class="text" style="visibility: visible;">
+            <p><span>合作单位</span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1980" class="ax_default _一级标题">
+          <div id="u1980_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1981" class="text" style="visibility: visible;">
+            <p><span>技术优势</span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u1982" class="ax_default label">
+          <div id="u1982_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u1983" class="text" style="display: none; visibility: hidden">
+            <p><span></span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (组合) -->
+        <div id="u1984" class="ax_default">
+
+          <!-- Unnamed (菱形) -->
+          <div id="u1985" class="ax_default box_2">
+            <img id="u1985_img" class="img " src="images/战略院简介/u714.png"/>
+            <!-- Unnamed () -->
+            <div id="u1986" class="text" style="display: none; visibility: hidden">
+              <p><span></span></p>
+            </div>
+          </div>
+
+          <!-- Unnamed (菱形) -->
+          <div id="u1987" class="ax_default box_2">
+            <img id="u1987_img" class="img " src="images/战略院简介/u716.png"/>
+            <!-- Unnamed () -->
+            <div id="u1988" class="text" style="display: none; visibility: hidden">
+              <p><span></span></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Unnamed (组合) -->
+        <div id="u1989" class="ax_default">
+
+          <!-- Unnamed (菱形) -->
+          <div id="u1990" class="ax_default box_2">
+            <img id="u1990_img" class="img " src="images/战略院简介/u714.png"/>
+            <!-- Unnamed () -->
+            <div id="u1991" class="text" style="display: none; visibility: hidden">
+              <p><span></span></p>
+            </div>
+          </div>
+
+          <!-- Unnamed (菱形) -->
+          <div id="u1992" class="ax_default box_2">
+            <img id="u1992_img" class="img " src="images/战略院简介/u716.png"/>
+            <!-- Unnamed () -->
+            <div id="u1993" class="text" style="display: none; visibility: hidden">
+              <p><span></span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u1994" class="ax_default box_2">
+        <img id="u1994_img" class="img " src="images/专家库/u1994.png"/>
+        <!-- Unnamed () -->
+        <div id="u1995" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u1996" class="ax_default box_2">
+        <img id="u1996_img" class="img " src="images/专家库/u1994.png"/>
+        <!-- Unnamed () -->
+        <div id="u1997" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u1998" class="ax_default box_2">
+        <img id="u1998_img" class="img " src="images/组织架构/u999.png"/>
+        <!-- Unnamed () -->
+        <div id="u1999" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u2000" class="ax_default box_2">
+        <img id="u2000_img" class="img " src="images/组织架构/u999.png"/>
+        <!-- Unnamed () -->
+        <div id="u2001" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u2002" class="ax_default box_2">
+        <div id="u2002_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u2003" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u2004" class="ax_default label">
+        <div id="u2004_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u2005" class="text" style="visibility: visible;">
+          <p><span>按姓氏拼音字母排序 A-Z</span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (图片) -->
+      <div id="u2006" class="ax_default image">
+        <img id="u2006_img" class="img " src="images/学术委员会/u1262.png"/>
+        <!-- Unnamed () -->
+        <div id="u2007" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (图片) -->
+      <div id="u2008" class="ax_default image">
+        <img id="u2008_img" class="img " src="images/学术委员会/u1266.png"/>
+        <!-- Unnamed () -->
+        <div id="u2009" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (图片) -->
+      <div id="u2010" class="ax_default image">
+        <img id="u2010_img" class="img " src="images/学术委员会/u1270.jpg"/>
+        <!-- Unnamed () -->
+        <div id="u2011" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (图片) -->
+      <div id="u2012" class="ax_default image">
+        <img id="u2012_img" class="img " src="images/学术委员会/u1278.jpg"/>
+        <!-- Unnamed () -->
+        <div id="u2013" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (图片) -->
+      <div id="u2014" class="ax_default image">
+        <img id="u2014_img" class="img " src="images/学术委员会/u1282.jpg"/>
+        <!-- Unnamed () -->
+        <div id="u2015" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (图片) -->
+      <div id="u2016" class="ax_default image">
+        <img id="u2016_img" class="img " src="images/学术委员会/u1286.jpg"/>
+        <!-- Unnamed () -->
+        <div id="u2017" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+      <!-- Unnamed (矩形) -->
+      <div id="u2026" class="ax_default label">
+        <div id="u2026_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u2027" class="text" style="visibility: visible;">
+          <p style="font-size:18px;"><span style="font-family:'微软雅黑 Bold', '微软雅黑';font-weight:700;">叶培建</span></p><p style="font-size:14px;"><span style="font-family:'微软雅黑 Regular', '微软雅黑';font-weight:400;">职务职称：总指挥、总师、中科院院士</span></p><p style="font-size:14px;"><span style="font-family:'微软雅黑 Regular', '微软雅黑';font-weight:400;">专业方向：空间飞行器总体、信息处理</span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u2028" class="ax_default label">
+        <div id="u2028_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u2029" class="text" style="visibility: visible;">
+          <p style="font-size:18px;"><span style="font-family:'微软雅黑 Bold', '微软雅黑';font-weight:700;">刘永才</span></p><p style="font-size:14px;"><span style="font-family:'微软雅黑 Regular', '微软雅黑';font-weight:400;">职务职称：科技委顾问、工程院院士</span></p><p style="font-size:14px;"><span style="font-family:'微软雅黑 Regular', '微软雅黑';font-weight:400;">专业方向：飞航技术</span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u2030" class="ax_default label">
+        <div id="u2030_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u2031" class="text" style="visibility: visible;">
+          <p style="font-size:18px;"><span style="font-family:'微软雅黑 Bold', '微软雅黑';font-weight:700;">刘竹生</span></p><p style="font-size:14px;"><span style="font-family:'微软雅黑 Regular', '微软雅黑';font-weight:400;">职务职称：中科院院士</span></p><p style="font-size:14px;"><span style="font-family:'微软雅黑 Regular', '微软雅黑';font-weight:400;">专业方向：火箭总体设计</span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u2032" class="ax_default label">
+        <div id="u2032_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u2033" class="text" style="visibility: visible;">
+          <p style="font-size:18px;"><span style="font-family:'微软雅黑 Bold', '微软雅黑';font-weight:700;">刘经南</span></p><p style="font-size:14px;"><span style="font-family:'微软雅黑 Regular', '微软雅黑';font-weight:400;">职务职称：教授、工程院院士</span></p><p style="font-size:14px;"><span style="font-family:'微软雅黑 Regular', '微软雅黑';font-weight:400;">专业方向：大地测量理论及应用</span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u2034" class="ax_default label">
+        <div id="u2034_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u2035" class="text" style="visibility: visible;">
+          <p style="font-size:18px;"><span style="font-family:'微软雅黑 Bold', '微软雅黑';font-weight:700;">刘宝镛</span></p><p style="font-size:14px;"><span style="font-family:'微软雅黑 Regular', '微软雅黑';font-weight:400;">职务职称：中科院院士</span></p><p style="font-size:14px;"><span style="font-family:'微软雅黑 Regular', '微软雅黑';font-weight:400;">专业方向：导弹总体设计&nbsp; &nbsp;&nbsp; </span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u2036" class="ax_default label">
+        <div id="u2036_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u2037" class="text" style="visibility: visible;">
+          <p style="font-size:18px;"><span style="font-family:'微软雅黑 Bold', '微软雅黑';font-weight:700;">许健民</span></p><p style="font-size:14px;"><span style="font-family:'微软雅黑 Regular', '微软雅黑';font-weight:400;">职务职称：主任、总工、工程院院士</span></p><p style="font-size:14px;"><span style="font-family:'微软雅黑 Regular', '微软雅黑';font-weight:400;">专业方向：卫星气象</span></p>
+        </div>
+      </div>
+      <div class="search-people">
+        <input type="text" placeholder="请输入关键字搜索专家" class="searches">
+        <div class="btn"><img src="images/index/u394.png"></div>
+      </div>
+      <ul id="nav-box">
+      	<li class="navs na" style ="background: rgba(18, 106, 204, 1)">
+      		<p  style ="color: #fff">资源优势</p> <div></div>
+      		
+      	</li>
+      	<li class="sub-nav">
+      		
+      	</li>
+      	<li class="nav na">
+      		<p>专家库</p><div>></div>
+      		
+      	</li>
+      	<li class="sub-nav nav-list">
+      		<ul>
+      			<li class="activited"><p>院士</p></li>
+      			<li><p>专家</p></li>
+      		</ul>
+      	</li>
+      	<li class="nav2 na">
+      		<p>合作单位</p><div></div>
+      		
+      	</li>
+      	<li class="sub-nav">
+      		<ul>
+      			<li><p>院企</p></li>
+      			<li><p>院校</p></li>
+      			<li><p>院地</p></li>
+      		</ul>
+      	</li>
+      	<li class="nav3 na">
+      		<p>技术优势</p><img>
+      	</li>
+      </ul>
+      <div id="content-box">
+        <div class="bar">院士</div>
+        <ul>
+        </ul>
+      </div>
+      <div class="M-box2"></div>
+    </div>
+    <div class="inport-footer"></div>
+    </div>
+    </div>
+  </body>
+   <link href="resources/css/bodycss.css"  type="text/css" rel="stylesheet"/>
+  <script src="resources/scripts/load.js"></script>
+  <script src="resources/scripts/search-people.js"></script>
+  <script>
+  //	上来先展开
+ 
+  	$(function(){
+      var data = {
+        type: 'yuanshi',
+        pageNo: 1,
+        pageSize: 15
+      };
+      $.get('/bswebsite/api/person/type', data, function (json) {
+        console.log(json);
+        if (json.success) {
+          var listData = json.attributes.person;
+          var lists = '';
+          for (var i in listData) {
+            lists += '<li>';
+              lists += '<div class="photo">';
+              lists += '<img src="'+  listData[i]['pictureurl'] +'">';
+              lists += '</div>';
+              lists += '<div class="people-info">';
+              lists += '<p class="name"> '+ listData[i]['name'] + '</p>';
+              lists += '<p class="position">职务职称：<span>' + listData[i]['zwzc'] + '</span></p>';
+              lists += '<p class="major">专业方向：<span> '+ listData[i]['zyfx'] + '</span></p>';
+              lists += '</div>';
+            lists += '</li>';
+          }
+          $("#content-box ul").html(lists);
+          $("#content-box ul li").on('click', function() {
+            var name = $(this).find('.name').text();
+            window.location.href = encodeURI("专家简介.html?name=" + name);
+          });
+        }
+          
+      });
+
+      $('.M-box2').pagination({
+        pageCount: 2,
+        coping: true,
+        prevContent: '上页',
+        nextContent: '下页',
+        callback: function (api) {
+          var data = {
+            type: 'yuanshi',
+            pageNo: api.getCurrent(),
+            pageSize: 15
+          };
+          $.get('/bswebsite/api/person/type', data, function (json) {
+            console.log(json);
+            if (json.success) {
+              var listData = json.attributes.person;
+              var lists = '';
+              for (var i in listData) {
+                lists += '<li>';
+                  lists += '<div class="photo">';
+                    lists += '<img src="' + listData[i]['pictureurl'] +'">';
+                  lists += '</div>';
+                  lists += '<div class="people-info">';
+                    lists += '<p class="name"> '+ listData[i]['name'] + '</p>';
+                    lists += '<p class="position">职务职称：<span>' + listData[i]['zwzc'] + '</span></p>';
+                    lists += '<p class="major">专业方向：<span> '+ listData[i]['zyfx'] + '</span></p>';
+                  lists += '</div>';
+                lists += '</li>';
+              }
+              $("#content-box ul").html(lists);
+              $("#content-box ul li").on('click', function() {
+                var name = $(this).find('.name').text();
+                window.location.href = encodeURI( "专家简介.html?name=" + name);
+              });
+            }
+              
+          });
+        }
+      });
+
+      $("#content-box li").on('click', function() {
+        var id = $(this).find('input').val();
+        window.location.href = '专家简介.html?id=' + id + '';
+      });
+
+  		$('#nav-box .nav').click(function(){
+  			$('#nav-box .nav').each(function() {
+	  			
+	  			$(this).find('p').css('color', '#126ACC');
+	  			$(this).find('div').css({
+
+	  				'webkitTransform':'rotate(0deg)',
+
+	  				'transform':'rotate(0deg)'
+	  				});
+	  		});
+  			$(this).find('div').css({
+
+  				'webkitTransform':'rotate(90deg)',
+
+  				'transform':'rotate(90deg)'
+  				});
+  			
+  			
+  			$(this).next('li').find('ul').find('p').css('color', '#666666');
+  			console.log($(this).next('li').html());
+  			if ($(this).next('li').is(':hidden')) {
+  				$('#nav-box .sub-nav').each(function() {
+  	  				$(this).hide();
+  	  			});
+  				$(this).next('li').show();
+  			} else {
+  				$(this).next('li').hide();
+  				$(this).find('div').css({
+	  				'webkitTransform':'rotate(0deg)',
+
+	  				'transform':'rotate(0deg)'
+	  				});
+  			}
+  		});
+  		
+  		$('#nav-box .sub-nav li').click(function(){
+  			$('#nav-box .sub-nav li').each(function() {
+	  			$(this).find('p').css('color', '#666666');
+	  		});
+  			$(this).find('p').css('color', '#126ACC');
+      });
+      
+      $("#nav-box .na ").on('click',function() {
+        var url = $(this).children('p:first-child').text();
+        console.log(url);
+        if (url == '首页') {
+          url = 'index';
+        } else if (url == '咨询研究') {
+          url = '战略咨询';
+        } else if (url == '关于我们') {
+          url = '战略院简介';
+        } else if (url == '资源优势') {
+          url = '专家库';
+        } else if (url == '核心业务') {
+          url = '战略咨询';
+        } else if (url == '动态资讯') {
+          url = '社会热点';
+        } else if (url == '加入我们') {
+          url = '联系我们';
+        }
+        window.location.href = url +'.html';
+      });
+
+     $("#nav-box .nav-list ul li ").on('click',function() {
+      var url = $(this).children('p:first-child').text();
+      console.log(url);
+      if (url == '首页') {
+        url = 'index';
+      } else if (url == '咨询研究') {
+        url = '战略咨询';
+      } else if (url == '关于我们') {
+        url = '战略院简介';
+      } else if (url == '资源优势') {
+        url = '专家库';
+      } else if (url == '核心业务') {
+        url = '战略咨询';
+      } else if (url == '动态资讯') {
+        url = '社会热点';
+      } else if (url == '加入我们') {
+        url = '联系我们';
+      }  else if (url == '院士') {
+        url = '专家库';
+      } 
+      console.log(url);
+      window.location.href = url +'.html';
+    });
+  	});
+  </script>
+</html>

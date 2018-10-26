@@ -1,0 +1,176 @@
+/**
+ * 
+ */
+package cn.caecc.erp.support.workflow.remind.service.serviceImpl;
+
+import org.activiti.engine.delegate.DelegateExecution;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import cn.caecc.erp.modules.dao.mybatis.entity.User;
+import cn.caecc.erp.modules.service.MessageService;
+import cn.caecc.erp.modules.service.UserService;
+import cn.caecc.erp.support.constant.Contants;
+import cn.caecc.erp.support.email.service.EmailService;
+import cn.caecc.erp.support.sms.service.SmsService;
+import cn.caecc.erp.support.workflow.remind.entity.RemindInfoEntity;
+import cn.caecc.erp.support.workflow.remind.service.RemindService;
+import cn.caecc.erp.support.workflow.service.WorkflowService;
+
+/**
+ * @author weizhen 提醒服务实现类
+ */
+@Service
+public class RemindServiceImpl implements RemindService {
+
+	private final static Logger logger = LoggerFactory.getLogger(RemindServiceImpl.class);
+
+	@Autowired
+	UserService userService;
+
+	@Autowired
+	private WorkflowService workflowService;
+
+	@Autowired
+	private SmsService smsService;
+
+	@Autowired
+	private EmailService emailService;
+
+	@Autowired
+	private MessageService messageService;
+
+	private RemindInfoEntity getRemindInfoEntity(DelegateExecution execution) {
+		RemindInfoEntity remindInfoEntity = null;
+		try {
+			remindInfoEntity = new RemindInfoEntity();
+			String processInstanceId = execution.getProcessInstanceId();
+			String executionId = execution.getId();
+			String lastAssignee = workflowService.queryLastRuntimeTaskAssigneeByRuntimeExecutionId(executionId);
+			Integer lastAssigneeId = Integer.parseInt(lastAssignee);
+			User lastAssigneeUser = userService.findDtoById(lastAssigneeId);
+			String processDefinitionName = workflowService
+					.queryProcessDefinitionNameByHistoricProcessInstanceId(processInstanceId);
+			String commentMessage = workflowService
+					.queryLastTaskCommentMessageByRuntimeExecutionId(executionId);
+			String initiator = (String) execution.getVariable(Contants.STARTUSERID);
+			Integer initiatorId = Integer.parseInt(initiator);
+			User initiatorUser = userService.findDtoById(initiatorId);
+			
+			remindInfoEntity.setExecutionId(executionId);
+			remindInfoEntity.setInitiatorUser(initiatorUser);
+			remindInfoEntity.setLastAssigneeUser(lastAssigneeUser);
+			remindInfoEntity.setLastCommentMessage(commentMessage);
+			remindInfoEntity.setProcessDefinitionName(processDefinitionName);
+			remindInfoEntity.setProcessInstanceId(processInstanceId);
+
+		} catch (Exception ex) {
+			logger.warn(ex.getMessage());
+		}
+		return remindInfoEntity;
+	}
+
+	@Override
+	public void sendRemind(DelegateExecution execution, boolean isApprove) {
+		RemindInfoEntity remindInfoEntity = getRemindInfoEntity(execution);
+		if (remindInfoEntity != null) {
+			this.sendResultByEmail(remindInfoEntity, isApprove);
+			this.sendResultByMessage(remindInfoEntity, isApprove);
+			this.sendResultBySms(remindInfoEntity, isApprove);
+		}
+	}
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * cn.caecc.erp.support.workflow.service.NoticeService#sendSms(org.activiti.
+	 * engine.delegate.DelegateExecution, boolean)
+	 */
+	
+	private void sendResultBySms(RemindInfoEntity remindInfoEntity, boolean isApprove) {
+		// TODO Auto-generated method stub
+		try {
+			User initiatorUser = remindInfoEntity.getInitiatorUser();
+			String phonenumber = initiatorUser.getTelephone();
+			if (StringUtils.isBlank(phonenumber)) {
+				phonenumber = initiatorUser.getUnittelephone();
+				if (StringUtils.isBlank(phonenumber)) {
+					return;
+				}
+			}
+			String initiatorName = initiatorUser.getName();
+			String processDefinitionName = remindInfoEntity.getProcessDefinitionName();
+			if (isApprove) {
+				smsService.sendWorkflowApproveSms(phonenumber, initiatorName, processDefinitionName);
+			} else {
+				User lastAssigneeUser = remindInfoEntity.getLastAssigneeUser();
+				String lastAssigneeUserName = lastAssigneeUser.getName();
+				String commentMessage = remindInfoEntity.getLastCommentMessage();
+					smsService.sendWorkflowRejectSms(phonenumber, initiatorName, processDefinitionName,
+							lastAssigneeUserName, commentMessage);
+			}
+			
+		} catch (Exception ex) {
+			logger.warn(ex.getMessage());
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * cn.caecc.erp.support.workflow.service.NoticeService#sendEmail(org.activiti.
+	 * engine.delegate.DelegateExecution, boolean)
+	 */
+	private void sendResultByEmail(RemindInfoEntity remindInfoEntity, boolean isApprove) {
+		// TODO Auto-generated method stub
+		try {
+			
+			User initiatorUser = remindInfoEntity.getInitiatorUser();
+			String to = initiatorUser.getEmail();
+			String initiatorName = initiatorUser.getName();
+			String processDefinitionName = remindInfoEntity.getProcessDefinitionName();
+			String subject = processDefinitionName + "最新状态";
+			String content = "";
+
+			if (isApprove) {
+				User lastAssigneeUser = remindInfoEntity.getLastAssigneeUser();
+				String lastAssigneeUserName = lastAssigneeUser.getName();
+				content = String.format("亲爱的%s,很抱歉的通知您，您发起的流程【%s】已被%s驳回", initiatorName, processDefinitionName, lastAssigneeUserName);
+			} else {
+				content = String.format("亲爱的%s,恭喜您，您发起的流程【%s】已通过审批", initiatorName, processDefinitionName);
+			}
+			if (!StringUtils.isBlank(to)) {
+				emailService.sendMail(subject, content, true, to);
+			}
+		} catch (Exception ex) {
+			logger.warn(ex.getMessage());
+		}
+	}
+
+	private void sendResultByMessage(RemindInfoEntity remindInfoEntity, boolean isApprove) {
+		try {
+			User initiatorUser = remindInfoEntity.getInitiatorUser();
+			Integer initiatorId = initiatorUser.getId();
+			String initiatorName = initiatorUser.getName();
+			String processDefinitionName = remindInfoEntity.getProcessDefinitionName();
+			
+			String content = "";
+			String title = processDefinitionName + "最新状态";
+			if (isApprove) {
+				content = String.format("亲爱的%s,恭喜您，您发起的流程【%s】已通过审批", initiatorName, processDefinitionName);
+			} else {
+				User lastAssigneeUser = remindInfoEntity.getLastAssigneeUser();
+				String lastAssigneeUserName = lastAssigneeUser.getName();
+				content = String.format("亲爱的%s,很抱歉的通知您，您发起的流程【%s】已被%s驳回", initiatorName, processDefinitionName, lastAssigneeUserName);
+			}
+			this.messageService.createWorkflowMessage(initiatorId, title, content);
+
+		} catch (Exception ex) {
+			logger.warn(ex.getMessage());
+		}
+	}
+
+}

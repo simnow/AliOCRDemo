@@ -1,0 +1,518 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <title>新闻搜索结果</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <link href="resources/css/jquery-ui-themes.css" type="text/css" rel="stylesheet"/>
+    <link href="resources/css/axure_rp_page.css" type="text/css" rel="stylesheet"/>
+    <link href="data/styles.css" type="text/css" rel="stylesheet"/>
+    <link href="resources/css/pagination.css" type="text/css" rel="stylesheet"/>
+    <link href="files/通知公告/styles.css" type="text/css" rel="stylesheet"/>
+    <link href="files/组织架构/styles.css" type="text/css" rel="stylesheet"/>
+    <link href="resources/css/bodycss.css"  type="text/css" rel="stylesheet"/>
+    <script src="resources/scripts/jquery-1.7.1.min.js"></script>
+    <script src="resources/scripts/jquery-ui-1.8.10.custom.min.js"></script>
+    <script src="resources/scripts/jquery.pagination.js"></script>
+    <script src="resources/scripts/axure/axQuery.js"></script>
+    <script src="resources/scripts/axure/globals.js"></script>
+    <script src="resources/scripts/axutils.js"></script>
+    <script src="resources/scripts/axure/annotation.js"></script>
+    <script src="resources/scripts/axure/axQuery.std.js"></script>
+    <script src="resources/scripts/axure/doc.js"></script>
+    <script src="data/document.js"></script>
+    <script src="resources/scripts/messagecenter.js"></script>
+    <script src="resources/scripts/axure/events.js"></script>
+    <script src="resources/scripts/axure/recording.js"></script>
+    <script src="resources/scripts/axure/action.js"></script>
+    <script src="resources/scripts/axure/expr.js"></script>
+    <script src="resources/scripts/axure/geometry.js"></script>
+    <script src="resources/scripts/axure/flyout.js"></script>
+    <script src="resources/scripts/axure/ie.js"></script>
+    <script src="resources/scripts/axure/model.js"></script>
+    <script src="resources/scripts/axure/repeater.js"></script>
+    <script src="resources/scripts/axure/sto.js"></script>
+    <script src="resources/scripts/axure/utils.temp.js"></script>
+    <script src="resources/scripts/axure/variables.js"></script>
+    <script src="resources/scripts/axure/drag.js"></script>
+    <script src="resources/scripts/axure/move.js"></script>
+    <script src="resources/scripts/axure/visibility.js"></script>
+    <script src="resources/scripts/axure/style.js"></script>
+    <script src="resources/scripts/axure/adaptive.js"></script>
+    <script src="resources/scripts/axure/tree.js"></script>
+    <script src="resources/scripts/axure/init.temp.js"></script>
+    <script src="files/通知公告/data.js"></script>
+    <script src="resources/scripts/axure/legacy.js"></script>
+    <script src="resources/scripts/axure/viewer.js"></script>
+    <script src="resources/scripts/axure/math.js"></script>
+    <script type="text/javascript">
+      $axure.utils.getTransparentGifPath = function() { return 'resources/images/transparent.gif'; };
+      $axure.utils.getOtherPath = function() { return 'resources/Other.html'; };
+      $axure.utils.getReloadPath = function() { return 'resources/reload.html'; };
+    </script>
+    <style>
+      #base {
+          position: relative;
+          margin-top: -207px;
+      }
+      .inport-footer {
+          position: absolute;
+          top:1500px;
+          left: 0px;
+      }
+    	#nav-box {
+    		position: absolute;
+		    left: 379px;
+		    top: 431px;
+		    width: 220px;
+		    height: 300px;
+		    background: #fff;
+		    opacity:1;
+		    margin: 0;
+		    padding: 0;
+    	}
+    	#nav-box li {
+   		    width: 220px;
+		    
+		    background: inherit;
+		    background-color: rgba(242, 242, 242, 1);
+		    border: none;
+		    border-radius: 0px;
+		    margin-bottom: 4px;
+		    list-style:none;
+    	}
+    	#nav-box li p{
+    		display:inline-block;
+    		margin-left: 40px;
+    		height: 46px;
+    		line-height:46px;
+	       font-family: '微软雅黑 Bold', '微软雅黑';
+		   font-weight: 700;
+		   font-style: normal;
+		   font-size: 16px;
+		   color:  #126ACC;
+		   vertical-align: middle;
+		   width:100px;
+    	}
+    	#nav-box li div {
+    		display:inline-block;
+    		margin-left: 40px;
+    		width: 13px;
+    		height: 15px;
+    		vertical-align: middle;
+    		    font-family: 'Arial Normal', 'Arial';
+			   font-weight: 400;
+			   font-style: normal;
+			   font-size: 13px;
+			   color: #333333;
+			   text-align: center;
+			   line-height: normal;
+    	}
+    	#nav-box li div img {
+    		width:100%;
+    	}
+    	#sub-nav-box li {
+		    width: 220px;
+		    
+		    background: inherit;
+		    background-color: rgba(242, 242, 242, 1);
+		    border: none;
+		    border-radius: 0px;
+		    margin-bottom: 4px;
+		    list-style:none;
+    	}
+    	#sub-nav-box li p{
+    		display:inline-block;
+    		margin-left: 40px;
+    		height: 46px;
+    		line-height:46px;
+	       font-family: '微软雅黑 Bold', '微软雅黑';
+		   font-weight: 700;
+		   font-style: normal;
+		   font-size: 16px;
+		   color: #FFFFFF;
+		   vertical-align: middle;
+    	}
+    	#nav-box .sub-nav {
+    		display:none;
+    	}
+    	#nav-box li ul{
+   		  width: 220px;
+		    background: inherit;
+		    background-color: rgba(242, 242, 242, 1);
+		    border: none;
+		    border-radius: 0px;
+		    margin-bottom: 4px;
+		    list-style:none;
+		    margin:0;
+		    padding:0;
+		    padding-top:4px;
+		    background:#fff;
+    	}
+      #u3425, #u3421{
+      position: absolute;
+      left: 1603px;
+      top: 1000px;
+      width: 52px;
+      height: 40px;
+      text-align: center;
+      line-height: 40px;
+      background-color: rgba(242, 242, 242, 1);
+    }
+
+    #u3421 {
+      top: 1060px;
+    }
+    #u3425 img, #u3421 img{
+      margin-top: 10px;
+      width: 21px;
+      height: 21px;
+    }
+    #u3421 img {
+      width: 24px;
+      height: 14px;
+    }
+    
+    .M-box2 {
+      position: absolute;
+      width:400px;
+      left: 1000px;
+      top: 1380px;
+    }
+    .M-box2 a, .M-box2 span {
+      display: inline-block;
+      text-decoration: none;
+      width:30px;
+      height:22px;
+    }
+    .M-box2 .next, .M-box2 .prev {
+      width:55px;
+    }
+    .M-box2 .active {
+      color:#126ACC;
+    }
+
+     #list {
+      position: absolute;
+      left: 628px;
+      top: 429px;
+      width: 951px;
+      /* background:cornflowerblue; */
+      border-top: 1px rgba(242, 242, 242, 1) solid;
+      border-left: 1px  rgba(242, 242, 242, 1) solid;
+      border-right: 1px  rgba(242, 242, 242, 1) solid;
+    }
+    
+    #list ul {
+      width: 951px;
+      margin:0;
+      padding:0;
+    }
+    #list ul li{
+      padding-top:20px;
+      width: 951px;
+      height: 160px;
+      line-height: 50px;
+      border-bottom: 1px rgba(242, 242, 242, 1) solid;
+      list-style: none; 
+      cursor: pointer;
+      
+    }
+    #list ul li .title{
+      padding-left:30px;
+      width: 921px;
+      height: 50px;
+      line-height: 40px;
+      font-size: 18px;
+      color:#126ACC;
+    }
+    #list ul li .abstract{
+      padding-left:30px;
+      width: 895px;
+      height: 60px;
+      line-height: 30px;
+      text-overflow: -o-ellipsis-lastline;overflow: hidden;text-overflow: ellipsis;display: -webkit-box;-webkit-line-clamp: 2;-webkit-box-orient: vertical;
+    }
+    #list ul li .time{
+      padding-left:30px;
+      width:300px;
+      height: 40px;
+      line-height: 40px;
+      overflow: hidden;
+      text-overflow:ellipsis;
+      white-space: break-word;
+      font-size: 14px;
+    }
+    #list ul li:hover {
+      background: #f8f8f8;
+    }
+    #list ul li span {
+      display:inline-block;
+      width:100px;
+      vertical-align: middle;
+    }
+    </style>
+  </head>
+  <body>
+  <div class="body">
+      <div class="move">
+    <div class="inport-header"></div>
+    <div id="base" class="">
+
+      <!-- Unnamed (组合) -->
+      <div id="u3676" class="ax_default">
+
+        <!-- Unnamed (组合) -->
+        <div id="u3677" class="ax_default">
+
+          <!-- Unnamed (组合) -->
+          <div id="u3678" class="ax_default">
+
+            <!-- Unnamed (矩形) -->
+            <div id="u3679" class="ax_default box_2" style="display:none;">
+              <div id="u3679_div" class=""></div>
+              <!-- Unnamed () -->
+              <div id="u3680" class="text" style="display: none; visibility: hidden">
+                <p><span></span></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Unnamed (矩形) -->
+          <div id="u3683" class="ax_default box_2" style="display:none;">
+            <div id="u3683_div" class=""></div>
+            <!-- Unnamed () -->
+            <div id="u3684" class="text" style="display: none; visibility: hidden">
+              <p><span></span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Unnamed (图片) -->
+      <div id="u3687" class="ax_default image">
+        <img id="u3687_img" class="img " src="images/社会热点/u3429.jpg"/>
+        <!-- Unnamed () -->
+        <div id="u3688" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+    
+  <!-- 位置 -->
+    <div id="u944" class="ax_default icon">
+            <img id="u944_img" class="img " src="images/战略院简介/u699.png"/>
+            <!-- Unnamed () -->
+            <div id="u945" class="text" style="display: none; visibility: hidden">
+              <p><span></span></p>
+            </div>
+          </div>
+    <!-- Unnamed (矩形) -->
+          <div id="u942" class="ax_default label">
+            <div id="u942_div" class=""></div>
+            <!-- Unnamed () -->
+            <div id="u943" class="text" style="visibility: visible;">
+              <p><span>当前位置＞动态资讯</span></p>
+            </div>
+          </div>
+    <ul id="nav-box">
+      	<li class="navs" style ="background: rgba(18, 106, 204, 1)">
+      		<p  style ="color: #fff">动态资讯</p> <div></div>
+      		
+      	</li>
+      	<li class="sub-nav">
+      		
+      	</li>
+      	<li class="nav1" >
+      		<p>社会热点</p>
+      		
+      	</li>
+      	<li class="sub-nav" >
+      	</li>
+      	<li class="nav2">
+      		<p>战略院动态</p>
+      		
+      	</li>
+      	<li class="sub-nav">
+      		<ul>
+      		</ul>
+      	</li>
+      	<li class="nav3">
+      		<p>通知公告</p>
+      		
+      	</li>
+      	<li class="sub-nav">
+      		<ul>
+      			
+      		</ul>
+        </li>
+        <li class="nav4">
+      		<p>科普知识</p>
+      		
+      	</li>
+      	<li class="sub-nav">
+      		<ul>
+      			
+      		</ul>
+      	</li>
+      </ul>
+       <!--列表-->
+       <div id="list">
+        <ul>
+        </ul>
+      </div>
+      <div class="M-box2"></div>
+    </div>
+    <div class="inport-footer"></div>
+    </div>
+    </div>
+  </body>
+  <style>
+   
+  </style>
+  <script src="resources/scripts/load.js"></script>
+  <script type="text/javascript">
+//	上来先展开
+  
+  $('#nav-box .nav1').click(function(){
+	  //转换页面
+	  window.location.href='社会热点.html';
+  });
+ $('#nav-box .nav4').click(function(){
+	  //转换页面
+	  window.location.href='科普知识.html';
+  });
+  $('#nav-box .nav3').click(function(){
+	  //转换页面
+	  window.location.href='通知公告.html';
+  });
+  $('#nav-box .nav2').click(function(){
+	  //转换页面
+	  window.location.href='战略院动态.html';
+  });
+  	$(function(){
+      $(".inport-footer").load("footer.html", function() {});
+      var locs = '';
+      if(decodeURI(window.location).indexOf("?") != '-1') {
+        var urls = window.location.search;
+        locs =  decodeURI(urls.substring(urls.lastIndexOf('=')+1, urls.length));
+      } else {
+        locs =  '';
+      }
+      console.log('0000000', locs);
+      console.log($(".inport-header").html());
+      $(".input-box .searches").val(locs);
+      var data = {
+        keyword: locs,
+        pageNo: 1,
+        pageSize: 5
+      };
+      $.get('/bswebsite/api/news/keyword', data, function (json) {
+        console.log(json);
+        if (json.success) {
+          var listData = json.attributes.news;
+          var lists = '';
+          for (var i in listData) {
+            lists += '<li>';
+              lists += ' <input type="hidden" value="'+ listData[i]['id'] +'">';
+              lists += '<p class="title">'+  listData[i]['newstitle'] +'</p>';
+              lists += '<p class="abstract">'+  listData[i]['newstitle'] +'</p>';
+              lists += '<p class="time">'+  listData[i]['publishtime'] +'</p>';
+            lists += '</li>';
+          }
+          $("#list ul").html(lists);
+          $("#list ul li").on('click', function() {
+            var id = $(this).find('input').val();
+            window.location.href ="新闻详情.html?id=" + id;
+          });
+        }
+          
+      });
+
+      $('.M-box2').pagination({
+        pageCount: 5,
+        coping: true,
+        prevContent: '上页',
+        nextContent: '下页',
+        callback: function (api) {
+          var data = {
+            keyword:  encodeURI(locs),
+            pageNo: api.getCurrent(),
+            pageSize: 5
+          };
+          $.get('/bswebsite/api/news/keyword', data, function (json) {
+            console.log(json);
+            if (json.success) {
+              var listData = json.attributes.news;
+              var lists = '';
+              for (var i in listData) {
+                lists += '<li>';
+                  lists += ' <input type="hidden" value="'+ listData[i]['id'] +'">';
+                  lists += '<p class="title">'+  listData[i]['newstitle'] +'</p>';
+                  lists += '<p class="abstract">'+  listData[i]['newstitle'] +'</p>';
+                  lists += '<p class="time">'+  listData[i]['publishtime'] +'</p>';
+                lists += '</li>';
+              }
+              $("#list ul").html(lists);
+              $("#list ul li").on('click', function() {
+                var id = $(this).find('input').val();
+                window.location.href ="新闻详情.html?id=" + id;
+              });
+            }
+              
+          });
+        }
+      });
+
+  		$('#nav-box .nav').click(function(){
+  			$('#nav-box .nav').each(function() {
+	  			
+	  			$(this).find('p').css('color', '#126ACC');
+	  			$(this).find('div').css({
+
+	  				'webkitTransform':'rotate(0deg)',
+
+	  				'transform':'rotate(0deg)'
+	  				});
+	  		});
+  			$(this).find('div').css({
+
+  				'webkitTransform':'rotate(90deg)',
+
+  				'transform':'rotate(90deg)'
+  				});
+  			$(this).next('li').find('ul').find('p').css('color', '#666666');
+  			console.log($(this).next('li').html());
+  			if ($(this).next('li').is(':hidden')) {
+  				$('#nav-box .sub-nav').each(function() {
+  	  				$(this).hide();
+  	  			});
+  				$(this).next('li').show();
+  			} else {
+  				$(this).next('li').hide();
+  				$(this).find('div').css({
+
+	  				'webkitTransform':'rotate(0deg)',
+
+	  				'transform':'rotate(0deg)'
+	  				});
+  			}
+        
+  		});
+  		
+      $("#list li").on('click', function() {
+        var id = $(this).find('input').val();
+        window.location.href = '新闻详情.html?id=' + id + '';
+      });
+
+  		$('#nav-box .sub-nav li').click(function(){
+  			$('#nav-box .sub-nav li').each(function() {
+	  			$(this).find('p').css('color', '#666666');
+	  		});
+  			$(this).find('p').css('color', '#126ACC');
+  		});
+  	});
+
+
+  </script>
+</html>

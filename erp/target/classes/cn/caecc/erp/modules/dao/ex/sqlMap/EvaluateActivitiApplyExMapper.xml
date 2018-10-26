@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="cn.caecc.erp.modules.dao.ex.mapper.EvaluateActivitiApplyExMapper">
+	<resultMap type="cn.caecc.erp.modules.dao.ex.dto.EvaluateActivitiApplyDto"
+		id="evaluateActivitiApplyDto">
+		<id column="Id" jdbcType="INTEGER" property="id" />
+		<result column="ProcessInstanceId" jdbcType="VARCHAR" property="processinstanceid" />
+		<result column="UId" jdbcType="INTEGER" property="uid" />
+		<result column="DId" jdbcType="INTEGER" property="did" />
+		<result column="SId" jdbcType="INTEGER" property="sid" />
+		<result column="Evaluate1" jdbcType="VARCHAR" property="evaluate1" />
+		<result column="Evaluate2" jdbcType="VARCHAR" property="evaluate2" />
+		<result column="Evaluate3" jdbcType="VARCHAR" property="evaluate3" />
+		<result column="Evaluate4" jdbcType="VARCHAR" property="evaluate4" />
+		<result column="Evaluate5" jdbcType="VARCHAR" property="evaluate5" />
+		<result column="CreateUserId" jdbcType="INTEGER" property="createuserid" />
+		<result column="CreateTime" jdbcType="TIMESTAMP" property="createtime" />
+		<result column="IsSuccess" jdbcType="INTEGER" property="issuccess" />
+		<result column="uname" property="uname" jdbcType="VARCHAR" />
+		<result column="dname" property="dname" jdbcType="VARCHAR" />
+		<result column="sname" property="sname" jdbcType="VARCHAR" />
+		<result column="cname" property="cname" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<!-- 查询详情 -->
+	<select id="findDetail" resultMap="evaluateActivitiApplyDto">
+		select e.*,u.name uname,d.name dname,s.name sname,c.name cname
+		from
+		evaluate_activiti_apply e
+		left join user u
+		on(e.uid = u.id)
+		left join
+		department d
+		on(e.did = d.id)
+		left join supplier s
+		on(e.sid = s.id)
+		left
+		join user c
+		on(e.createuserid = c.id)
+		<where>
+			<if test="id != null">
+				e.id = #{id}
+			</if>
+		</where>
+	</select>
+
+	<!-- 按条件获取分页列表 -->
+	<select id="getList" resultMap="evaluateActivitiApplyDto">
+		select e.*,u.name uname,d.name dname,s.name sname,c.name cname
+		from
+		evaluate_activiti_apply e
+		left join user u
+		on(e.uid = u.id)
+		left join
+		department d
+		on(e.did = d.id)
+		left join supplier s
+		on(e.sid = s.id)
+		left
+		join user c
+		on(e.createuserid = c.id)
+		<where>
+			<if test="userid != null">
+				e.createuserid = #{userid}
+			</if>
+			<if test="drafts == 'drafts'">
+				and e.processinstanceid is null
+			</if>
+			<if test="isSuccess != null">
+				and e.issuccess = #{isSuccess}
+			</if>
+		</where>
+	</select>
+</mapper>

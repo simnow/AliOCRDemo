@@ -1,0 +1,137 @@
+package cn.caecc.erp.modules.service.serviceImpl;
+
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import cn.caecc.erp.modules.dao.mybatis.entity.WellXwDaily;
+import cn.caecc.erp.modules.dao.mybatis.entity.WellXwDailyExample;
+import cn.caecc.erp.modules.dao.mybatis.entity.WellXwDailyExample.Criteria;
+import cn.caecc.erp.modules.dao.mybatis.mapper.WellXwDailyMapper;
+import cn.caecc.erp.modules.service.WellXwDailyService;
+import cn.caecc.erp.support.message.Message;
+import cn.caecc.erp.support.util.DateUtil;
+@Service
+public class WellXwDailyServiceImpl implements WellXwDailyService {
+
+	@Autowired
+	private WellXwDailyMapper wellXwDailyMapper;
+	
+	@Override
+	public boolean insertWellXwDaily(WellXwDaily wellXwDaily) {
+		wellXwDaily.setCreatetime(DateUtil.getcurrentDateTime());
+		WellXwDailyExample example=new WellXwDailyExample();
+		Criteria criteria=example.createCriteria();
+		criteria.andLogdateEqualTo(wellXwDaily.getLogdate());
+		criteria.andWellidEqualTo(wellXwDaily.getWellid());
+		List<WellXwDaily> result1 =wellXwDailyMapper.selectByExample(example);
+		if(null!=result1&&result1.size()>0){
+			return false;
+		}
+		int result=wellXwDailyMapper.insertSelective(wellXwDaily);
+		if(result>0){
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean deleteWellXwDaily(int id) {
+		if(wellXwDailyMapper.deleteByPrimaryKey(id)>0){
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public WellXwDaily getWellXwDailyById(int id) {
+		return wellXwDailyMapper.selectByPrimaryKey(id);
+	}
+
+	@Override
+	public Message listWellXwDaily(String startDate, String endDate, Integer wellId, int pageNo, int pageSize) {
+		PageHelper.startPage(pageNo, pageSize, "logdate desc");
+		WellXwDailyExample example=new WellXwDailyExample();
+		Criteria criteria=example.createCriteria();
+		if(StringUtils.isNotBlank(startDate)){
+			criteria.andLogdateGreaterThanOrEqualTo(DateUtil.convertStringToDate(startDate, DateUtil.YYYY_MM_DD));
+		}
+		if(StringUtils.isNotBlank(endDate)){
+			criteria.andLogdateLessThanOrEqualTo(DateUtil.convertStringToDate(endDate, DateUtil.YYYY_MM_DD));
+		}
+		if(null!=wellId){
+			criteria.andWellidEqualTo(wellId);
+		}
+		Message message=new Message();
+		List<WellXwDaily> result=wellXwDailyMapper.selectByExample(example);
+		if(result!=null&&result.size()>0){
+			PageInfo<WellXwDaily> pageinfo=new PageInfo<>(result);
+			message.setObj(pageinfo);
+		}
+		return message;
+	}
+	@Override
+	public Message listWellXwDailyNoPage(String startDate, String endDate, Integer wellId) {
+		WellXwDailyExample example=new WellXwDailyExample();
+		Criteria criteria=example.createCriteria();
+		example.setOrderByClause("logdate desc");
+		if(StringUtils.isNotBlank(startDate)){
+			criteria.andLogdateGreaterThanOrEqualTo(DateUtil.convertStringToDate(startDate, DateUtil.YYYY_MM_DD));
+		}
+		if(StringUtils.isNotBlank(endDate)){
+			criteria.andLogdateLessThanOrEqualTo(DateUtil.convertStringToDate(endDate, DateUtil.YYYY_MM_DD));
+		}
+		if(null!=wellId){
+			criteria.andWellidEqualTo(wellId);
+		}
+		Message message=new Message();
+		List<WellXwDaily> result=wellXwDailyMapper.selectByExample(example);
+		if(result!=null&&result.size()>0){
+			message.setObj(result);
+		}
+		return message;
+	}
+
+	@Override
+	public boolean updateWellXwDaily(WellXwDaily wellXwDaily) {
+		if(wellXwDailyMapper.updateByPrimaryKeySelective(wellXwDaily)>0){
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public Message selectXwWellDaily(Date logDate, Integer wellId) {
+		WellXwDailyExample example=new WellXwDailyExample();
+		Criteria criteria=example.createCriteria();
+		if(null!=logDate){
+			criteria.andLogdateEqualTo(logDate);
+		}
+		if(null!=wellId){
+			criteria.andWellidEqualTo(wellId);
+		}
+		example.setOrderByClause("logdate desc");
+		Message message=new Message();
+		message.setObj(wellXwDailyMapper.selectByExample(example));
+		return message;
+	}
+	@Override
+	public WellXwDaily getLessThanOrEqualTo(Date logday,int wellId) {
+		WellXwDailyExample example=new WellXwDailyExample();
+		Criteria criteria=example.createCriteria();
+		criteria.andLogdateLessThanOrEqualTo(logday);
+		criteria.andWellidEqualTo(wellId);
+		example.setOrderByClause("LogDate desc");
+		List<WellXwDaily> list=wellXwDailyMapper.selectByExample(example);
+		if(list!=null&&list.size()>0){
+			return list.get(0);
+		}
+		return null;
+	}
+
+}

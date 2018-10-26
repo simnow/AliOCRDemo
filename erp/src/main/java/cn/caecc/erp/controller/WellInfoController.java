@@ -1,0 +1,236 @@
+package cn.caecc.erp.controller;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import cn.caecc.erp.modules.dao.ex.dto.WellInfoDto;
+import cn.caecc.erp.modules.dao.mybatis.entity.WellInfo;
+import cn.caecc.erp.modules.service.DxWellInfoService;
+import cn.caecc.erp.modules.service.WellDxDailyService;
+import cn.caecc.erp.modules.service.WellLogService;
+import cn.caecc.erp.modules.service.WellinfoService;
+import cn.caecc.erp.support.constant.Contants;
+import cn.caecc.erp.support.message.Message;
+import cn.caecc.erp.support.oss.service.OssService;
+import cn.caecc.erp.support.util.DateUtil;
+
+/**
+ * 井基础信息操作
+ * @author GaiNing
+ *
+ */
+@RequestMapping(value="/api/well")
+@Controller
+public class WellInfoController {
+	@Autowired
+	public WellinfoService wellInfoService;
+	@Autowired
+	public DxWellInfoService dxwellInfoService;
+	@Autowired
+	public WellLogService wellLogService;
+	@Autowired
+	public WellDxDailyService wellDxDailyService;
+	@Autowired
+	public OssService ossService;
+	
+	/**
+	 * 添加井信息
+	 * @param wellinfo
+	 */
+	@RequestMapping(method=RequestMethod.POST)
+	@ResponseBody
+	public Message insertWellInfo(@RequestBody WellInfo wellinfo){
+		Message message=new Message();
+		//添加中完时间判断
+//		wellinfo.setZwsj(0);
+		if(wellinfo.getFirstwzsj()!=null&&wellinfo.getSecondkzsj()!=null){
+			wellinfo.setZwsj((int) DateUtil.getDaySub(wellinfo.getFirstwzsj(),wellinfo.getSecondkzsj()));
+		}
+		if(wellinfo.getSecondwzsj()!=null&&wellinfo.getThirdkzsj()!=null){
+			wellinfo.setZwsjtwo((int) DateUtil.getDaySub(wellinfo.getSecondwzsj(),wellinfo.getThirdkzsj()));
+		}
+		if(wellinfo.getThirdwzsj()!=null&&wellinfo.getFourthkzsj()!=null){
+			wellinfo.setZwsjthree((int) DateUtil.getDaySub(wellinfo.getThirdwzsj(),wellinfo.getFourthkzsj()));
+		}
+		if(wellinfo.getFourthwzsj()!=null&&wellinfo.getFifthkzsj()!=null){
+			wellinfo.setZwsjfour((int) DateUtil.getDaySub(wellinfo.getFourthwzsj(),wellinfo.getFifthkzsj()));
+		}
+		int result=wellInfoService.insertWellInfo(wellinfo);
+		if(result>0){
+			message.setObj(result);
+			return message;
+		}else{
+			message.setSuccess(false);
+			message.setMsg("存储失败");
+		}
+		return message;
+	}
+	/**
+	 * 删除井信息
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value="/{id}",method=RequestMethod.DELETE)
+	@ResponseBody
+	@RequiresPermissions(Contants.WELL_DELETE_PERMISSION)
+	public Message deleteWellInfoById(@PathVariable("id") int id,String type){
+		Message message=new Message();
+		boolean result=false;
+		message.setSuccess(result);
+		message.setMsg("删除失败");
+		if(Contants.Well_PT.equals(type)){
+			//判断有没有日志，有就不让删除
+			if(!wellLogService.isExitDaily(id)){
+				result=wellInfoService.deleteWellInfo(id);
+			}else{
+				message.setMsg("已存在日报，不能删除");
+			}
+		}else if(Contants.Well_DX.equals(type)){
+			Message daily=wellDxDailyService.selectDxWellDaily(null, id);
+			if(null==daily.getObj()){
+				result=dxwellInfoService.deleteDxWellInfo(id);
+			}else{
+				message.setMsg("已存在日报，不能删除");
+			}
+		}
+		if(result){
+			message.setMsg("删除成功");
+			message.setSuccess(result);
+			return message;
+		}
+		return message;
+	}
+	
+	/**
+	 * 更新
+	 * @param wellinfo
+	 * @return
+	 */
+	@RequiresPermissions(Contants.WELL_UPDATE_PERMISSION)
+	@RequestMapping(method=RequestMethod.PUT)
+	@ResponseBody
+	public Message updateWellInfo(@RequestBody WellInfo wellinfo){
+		Message message=new Message();
+		if(wellinfo.getFirstwzsj()!=null&&wellinfo.getSecondkzsj()!=null){
+			wellinfo.setZwsj((int) DateUtil.getDaySub(wellinfo.getFirstwzsj(),wellinfo.getSecondkzsj()));
+		}
+		if(wellinfo.getSecondwzsj()!=null&&wellinfo.getThirdkzsj()!=null){
+			wellinfo.setZwsjtwo((int) DateUtil.getDaySub(wellinfo.getSecondwzsj(),wellinfo.getThirdkzsj()));
+		}
+		if(wellinfo.getThirdwzsj()!=null&&wellinfo.getFourthkzsj()!=null){
+			wellinfo.setZwsjthree((int) DateUtil.getDaySub(wellinfo.getThirdwzsj(),wellinfo.getFourthkzsj()));
+		}
+		if(wellinfo.getFourthwzsj()!=null&&wellinfo.getFifthkzsj()!=null){
+			wellinfo.setZwsjfour((int) DateUtil.getDaySub(wellinfo.getFourthwzsj(),wellinfo.getFifthkzsj()));
+		}
+		if(wellInfoService.updateWellInfo(wellinfo)){
+			return message;
+		}else{
+			message.setMsg("更新失败");
+			message.setSuccess(false);
+			return message;
+		}
+	}
+	/**
+	 * 查询单井
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value="/{id}",method=RequestMethod.GET)
+	@ResponseBody
+	public Message selectWellInfoById(@PathVariable("id") int id){
+		Message message=new Message();
+		WellInfo wellinfo=wellInfoService.selectWellInfoById(id);
+		message.setObj(wellinfo);
+		return message;
+	}
+	/**
+	 * 查询状态井列表(state:0在钻井)
+	 * @param state
+	 * @return
+	 */
+	@RequestMapping(value="/list",method=RequestMethod.GET)
+	@ResponseBody
+	public Message selectWellInfoByState(int state,Integer wellcode,int pageNo,int pageSize){
+		return wellInfoService.selectWellInfoListByState(state,wellcode,pageNo,pageSize);
+	}
+	
+	/**
+	 * 查询单号列表
+	 * @param state,0在钻井
+	 * @return
+	 */
+	@RequestMapping(value="/wellcode",method=RequestMethod.GET)
+	@ResponseBody
+	public Message selectAllWellcode(int state){
+		Message message=new Message();
+		List<WellInfo> wellinfo=wellInfoService.selectWellInfoByState(state);
+		if(wellinfo!=null&&wellinfo.size()>0){
+			List<WellInfoDto> dtolist=new ArrayList<>();
+			for(int i=0;i<wellinfo.size();i++){
+				WellInfoDto dto=new WellInfoDto();
+				dto.setId(wellinfo.get(i).getId());
+				dto.setWellcode(wellinfo.get(i).getWellcode());
+				dto.setDid(wellinfo.get(i).getDid());
+				dtolist.add(dto);
+			}
+			message.setObj(dtolist);
+		}	
+		return message;
+	}
+	
+	/**
+	 * 查询井队列表
+	 * @return
+	 */
+	@RequestMapping(value="/wellteam",method=RequestMethod.GET)
+	@ResponseBody
+	public Message selectDidList(){
+		Message message=new Message();
+		message.setObj(wellInfoService.selectDidList());
+		return message;
+	}
+	
+	/**
+	 * 通过did查询井信息
+	 */
+	@RequestMapping(value="/welllist",method=RequestMethod.GET)
+	@ResponseBody
+	public Message selectWellInfoLlistByDidList(Integer did){
+		Message message=new Message();
+		List<WellInfo>	wellInfoList=wellInfoService.getWellInfoBydid(did);
+		if(wellInfoList!=null&&wellInfoList.size()>0){
+			List<WellInfoDto> dtolist=new ArrayList<>();
+			for(int i=0;i<wellInfoList.size();i++){
+				WellInfoDto dto=new WellInfoDto();
+				dto.setId(wellInfoList.get(i).getId());
+				dto.setWellcode(wellInfoList.get(i).getWellcode());
+				dto.setDid(wellInfoList.get(i).getDid());
+				dtolist.add(dto);
+			}
+			message.setObj(dtolist);
+		}	
+		return message;
+	}
+	@RequestMapping(value="/delossfile",method=RequestMethod.GET)
+	@ResponseBody
+	public Message deleteOssFileByPath(String ossPath){
+		try {
+			if(StringUtils.isNotBlank(ossPath)){
+				ossService.deleteObject(ossPath.replaceAll(ossService.getUrlPrefix(), ""));
+			}
+		} catch (Exception e) {
+			e.getMessage();
+		}
+		return new Message();
+	}
+}

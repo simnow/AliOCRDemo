@@ -1,0 +1,109 @@
+package cn.caecc.erp.modules.service.serviceImpl;
+
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+
+import cn.caecc.erp.modules.dao.mybatis.entity.WellDxInfo;
+import cn.caecc.erp.modules.dao.mybatis.entity.WellDxInfoExample;
+import cn.caecc.erp.modules.dao.mybatis.entity.WellDxInfoExample.Criteria;
+import cn.caecc.erp.modules.dao.mybatis.mapper.WellDxInfoMapper;
+import cn.caecc.erp.modules.service.DxWellInfoService;
+import cn.caecc.erp.support.message.Message;
+import cn.caecc.erp.support.util.DateUtil;
+@Service
+public class DxWellInfoServiceImpl implements DxWellInfoService {
+
+	@Autowired
+	private WellDxInfoMapper wellDxInfoMapper;
+	
+	@Override
+	public int insertDxWellInfo(WellDxInfo dxWellinfo) {
+		if(StringUtils.isNotBlank(DateUtil.DateToString(dxWellinfo.getWcsj(), DateUtil.YYYY_MM_DD))){
+			dxWellinfo.setState(1);
+		}else{
+			dxWellinfo.setState(0);
+		}
+		dxWellinfo.setCreatetime(DateUtil.getcurrentDateTime());
+		int result=wellDxInfoMapper.insertSelective(dxWellinfo);
+		if(result>0){
+			return dxWellinfo.getId();
+		}else{
+			return 0;
+		}
+	}
+
+	@Override
+	public boolean deleteDxWellInfo(int id) {
+		if(wellDxInfoMapper.deleteByPrimaryKey(id)>0){
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean updateDxWellInfo(WellDxInfo dxWellinfo) {
+		if(StringUtils.isNotBlank(DateUtil.DateToString(dxWellinfo.getWcsj(), DateUtil.YYYY_MM_DD))){
+			dxWellinfo.setState(1);
+		}else{
+			dxWellinfo.setState(0);
+		}
+		if(wellDxInfoMapper.updateByPrimaryKey(dxWellinfo)>0){
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public WellDxInfo selectDxWellInfoById(int id) {
+		return wellDxInfoMapper.selectByPrimaryKey(id);
+	}
+
+	@Override
+	public List<WellDxInfo> selectDxWellInfoByState(int state) {
+		WellDxInfoExample example=new WellDxInfoExample();
+		Criteria criteria=example.createCriteria();
+		if(state!=3){
+			criteria.andStateEqualTo(state);
+		}
+		example.setOrderByClause("CreateTime desc");
+		return wellDxInfoMapper.selectByExample(example);
+	}
+
+	@Override
+	public boolean updateDxWellDepthById(int id, Double depth) {
+		WellDxInfo dxwellinfo=new WellDxInfo();
+		dxwellinfo.setId(id);
+		if(null!=depth){
+			dxwellinfo.setCurrentdepth(depth);
+			if(wellDxInfoMapper.updateByPrimaryKeySelective(dxwellinfo)>0){
+				return true;
+			}
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public Message selectDxWellInfoListByState(int state, Integer wellId, int pageNo, int pageSize) {
+		Message message = new Message();
+		PageHelper.startPage(pageNo, pageSize);
+		WellDxInfoExample example=new WellDxInfoExample();
+		Criteria criteria=example.createCriteria();
+		criteria.andStateEqualTo(state);
+		if(null!=wellId){
+			criteria.andIdEqualTo(wellId);
+		}
+		example.setOrderByClause("CreateTime desc");
+		List<WellDxInfo> list= wellDxInfoMapper.selectByExample(example);
+		PageInfo<WellDxInfo> pageInfo = new PageInfo<>(list);
+		message.setObj(pageInfo);
+		return message;
+	}
+
+}

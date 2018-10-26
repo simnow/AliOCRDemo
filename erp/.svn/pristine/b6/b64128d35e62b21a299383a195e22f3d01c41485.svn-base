@@ -1,0 +1,3 @@
+redis.hostName=r-hp3d52d63381bea4.redis.huhehaote.rds.aliyuncs.com
+redis.port=6379
+redis.password=wz861207%

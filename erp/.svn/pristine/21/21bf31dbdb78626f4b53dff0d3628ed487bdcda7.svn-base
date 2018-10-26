@@ -1,0 +1,809 @@
+package cn.caecc.erp.controller;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import com.github.pagehelper.PageInfo;
+import cn.caecc.erp.controller.UserController;
+import cn.caecc.erp.support.util.AesUtil;
+import cn.caecc.erp.support.util.RegexUtil;
+import cn.caecc.erp.modules.dao.ex.dto.UserDto;
+import cn.caecc.erp.modules.dao.mybatis.entity.User;
+import cn.caecc.erp.modules.service.UserRoleRelationshipService;
+import cn.caecc.erp.modules.service.UserService;
+import cn.caecc.erp.support.captcha.service.CaptchaService;
+import cn.caecc.erp.support.constant.Contants;
+import cn.caecc.erp.support.exception.CommonException;
+import cn.caecc.erp.support.message.Message;
+import cn.caecc.erp.support.sms.service.SmsService;
+
+@Controller
+@RequestMapping("/api/user")
+public class UserController {
+
+	private final static Logger logger = LoggerFactory.getLogger(UserController.class);
+
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private SmsService smsService;
+	@Autowired
+	private UserRoleRelationshipService urService;
+	@Autowired
+	private HttpSession session;
+	@Autowired
+	private CaptchaService captchaService;
+
+	
+	public static final String PASSWORDNOMATCH = "密码必须由8-20位字母、数字、特殊字符组成";
+	public static final String EMAILNOMATCH = "邮箱格式错误";
+	public static final String TELEPHONENOMATCH = "手机号格式错误";
+	public static final String UNITTELEPHONENOMATCH = "单位手机号格式错误";
+	public static final String IDNONOMATCH = "身份证号格式错误";
+	public static final String LANDLINENOMATCH = "座机格式错误";
+
+	@ResponseBody
+	@RequestMapping(method = RequestMethod.POST)
+	@RequiresPermissions(Contants.USER_ADD_PERMISSION)
+	public Message createUser(@RequestBody User user) {
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			user.setPassword(AesUtil.encrypt("123456"));
+			user.setCreatetime(new Date());
+			int ret = userService.createUser(user);
+			if (ret > 0) {
+				message.setSuccess(true);
+			}
+		} catch (CommonException ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+	
+	
+	private void checkUserInfo(User user) throws Exception {
+		String email = user.getEmail();
+		if (email != null) {
+			if (StringUtils.isBlank(email)) {
+				user.setEmail(null);
+			} else {
+				boolean isMatch = RegexUtil.checkEmail(email);
+				if (!isMatch) {
+					throw new Exception(EMAILNOMATCH);
+				}
+			}
+		}
+		
+		String telephone = user.getTelephone();
+		if (telephone != null) {
+			if (StringUtils.isBlank(telephone)) {
+				user.setTelephone(null);
+			} else {
+				boolean isMatch = RegexUtil.checkTelphone(telephone);
+				if (!isMatch) {
+					throw new Exception(TELEPHONENOMATCH);
+				}
+			}
+		}
+		
+		String unittelephone = user.getUnittelephone();
+		if (unittelephone != null) {
+			if (StringUtils.isBlank(unittelephone)) {
+				user.setUnittelephone(null);
+			} else {
+				boolean isMatch = RegexUtil.checkTelphone(unittelephone);
+				if (!isMatch) {
+					throw new Exception(UNITTELEPHONENOMATCH);
+				}
+			}
+		}
+		
+		String idNo = user.getIdno();
+		if (idNo != null) {
+			if (StringUtils.isBlank(idNo)) {
+				user.setIdno(null);
+			} else {
+				boolean isMatch = RegexUtil.checkIdNo(idNo);
+				if (!isMatch) {
+					throw new Exception(IDNONOMATCH);
+				}
+			}
+		}
+		
+		String landline = user.getLandline();
+		if (landline != null) {
+			if (StringUtils.isBlank(landline)) {
+				user.setLandline(null);
+			} else {
+				boolean isMatch = RegexUtil.checkLandline(landline);
+				if (!isMatch) {
+					throw new Exception(LANDLINENOMATCH);
+				}
+			}
+		}
+	}
+
+	private Message updateByIdInternal(User user) throws IllegalAccessException, InvocationTargetException {
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			checkUserInfo(user);
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+			return message;
+		}
+		User tmpUser = userService.findById(user.getId());
+		user.setPassword(tmpUser.getPassword());
+		
+		int ret = userService.update(user);
+		if (ret > 0) {
+			message.setSuccess(true);
+		}
+		return message;
+	} 
+	
+	@RequiresPermissions(Contants.USER_UPDATE_PERMISSION)
+	@ResponseBody
+	@RequestMapping(method = RequestMethod.PUT)
+	public Message updateById(@RequestBody User user) throws IllegalAccessException, InvocationTargetException {
+		return updateByIdInternal(user);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/mine", method = RequestMethod.PUT)
+	public Message updateMineById(@RequestBody User user) throws IllegalAccessException, InvocationTargetException {
+		Message message = new Message();
+		Integer myId = (Integer) session.getAttribute(Contants.LOGINUSERID);
+		if (myId.equals(user.getId())) {
+			return updateByIdInternal(user);
+		} else {
+			message.setMsg("您不能修改别人的信息");
+		}
+		return message;
+
+	}
+	@RequiresPermissions(Contants.USER_SELECT_PERMISSION)
+	@ResponseBody
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
+	public Message findById(@PathVariable("id") int userId) {
+		Message message = new Message();
+		message.setSuccess(false);
+		if (userId == 0) {
+			message.setMsg("用户ID不能为空");
+		} else {
+			UserDto userDto = userService.findDtoById(userId);
+			if (userDto == null) {
+				message.setMsg("该用户不存在2");
+			} else {
+				message.setSuccess(true);
+				message.setObj(userDto);
+			}
+		}
+		return message;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/ur/mine", method = RequestMethod.GET)
+	public Message findMineAll() {
+		Message message = new Message();
+		message.setSuccess(false);
+		Integer myId = (Integer) session.getAttribute(Contants.LOGINUSERID);
+		UserDto userDto = urService.findUrByUserId(myId);
+		message.setSuccess(true);
+		message.setObj(userDto);
+		return message;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/mine", method = RequestMethod.GET)
+	public Message findMine() {
+		Message message = new Message();
+		message.setSuccess(false);
+		Integer myId = (Integer) session.getAttribute(Contants.LOGINUSERID);
+		UserDto userDto = userService.findDtoById(myId);
+		if (userDto == null) {
+			message.setMsg("该用户不存在2");
+		} else {
+			message.setSuccess(true);
+			message.setObj(userDto);
+		}
+		return message;
+	}
+
+	@ResponseBody
+	@RequiresPermissions(Contants.USER_SELECT_PERMISSION)
+	@RequestMapping(value = "/list", method = RequestMethod.GET)
+	public Message getList() {
+		Message message = new Message();
+		message.setSuccess(false);
+		List<User> list = userService.getList();
+		if (list != null && list.size() > 0) {
+			message.setObj(list);
+			message.setSuccess(true);
+		}
+		return message;
+	}
+
+	@ResponseBody
+	@RequiresPermissions(Contants.USER_SELECT_PERMISSION)
+	@RequestMapping(value = "/pagelist", method = RequestMethod.GET)
+	public Message findPageList(@RequestParam("pageNo") int pageNo, @RequestParam("pageSize") int pageSize,
+			@RequestParam("did") int did) {
+		Message message = new Message();
+		message.setSuccess(false);
+		if (pageNo == 0) {
+			message.setMsg("请选中要查询页数");
+		} else if (pageSize == 0) {
+			message.setMsg("页数大小不能为0");
+		} else {
+			PageInfo<UserDto> pageInfo = userService.findPageList(pageNo, pageSize, did);
+			message.setSuccess(true);
+			message.setObj(pageInfo);
+		}
+		return message;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/contact/pagelist", method = RequestMethod.GET)
+	public Message findContactPageList(@RequestParam("pageNo") int pageNo, @RequestParam("pageSize") int pageSize,
+			@RequestParam("did") int did) {
+		Message message = new Message();
+		message.setSuccess(false);
+		if (pageNo == 0) {
+			message.setMsg("请选中要查询页数");
+		} else if (pageSize == 0) {
+			message.setMsg("页数大小不能为0");
+		} else {
+			PageInfo<UserDto> pageInfo = userService.findContactPageList(pageNo, pageSize, did);
+			message.setSuccess(true);
+			message.setObj(pageInfo);
+		}
+		return message;
+	}
+
+	@ResponseBody
+	@RequiresPermissions(Contants.USER_SELECT_PERMISSION)
+	@RequestMapping(value = "/name-like", method = RequestMethod.GET)
+	public Message findByNameLike(@RequestParam("pageNo") int pageNo, @RequestParam("pageSize") int pageSize,
+			@RequestParam("userName") String userName) {
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			PageInfo<UserDto> pageInfo = userService.findByNameLike(pageNo, pageSize, userName.trim());
+			message.setSuccess(true);
+			message.setObj(pageInfo);
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+
+		return message;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/contact/name-like", method = RequestMethod.GET)
+	public Message findContactByNameLike(@RequestParam("pageNo") int pageNo, @RequestParam("pageSize") int pageSize,
+			@RequestParam("userName") String userName) {
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			PageInfo<UserDto> pageInfo = userService.findContactByNameLike(pageNo, pageSize, userName.trim());
+			message.setSuccess(true);
+			message.setObj(pageInfo);
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+
+		return message;
+	}
+
+	@ResponseBody
+	@RequiresPermissions(Contants.USER_DEL_PERMISSION)
+	@RequestMapping(method = RequestMethod.DELETE)
+	public Message delById(int userId) {
+		Message message = new Message();
+		message.setSuccess(false);
+		String msg = "该用户已产生过相关信息，不能删除";
+		try {
+			int ret = userService.delById(userId);
+			if (ret > 0) {
+				message.setSuccess(true);
+			} else {
+				message.setMsg("删除失败");
+			}
+		} catch (Exception ex) {
+			message.setMsg(msg);
+		}
+		return message;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/loginName", method = RequestMethod.GET)
+	public Message findByLoginName(String loginName, Integer exceptUserId) {
+		Message message = new Message();
+		message.setSuccess(false);
+		User user = userService.findByLoginName(loginName);
+		if (user == null || user.getId().equals(exceptUserId)) {
+			message.setMsg("用户名可用");
+			message.setSuccess(true);
+		} else {
+			message.setMsg("用户名已被注册");
+		}
+		return message;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/telephone", method = RequestMethod.GET)
+	public Message findByTelephone(String telephone, Integer exceptUserId) {
+		Message message = new Message();
+		message.setSuccess(false);
+		User user = userService.findByTelphone(telephone);
+		if (user == null || user.getId().equals(exceptUserId)) {
+			message.setSuccess(true);
+			message.setMsg("手机号可用");
+		} else {
+			message.setMsg("手机号已被注册");
+		}
+		return message;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/unit-telephone", method = RequestMethod.GET)
+	public Message findByUnitTelephone(String unittelephone, Integer exceptUserId) {
+		Message message = new Message();
+		message.setSuccess(false);
+		User user = userService.findByUnitTelephone(unittelephone);
+		if (user == null || user.getId().equals(exceptUserId)) {
+			message.setSuccess(true);
+			message.setMsg("手机号可用");
+		} else {
+			message.setMsg("手机号已被注册");
+		}
+		return message;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/idno", method = RequestMethod.GET)
+	public Message findByIdno(String idno, Integer exceptUserId) {
+		Message message = new Message();
+		message.setSuccess(false);
+		User user = userService.findByIdNo(idno);
+		if (user == null || user.getId().equals(exceptUserId)) {
+			message.setSuccess(true);
+			message.setMsg("身份证号可用！");
+		} else {
+			message.setMsg("身份证号已被注册！");
+		}
+		return message;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/email", method = RequestMethod.GET)
+	public Message findByEmail(String email, Integer exceptUserId) {
+		Message message = new Message();
+		message.setSuccess(false);
+		User user = userService.findByEmail(email);
+		if (user == null || user.getId().equals(exceptUserId)) {
+			message.setSuccess(true);
+			message.setMsg("邮箱可用！");
+		} else {
+			message.setMsg("邮箱已被注册！");
+		}
+
+		return message;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/jobno", method = RequestMethod.GET)
+	public Message findByJobno(String jobno, Integer exceptUserId) {
+		Message message = new Message();
+		message.setSuccess(false);
+		User user = userService.findByJobNo(jobno);
+		if (user == null || user.getId().equals(exceptUserId)) {
+			message.setSuccess(true);
+			message.setMsg("工号可用！");
+		} else {
+			message.setMsg("工号已被注册！");
+		}
+		return message;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/login")
+	public Message login(String loginname, String password, String code) {
+
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			
+		//	boolean ret = captchaService.checkCaptcha(code);
+			boolean ret = true;
+			if (ret == true) {
+			//	logger.info("用户名密码登录:用户名/手机号/单位手机号【{}】", loginname);
+				if (StringUtils.isBlank(password) || StringUtils.isBlank(loginname)) {
+					message.setSuccess(false);
+					message.setMsg("登录参数不全");
+					return message;
+				} else {
+					password = AesUtil.encrypt(password);
+					User user = userService.login(loginname, password);
+					message.setObj(user);
+					message.setSuccess(true);
+				}
+			}
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+
+	/**
+	 * 发送验证码
+	 * 
+	 * @throws Exception
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/phone-verification-code", method = RequestMethod.GET)
+	public Message sendPhoneVerificationCode(String phoneNumber, String operation) {
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			if (phoneNumber != null && !"".equals(phoneNumber)) {
+				User user = userService.findByTelphone(phoneNumber);
+				if (user == null) {
+					user = userService.findByUnitTelephone(phoneNumber);
+				}
+				if (user != null) {
+
+					if (operation == null || "".equals(operation)) {
+						message.setMsg("未知操作");
+					} else if (operation.equals("login")) {
+						boolean ret = smsService.sendLoginSms(phoneNumber);
+						if (ret) {
+							message.setSuccess(true);
+						}
+					} else if (operation.equals("update")) {
+						boolean ret = smsService.sendModifyPasswordSms(phoneNumber);
+						if (ret) {
+							message.setSuccess(true);
+						}
+					} else {
+						message.setMsg("无效操作");
+					}
+				} else {
+					message.setMsg("该手机号未注册！");
+				}
+
+			}
+		} catch (Exception ex) {
+			message.setErrorCode(Contants.ErrorCodeEnum.Unknow);
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+
+	/**
+	 * 验证手机号和验证码
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/phone-verification-code-return", method = RequestMethod.GET)
+	public Message checkPhoneVerificationCode(String phoneNumber, String code, String newPassword, String operation) {
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			if (phoneNumber != null && !"".equals(phoneNumber)) {
+				User user = userService.findByTelphone(phoneNumber);
+				if (user == null) {
+					user = userService.findByUnitTelephone(phoneNumber);
+				}
+				if (user != null) {
+					if (operation.equals("login")) {
+						boolean ret = smsService.checkLoginSms(phoneNumber, code);						
+						if (ret) {
+							logger.info("短信验证码登录:手机号/单位手机号【{}】", phoneNumber);
+							User userInfo = userService.login(phoneNumber, user.getPassword());
+							message.setObj(userInfo);
+							message.setSuccess(true);
+						}
+					} else if (operation.equals("update")) {
+						boolean ret = smsService.checkModifyPasswordSms(phoneNumber, code);
+						if (ret) {
+							boolean isMatch = RegexUtil.checkPassword(newPassword);
+							if (!isMatch) {
+								message.setMsg(PASSWORDNOMATCH);
+								return message;
+							}
+							logger.info("修改密码:手机号/单位手机号【{}】", phoneNumber);
+							String encrypt = AesUtil.encrypt(newPassword);
+							user.setPassword(encrypt);
+							userService.update(user);
+							message.setObj(user);
+							message.setSuccess(true);
+						}
+					} else {
+						message.setMsg("无效操作");
+					}
+				}
+			}
+		} catch (Exception ex) {
+			message.setErrorCode(Contants.ErrorCodeEnum.Unknow);
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+
+	@ResponseBody
+	@RequiresPermissions(Contants.USER_ADD_PERMISSION)
+	@RequestMapping(value = "/excel", method = RequestMethod.POST)
+	public Message upload(MultipartFile file, HttpServletRequest request) throws IllegalStateException, IOException {
+		Message message = new Message();
+		String path = request.getServletContext().getRealPath("/upload");
+		String fileName = file.getOriginalFilename();
+		File dir = new File(path, fileName);
+		if (!dir.exists()) {
+			dir.mkdirs();
+		}
+		file.transferTo(dir);
+		Integer loginUser = (Integer) SecurityUtils.getSubject().getSession().getAttribute(Contants.LOGINUSERID);
+		List<User> list = null;
+		try {
+			// list = FileParsingUtil.readExcel(dir, loginUser);
+			list = userService.getUsersFromExcel(dir, loginUser);
+		} catch (Exception e) {
+			message.setSuccess(false);
+			message.setMsg(e.getMessage());
+			return message;
+			// e.printStackTrace();
+		}
+		if (list == null) {
+			message.setSuccess(false);
+			message.setMsg("Excel表格为空");
+			dir.delete();
+			return message;
+		} else {
+			dir.delete();
+			try {
+				int ret = userService.insertUserList(list);
+				if (ret > 0) {
+					message.setSuccess(true);
+				}
+			} catch (Exception e) {
+				logger.info(e.getMessage());
+				message.setSuccess(false);
+				message.setMsg(e.getCause().getMessage());
+				return message;
+				// e.printStackTrace();
+			}
+			return message;
+		}
+
+	}
+
+	/**
+	 * FunName: getDeptAusers Description :查询部门修改领导人员工
+	 * 
+	 * @param：int
+	 * @return Message
+	 * @Author:shh
+	 * @Create Date: 2018-05-09
+	 */
+	@RequestMapping(value = "/deptusers/{did}", method = RequestMethod.GET)
+	@RequiresPermissions({ Contants.USER_SELECT_PERMISSION, Contants.DEPARTMENT_SELECT_PERMISSION })
+	@ResponseBody
+	public Message getDeptusersUsers(@PathVariable("did") int did) {
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			List<User> userList = userService.findDpetUsers(did);
+			message.setObj(userList);
+			message.setSuccess(true);
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+
+	@RequestMapping(value = "contact/deptusers/{did}", method = RequestMethod.GET)
+	@ResponseBody
+	public Message getContactDeptusersUsers(@PathVariable("did") int did) {
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			List<User> userList = userService.findDpetUsersContactInfo(did);
+
+			message.setObj(userList);
+			message.setSuccess(true);
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+
+	@RequestMapping(value = "/selecter/deptusers/{did}", method = RequestMethod.GET)
+	@ResponseBody
+	public Message selectDeptusersUserNames(@PathVariable("did") int did) {
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			List<User> userList = userService.findDpetUsers(did);
+			List<User> newUserList = new ArrayList<User>();
+			if (userList != null) {
+				for (User user : userList) {
+					User newUser = new User();
+					newUser.setId(user.getId());
+					newUser.setName(user.getName());
+					newUserList.add(newUser);
+				}
+			}
+			message.setObj(newUserList);
+			message.setSuccess(true);
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+
+	/**
+	 * FunName: getDeptAusers Description :查询部门变更员工
+	 * 
+	 * @param：int
+	 * @return Message
+	 * @Author:shh
+	 * @Create Date: 2018-05-09
+	 */
+	@RequestMapping(value = "/alterdusers/{did}", method = RequestMethod.GET)
+	@RequiresPermissions({ Contants.USER_SELECT_PERMISSION, Contants.DEPARTMENT_SELECT_PERMISSION })
+	@ResponseBody
+	public Message findAlterDusers(@PathVariable("did") int did) {
+
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			List<Object> objects = userService.findAlterDusers(did);
+			message.setObj(objects);
+			message.setSuccess(true);
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+
+	/**
+	 * FunName: getDeptAusers Description :查询副职变更员工
+	 * 
+	 * @param：int
+	 * @return Message
+	 * @Author:shh
+	 * @Create Date: 2018-05-09
+	 */
+	@RequestMapping(value = "/altereusers/{did}", method = RequestMethod.GET)
+	@RequiresPermissions({ Contants.USER_SELECT_PERMISSION, Contants.DEPARTMENT_SELECT_PERMISSION })
+	@ResponseBody
+	public Message findAlterEusers(@PathVariable("did") int did) {
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			List<Object> objects = userService.findAlterEusers(did);
+			message.setObj(objects);
+			message.setSuccess(true);
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+
+	@ResponseBody
+	@RequiresPermissions(value = { Contants.USER_UPDATE_PERMISSION,
+			Contants.USER_ADD_PERMISSION }, logical = Logical.OR)
+	@RequestMapping(value = "/reset-users-of-department", method = RequestMethod.PUT)
+	public Message resetUsersOfDepartment(@RequestParam("deptid") int deptid, @RequestParam("ids") String ids) {
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			userService.updateUsersOfDepartment(deptid, ids);
+			message.setSuccess(true);
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+
+	@ResponseBody
+	@RequiresPermissions(value = { Contants.USER_UPDATE_PERMISSION,
+			Contants.USER_ADD_PERMISSION }, logical = Logical.OR)
+	@RequestMapping(value = "/reset-eputys-of-department", method = RequestMethod.POST)
+	public Message resetEputysOfDepartment(@RequestParam("deptid") int deptid, @RequestParam("ids") String ids) {
+
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			userService.updateEputysOfDepartment(deptid, ids);
+			message.setSuccess(true);
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+
+	@ResponseBody
+	@RequiresPermissions(Contants.USER_SELECT_PERMISSION)
+	@RequestMapping(value = "/export", method = RequestMethod.GET)
+	public ResponseEntity<byte[]> export(HttpServletRequest request) {
+		ResponseEntity<byte[]> entity = null;
+		try {
+			ByteArrayInputStream is = userService.exportUsers();
+			byte[] body = new byte[is.available()];
+			is.read(body);
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+			headers.add("Content-Disposition", "attachment;filename=users.xls");
+			HttpStatus statusCode = HttpStatus.OK;
+			entity = new ResponseEntity<byte[]>(body, headers, statusCode);
+			is.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return entity;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/oss/head-portrait-path", method = RequestMethod.GET)
+	public Message generateHeadPortraitOssKey(Integer userId, String name) {
+		Message message = new Message();
+		message.setSuccess(true);
+		String path = userService.getHeadPortraitOssKey(userId, name);
+		message.setObj(path);
+		return message;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/oss/electronic-seal-path", method = RequestMethod.GET)
+	public Message generateElectronicSealOssKey(Integer userId, String name) {
+		Message message = new Message();
+		message.setSuccess(true);
+		String path = userService.getElectronicSealOssKey(userId, name);
+		message.setObj(path);
+		return message;
+	}
+	
+	
+	@RequestMapping(value = "/{userId}/electronic-sealpath", method = RequestMethod.GET)
+	@ResponseBody
+	public Message getElectronicSealpath(@PathVariable("userId") int userId) {
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			User user = userService.findDtoById(userId);
+			message.setObj(user.getElectronicsealpath());
+			message.setSuccess(true);
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+}

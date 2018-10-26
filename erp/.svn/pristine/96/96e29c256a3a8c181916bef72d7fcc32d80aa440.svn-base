@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="cn.caecc.erp.modules.dao.ex.mapper.PositionExMapper">
+	<resultMap id="position_dto"
+		type="cn.caecc.erp.modules.dao.ex.dto.PositionDto">
+		<id column="Id" property="id" jdbcType="INTEGER" />
+		<result column="Name" property="name" jdbcType="VARCHAR" />
+		<result column="CName" property="cname" jdbcType="VARCHAR" />
+		<result column="UName" property="uname" jdbcType="VARCHAR" />
+		<result column="DName" property="dname" jdbcType="VARCHAR" />
+		<result column="DId" property="did" jdbcType="INTEGER" />
+		<result column="CreateUserId" property="createuserid"
+			jdbcType="INTEGER" />
+		<result column="CreateTime" property="createtime"
+			jdbcType="TIMESTAMP" />
+		<result column="UpdateUserId" property="updateuserid"
+			jdbcType="INTEGER" />
+		<result column="UpdateTime" property="updatetime"
+			jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<select id="findPositionList"
+		parameterType="cn.caecc.erp.modules.dao.ex.dto.PositionDto"
+		resultMap="position_dto">
+		select p.*,d.name DName, u1.Name CName, u2.Name UName from
+		position p 
+		left join department d
+		on(p.DId=d.Id)
+		left join user u1
+		on(p.CreateUserId=u1.Id)
+		left join user u2
+		on(p.UpdateUserId=u2.Id)
+		<where>
+			<if test="did!=null and did!=''">
+				p.DId=#{did}
+			</if>
+		</where>
+	</select>
+
+
+	<select id="findPositionListByNameLike"
+		parameterType="cn.caecc.erp.modules.dao.ex.dto.PositionDto"
+		resultMap="position_dto">
+		select p.*,d.name DName, u1.Name CName, u2.Name UName from
+		position p 
+		left join department d
+		on(p.DId=d.Id)
+		left join user u1
+		on(p.CreateUserId=u1.Id)
+		left join user u2
+		on(p.UpdateUserId=u2.Id)
+		<where>
+			<if test="_parameter!=null">
+				p.`Name` LIKE "%"#{_parameter}"%"
+			</if>
+		</where>
+	</select>
+
+
+	<!-- 根据岗位名字查询部门 -->
+	<select id="findPositionByName" parameterType="String"
+		resultType="cn.caecc.erp.modules.dao.mybatis.entity.Position">
+		SELECT * FROM position where Name=#{name,jdbcType=VARCHAR}
+	</select>
+	
+	
+	<select id="findById" parameterType="int"
+		resultType="cn.caecc.erp.modules.dao.ex.dto.PositionDto"
+		resultMap="position_dto">
+		select p.*,d.name DName, u1.Name CName, u2.Name UName from
+		position p 
+		left join department d
+		on(p.DId=d.Id)
+		left join user u1
+		on(p.CreateUserId=u1.Id)
+		left join user u2
+		on(p.UpdateUserId=u2.Id)
+		where p.Id=#{id}
+	</select>
+</mapper>

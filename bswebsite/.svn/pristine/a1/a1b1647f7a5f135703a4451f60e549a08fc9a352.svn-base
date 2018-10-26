@@ -1,0 +1,35 @@
+$(".inport-header").load("header.html", function() {
+		  $("#base").show();
+		  var testUrl = window.location;
+		  var path = decodeURI(window.location);
+		  if (path.indexOf("新闻列表") != '-1') {
+			var urls = window.location.search;
+			var loc =  decodeURI(urls.substring(urls.lastIndexOf('=')+1, urls.length));
+			console.log('222222', loc);
+			$(".input-box .searches").val(loc);
+		  }
+      });
+$(".inport-footer").load("footer.html", function() {});
+
+function show_index(url) {      
+	if (document.all) { 
+		document.body.style.behavior = 'url(#default#homepage)';        
+		document.body.setHomePage(url);         
+	} else {
+		alert("您好,您的浏览器不支持自动设置页面为首页功能,请您手动在浏览器里设置该页面为首页!");       
+	}   
+} 
+
+//加入收藏  
+function show_Favorite(sURL, sTitle) {     
+	sURL = encodeURI(sURL);  
+	try { 
+		window.external.addFavorite(sURL, sTitle);
+	}catch (e) {         
+		try {
+			window.sidebar.addPanel(sTitle, sURL, ""); 
+		}catch (e) {
+			alert("加入收藏失败,请使用Ctrl+D进行添加,或手动在浏览器里进行设置.");
+		}        
+	}    
+}

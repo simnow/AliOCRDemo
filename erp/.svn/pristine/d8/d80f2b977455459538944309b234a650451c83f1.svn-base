@@ -1,0 +1,16 @@
+package test.other;
+
+import org.junit.Test;
+
+import test.TestBase;
+
+public class TmpTest extends TestBase {
+	
+	@Test
+    public void test() {
+		String a = "";
+		System.out.println(a.length());
+		
+	}
+    
+}

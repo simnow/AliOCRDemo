@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="cn.caecc.erp.modules.dao.ex.mapper.OfficesupplyActivitiApplyExMapper">
+	<resultMap
+		type="cn.caecc.erp.modules.dao.ex.dto.OfficesupplyActivitiApplyDto"
+		id="officesupplyActivitiApplyDto">
+		<id column="Id" property="id" jdbcType="INTEGER" />
+		<result column="ProcessInstanceId" property="processinstanceid"
+			jdbcType="VARCHAR" />
+		<result column="UId" property="uid" jdbcType="INTEGER" />
+		<result column="DId" property="did" jdbcType="INTEGER" />
+		<result column="Date" property="date" jdbcType="DATE" />
+		<result column="CreateUserId" property="createuserid" jdbcType="INTEGER" />
+		<result column="CreateTime" property="createtime" jdbcType="TIMESTAMP" />
+		<result column="IsSuccess" property="issuccess" jdbcType="INTEGER" />
+		<result column="uname" property="uname" jdbcType="VARCHAR" />
+		<result column="dname" property="dname" jdbcType="VARCHAR" />
+		<result column="cname" property="cname" jdbcType="VARCHAR" />
+		<collection property="list" column="Id"
+			ofType="cn.caecc.erp.modules.dao.ex.dto.OfficesupplyGoodsRelationshipActivitiApplyDto"
+			select="getOfficesupplyGoodsRelationship">
+		</collection>
+	</resultMap>
+
+	<resultMap
+		type="cn.caecc.erp.modules.dao.ex.dto.OfficesupplyGoodsRelationshipActivitiApplyDto"
+		id="officesupplyGoodsRelationshipActivitiApplyDto">
+		<id column="Id" property="id" jdbcType="INTEGER" />
+		<result column="OId" property="oid" jdbcType="INTEGER" />
+		<result column="GCode" property="gcode" jdbcType="VARCHAR" />
+		<result column="DId" property="did" jdbcType="INTEGER" />
+		<result column="ApplyCount" property="applycount" jdbcType="INTEGER" />
+		<result column="CGId" property="cgid" jdbcType="INTEGER" />
+		<result column="Reason" property="reason" jdbcType="VARCHAR" />
+		<result column="gname" property="gname" jdbcType="VARCHAR" />
+		<result column="dname" property="dname" jdbcType="VARCHAR" />
+		<result column="contractCode" property="contractCode" jdbcType="VARCHAR" />
+		<result column="contractName" property="contractName" jdbcType="VARCHAR" />
+		<result column="partyb" property="partyb" jdbcType="VARCHAR" />
+		<result column="unitPrice" property="unitPrice" jdbcType="DOUBLE" />
+	</resultMap>
+
+	<!-- 查询详情 -->
+	<select id="findDetail" resultMap="officesupplyActivitiApplyDto">
+		select o.*,u.name uname,d.name dname,c.name cname
+		from
+		officesupply_activiti_apply o
+		left join user u
+		on(o.uid = u.id)
+		left join
+		department d
+		on(o.did = d.id)
+		left join user c
+		on(o.createuserid = c.id)
+		<where>
+			<if test="id != null">
+				o.id = #{id}
+			</if>
+		</where>
+	</select>
+
+	<!-- 按条件获取分页列表 -->
+	<select id="getList" resultMap="officesupplyActivitiApplyDto">
+		select o.*,u.name uname,d.name dname,c.name cname
+		from
+		officesupply_activiti_apply o
+		left join user u
+		on(o.uid = u.id)
+		left join
+		department d
+		on(o.did = d.id)
+		left join user c
+		on(o.createuserid = c.id)
+		<where>
+			<if test="userid != null">
+				o.createuserid = #{userid}
+			</if>
+			<if test="drafts == 'drafts'">
+				and o.processinstanceid is null
+			</if>
+			<if test="isSuccess != null">
+				and o.issuccess = #{isSuccess}
+			</if>
+		</where>
+	</select>
+
+	<!-- 获取子类列表 -->
+	<select id="getOfficesupplyGoodsRelationship" resultMap="officesupplyGoodsRelationshipActivitiApplyDto">
+		select o.*,g.name gname,d.name dname,c.code contractCode,c.name
+		contractName,c.partyb partyb,cg.unitPrice unitPrice
+		from
+		officesupply_goods_relationship_activiti_apply o
+		left join goods g
+		on(o.gcode = g.code)
+		left join department d
+		on(o.did = d.id)
+		left join
+		contract_goods_relationship cg
+		on(o.cgid = cg.id)
+		left join contract_activiti_apply c
+		on(cg.cid = c.id)
+		<where>
+			o.oid = #{Id}
+		</where>
+	</select>
+</mapper>

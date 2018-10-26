@@ -1,0 +1,17 @@
+package cn.caecc.erp.support.dbcp;
+
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+import org.apache.commons.dbcp2.BasicDataSource;
+
+public class MyBasicDataSource extends BasicDataSource {
+	@Override
+	public synchronized void close() throws SQLException {
+		// System.out.println("......输出数据源Driver的url："+DriverManager.getDriver(url));
+		String url = this.getUrl();
+		DriverManager.deregisterDriver(DriverManager.getDriver(url));
+		super.close();
+	}
+
+}

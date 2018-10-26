@@ -1,0 +1,377 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <title>知识服务</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <link href="resources/css/jquery-ui-themes.css" type="text/css" rel="stylesheet"/>
+    <link href="resources/css/axure_rp_page.css" type="text/css" rel="stylesheet"/>
+    <link href="data/styles.css" type="text/css" rel="stylesheet"/>
+    <link href="files/知识服务/styles.css" type="text/css" rel="stylesheet"/>
+    <link href="files/组织架构/styles.css" type="text/css" rel="stylesheet"/>
+    <link href="files/战略院简介/styles.css" type="text/css" rel="stylesheet"/>
+    <script src="resources/scripts/jquery-1.7.1.min.js"></script>
+    <script src="resources/scripts/jquery-ui-1.8.10.custom.min.js"></script>
+    <script src="resources/scripts/axure/axQuery.js"></script>
+    <script src="resources/scripts/axure/globals.js"></script>
+    <script src="resources/scripts/axutils.js"></script>
+    <script src="resources/scripts/axure/annotation.js"></script>
+    <script src="resources/scripts/axure/axQuery.std.js"></script>
+    <script src="resources/scripts/axure/doc.js"></script>
+    <script src="data/document.js"></script>
+    <script src="resources/scripts/messagecenter.js"></script>
+    <script src="resources/scripts/axure/events.js"></script>
+    <script src="resources/scripts/axure/recording.js"></script>
+    <script src="resources/scripts/axure/action.js"></script>
+    <script src="resources/scripts/axure/expr.js"></script>
+    <script src="resources/scripts/axure/geometry.js"></script>
+    <script src="resources/scripts/axure/flyout.js"></script>
+    <script src="resources/scripts/axure/ie.js"></script>
+    <script src="resources/scripts/axure/model.js"></script>
+    <script src="resources/scripts/axure/repeater.js"></script>
+    <script src="resources/scripts/axure/sto.js"></script>
+    <script src="resources/scripts/axure/utils.temp.js"></script>
+    <script src="resources/scripts/axure/variables.js"></script>
+    <script src="resources/scripts/axure/drag.js"></script>
+    <script src="resources/scripts/axure/move.js"></script>
+    <script src="resources/scripts/axure/visibility.js"></script>
+    <script src="resources/scripts/axure/style.js"></script>
+    <script src="resources/scripts/axure/adaptive.js"></script>
+    <script src="resources/scripts/axure/tree.js"></script>
+    <script src="resources/scripts/axure/init.temp.js"></script>
+    <script src="files/知识服务/data.js"></script>
+    <script src="resources/scripts/axure/legacy.js"></script>
+    <script src="resources/scripts/axure/viewer.js"></script>
+    <script src="resources/scripts/axure/math.js"></script>
+    <script type="text/javascript">
+      $axure.utils.getTransparentGifPath = function() { return 'resources/images/transparent.gif'; };
+      $axure.utils.getOtherPath = function() { return 'resources/Other.html'; };
+      $axure.utils.getReloadPath = function() { return 'resources/reload.html'; };
+    </script>
+    <style>
+			#base {
+				position: relative;
+        margin-top: -207px;
+      }
+    	#nav-box {
+    		position: absolute;
+		    left: 379px;
+		    top: 431px;
+		    width: 220px;
+		    height: 300px;
+		    background: #fff;
+		    opacity:1;
+		    margin: 0;
+		    padding: 0;
+    	}
+    	#nav-box li {
+   		    width: 220px;
+		    
+		    background: inherit;
+		    background-color: rgba(242, 242, 242, 1);
+		    border: none;
+		    border-radius: 0px;
+		    margin-bottom: 4px;
+		    list-style:none;
+    	}
+    	#nav-box li p{
+    		display:inline-block;
+    		margin-left: 40px;
+    		height: 46px;
+    		line-height:46px;
+	       font-family: '微软雅黑 Bold', '微软雅黑';
+		   font-weight: 700;
+		   font-style: normal;
+		   font-size: 16px;
+		   color:  #126ACC;
+		   vertical-align: middle;
+		   width:100px;
+    	}
+    	#nav-box li div {
+    		display:inline-block;
+    		margin-left: 40px;
+    		width: 13px;
+    		height: 15px;
+    		vertical-align: middle;
+    		    font-family: 'Arial Normal', 'Arial';
+			   font-weight: 400;
+			   font-style: normal;
+			   font-size: 13px;
+			   color: #333333;
+			   text-align: center;
+			   line-height: normal;
+    	}
+    	#nav-box li div img {
+    		width:100%;
+    	}
+    	#sub-nav-box li {
+		    width: 220px;
+		    
+		    background: inherit;
+		    background-color: rgba(242, 242, 242, 1);
+		    border: none;
+		    border-radius: 0px;
+		    margin-bottom: 4px;
+		    list-style:none;
+    	}
+    	#sub-nav-box li p{
+    		display:inline-block;
+    		margin-left: 40px;
+    		height: 46px;
+    		line-height:46px;
+	       font-family: '微软雅黑 Bold', '微软雅黑';
+		   font-weight: 700;
+		   font-style: normal;
+		   font-size: 16px;
+		   color: #FFFFFF;
+		   vertical-align: middle;
+    	}
+    	#nav-box .sub-nav {
+    		display:none;
+    	}
+    	#nav-box li ul{
+   		    width: 220px;
+		    background: inherit;
+		    background-color: rgba(242, 242, 242, 1);
+		    border: none;
+		    border-radius: 0px;
+		    margin-bottom: 4px;
+		    list-style:none;
+		    margin:0;
+		    padding:0;
+		    padding-top:4px;
+		    background:#fff;
+    	}
+			.inport-footer {
+				position: absolute;
+				top:1400px;
+				left: 0px;
+			}
+    </style>
+  </head>
+  <body>
+		<div class="inport-header">
+
+		</div>
+    <div id="base" class="">
+		
+
+
+      <!-- Unnamed (主菜单页面) -->
+
+      <!-- Unnamed (组合) -->
+      <div id="u3043" class="ax_default">
+
+        <!-- Unnamed (水平线) -->
+        <div id="u3055" class="ax_default line">
+          <img id="u3055_img" class="img " src="images/index/u380.png"/>
+          <!-- Unnamed () -->
+          <div id="u3056" class="text" style="display: none; visibility: hidden">
+            <p><span></span></p>
+          </div>
+        </div>
+        
+      </div>
+      <!-- Unnamed (组合) -->
+      <div id="u3158" class="ax_default">
+
+        <!-- Unnamed (组合) -->
+        <div id="u3159" class="ax_default">
+
+          <!-- Unnamed (组合) -->
+        </div>
+      </div>
+
+      <!-- Unnamed (2222) -->
+
+      <!-- Unnamed (图片) -->
+      <div id="u3170" class="ax_default image">
+        <img id="u3170_img" class="img " src="images/战略咨询/u2907.jpg"/>
+        <!-- Unnamed () -->
+        <div id="u3171" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+    
+    <!-- 添加内容 -->
+     <!-- Unnamed (矩形) -->
+      <div id="u519" class="ax_default box_2">
+        <div id="u519_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u520" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u521" class="ax_default box_2">
+        <div id="u521_div" class="" style="height:750px"></div>
+        <!-- Unnamed () -->
+        <div id="u522" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u523" class="ax_default box_2">
+        <div id="u523_div" class="" style="height:750px"></div>
+        <!-- Unnamed () -->
+        <div id="u524" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u525" class="ax_default _一级标题">
+        <div id="u525_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u526" class="text" style="visibility: visible;">
+          <p><span>知识服务</span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u527" class="ax_default _文本段落">
+        <div id="u527_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u528" class="text" style="visibility: visible;">
+          <p><span><br></span></p><p>&nbsp;&nbsp; &nbsp; &nbsp; 航天战略院是中国工程科技知识中心平台中战略性新兴产业专业知识分中心、航天工程专业知识分中心建设、运行、服务工作的总体支撑和具体技术实施单位。在中国工程科技知识中心的统一管理和规划下，构建国家级专业特色知识服务平台，开展专业知识公益和商用服务。</p>
+		  <p><span>&nbsp;&nbsp; &nbsp; &nbsp;（1）中国工程科技航天工程专业知识分中心</span></p>
+		&nbsp;&nbsp; &nbsp; &nbsp;中国工程科技航天工程专业知识分中心是中国工程科技知识中心的重要组成部分，在航天工程大数据、数据密集型科研这一应用背景下研制，致力于国内外航天领域数据资源的建设与汇聚，关注不同领域数据之间的整合与分析、异构数据之间关联关系的发现等，在借助大数据技术、大数据分析技术做好资源有效采集、存储、加工、组织的基础上，面向航天工程领域工程科技人员提供丰富的科技文献、科学数据等数据资源和多维度的科研支撑服务，为院士开展航天强国建设战略咨询、航天工程管理、航天技术创新和航天产业发展等战略咨询研究提供全面、开放、智能的知识资源和战略决策服务，从而推动航天创新能力提升和知识创新。
+		  <p><span>&nbsp;&nbsp; &nbsp; &nbsp;（2）中国工程科技战略性新兴产业专业知识分中心</span></p>
+&nbsp;&nbsp; &nbsp; &nbsp;中国工程科技战略性新兴产业专业知识分中心是中国工程科技知识中心的重要组成部分之一，定位于提供具有权威性、多元性、广泛性、深刻性的战略性新兴产业知识服务，将全面深入地跟进国内外战略新兴产业的发展动态，从市场信息、技术数据、政策法规、人才等多个角度汇总梳理战略性新兴产业的多维度信息，以汇集和加工我国战略新兴产业领域海量数据为主要的建设内容，作为以搜索、利用和辅助创新为主要数据信息服务内容的战略性新兴产业知识资源整合平台，将为战略性新兴产业的发展提供及时准确的信息支撑。战略性新兴产业专业知识服务系统通过及时反映国内外战略性新兴产业发展动向，提供具有前瞻性，专业性和开放性的专业数据集成和服务系统，建设产业政策法规文本集成检索系统、专业人才专家库以及集成的检索服务平台，为国家规划和发展战略新兴产业提供专业性、权威性、全面性的智力支持。
+          
+        </div>
+      </div>
+    
+    
+    
+  <!-- 位置 -->
+    <div id="u944" class="ax_default icon">
+            <img id="u944_img" class="img " src="images/战略院简介/u699.png"/>
+            <!-- Unnamed () -->
+            <div id="u945" class="text" style="display: none; visibility: hidden">
+              <p><span></span></p>
+            </div>
+          </div>
+    <!-- Unnamed (矩形) -->
+          <div id="u942" class="ax_default label">
+            <div id="u942_div" class=""></div>
+            <!-- Unnamed () -->
+            <div id="u943" class="text" style="visibility: visible;">
+              <p><span>当前位置＞核心业务＞知识服务</span></p>
+            </div>
+          </div>
+    <ul id="nav-box">
+      	<li class="navs" style ="background: rgba(18, 106, 204, 1)">
+      		<p  style ="color: #fff">核心业务</p> <div></div>
+      		
+      	</li>
+      	<li class="sub-nav">
+      		
+      	</li>
+      	<li class="nav1" >
+      		<p>咨询研究</p>
+      		
+      	</li>
+      	<li class="sub-nav" >
+      		<!-- <ul>
+      			<li><p>院士</p></li>
+      			<li><p>专家</p></li>
+      		</ul> -->
+      	</li>
+      	<li class="nav2">
+      		<p>智慧服务</p>
+      		
+      	</li>
+      	<li class="sub-nav">
+      		<ul>
+      			<!-- <li><p><a href="#u791">学术委员会</a></p></li>
+      			<li><p><a href="#u796">理事会</a></p></li>
+      			<li><p><a href="#u803">院务委员会</a></p></li>
+      			<li><p><a href="#u811">综合办公室</a></p></li> -->
+      		</ul>
+      	</li>
+      	<li class="nav3">
+      		<p>知识服务</p>
+      		
+      	</li>
+      	<li class="sub-nav">
+      		<ul>
+      			<!-- <li><p>2011</p></li>
+      			<li><p>2015</p></li>
+      			<li><p>2016</p></li> -->
+      		</ul>
+      	</li>
+      	<li class="nav4">
+      		<p>集成创意</p>
+      		
+      	</li>
+			</ul>
+		</div>
+		<div class="inport-footer">
+
+		</div>
+  </body>
+  <script src="resources/scripts/load.js"></script>
+  <script type="text/javascript">
+//	上来先展开
+  
+  $('#nav-box .nav2').click(function(){
+	  //转换页面
+	  window.location.href='智慧服务.html';
+  });
+ $('#nav-box .nav1').click(function(){
+	  //转换页面
+	  window.location.href='战略咨询.html';
+  });
+ $('#nav-box .nav4').click(function(){
+	  //转换页面
+	  window.location.href='集成创意.html';
+  });
+  	$(function(){
+  		$('#nav-box .nav').click(function(){
+  			$('#nav-box .nav').each(function() {
+	  			
+	  			$(this).find('p').css('color', '#126ACC');
+	  			$(this).find('div').css({
+
+	  				'webkitTransform':'rotate(0deg)',
+
+	  				'transform':'rotate(0deg)'
+	  				});
+	  		});
+  			$(this).find('div').css({
+
+  				'webkitTransform':'rotate(90deg)',
+
+  				'transform':'rotate(90deg)'
+  				});
+  			$(this).next('li').find('ul').find('p').css('color', '#666666');
+  			console.log($(this).next('li').html());
+  			if ($(this).next('li').is(':hidden')) {
+  				$('#nav-box .sub-nav').each(function() {
+  	  				$(this).hide();
+  	  			});
+  				$(this).next('li').show();
+  			} else {
+  				$(this).next('li').hide();
+  				$(this).find('div').css({
+
+	  				'webkitTransform':'rotate(0deg)',
+
+	  				'transform':'rotate(0deg)'
+	  				});
+  			}
+  		});
+  		
+  		$('#nav-box .sub-nav li').click(function(){
+  			$('#nav-box .sub-nav li').each(function() {
+	  			$(this).find('p').css('color', '#666666');
+	  		});
+  			$(this).find('p').css('color', '#126ACC');
+  		});
+  	});
+  </script>
+</html>

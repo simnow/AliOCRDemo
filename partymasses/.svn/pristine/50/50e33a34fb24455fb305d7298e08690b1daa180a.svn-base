@@ -1,0 +1,120 @@
+package com.partymasses.controller;
+
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.partymasses.modules.dao.mybatis.entity.InputUnit;
+import com.partymasses.modules.dao.mybatis.entity.InputUnitPut;
+import com.partymasses.modules.dao.mybatis.entity.OutputUnit;
+import com.partymasses.modules.dao.mybatis.entity.SelectUnit;
+import com.partymasses.modules.dao.mybatis.entity.Function;
+import com.partymasses.modules.dao.mybatis.entity.Unit;
+import com.partymasses.modules.service.FunctionService;
+import com.partymasses.modules.service.UnitService;
+import com.partymasses.support.message.Message;
+
+@Controller
+@RequestMapping(value="/api/unit")
+public class UnitController {
+	private Message message=new Message(); 
+	@Autowired
+	private UnitService unitService;
+	@Autowired
+	private FunctionService functionService;
+	
+	//@RequestMapping(value="/get/ID")
+	@RequestMapping(value="/{id}",method=RequestMethod.GET)
+	@ResponseBody
+	public Message get(@PathVariable("id") int id){
+		Unit unit= unitService.getById(id);
+		List<Function> listf=functionService.getByUnitID(id);
+		List list=new ArrayList();
+		if (unit==null) {
+			message.setSuccess(false);
+			return message;
+		}
+		list.add(unit);
+		list.add(listf);
+		message.setObj(list);
+		return message;
+	}
+	
+	@RequestMapping(value="/fuzzy",method=RequestMethod.POST)
+	@ResponseBody
+	public Message select(@RequestBody SelectUnit selectunit){
+		int number=unitService.selectLike(selectunit).size();
+		List<Unit>unit= unitService.select(selectunit);
+		OutputUnit outputunit=new OutputUnit(unit,number);
+		if (unit==null) {
+			message.setSuccess(false);
+			message.setMsg("查询失败");
+			return message;
+		}
+		message.setObj(outputunit);
+		return message;
+	}
+	
+	@RequestMapping(value="/test",method=RequestMethod.GET)
+	@ResponseBody
+	public Message test(){
+		InputUnitPut  inputunitput=new InputUnitPut();
+		//s.setUnitname("测试");
+		//s.setUnitdistrict("6100");
+		inputunitput.setId(14);
+		inputunitput.setParentid(12);
+		unitService.update(inputunitput);
+		if (inputunitput==null) {
+			message.setSuccess(false);
+			message.setMsg("查询失败");
+			return message;
+		}
+		message.setObj(inputunitput);
+		return message;
+	}
+	
+	@RequestMapping(value="/all",method=RequestMethod.GET)
+	@ResponseBody
+	@RequiresRoles("admin")
+	public Message selectAllUnit(){
+		List<Unit>unit= unitService.selectAllUnit();
+		if (unit==null) {
+			message.setSuccess(false);
+			message.setMsg("查询失败");
+			return message;
+		}
+		message.setObj(unit);
+		return message;
+	}
+	
+	/*@RequestMapping(value="/post")
+	@ResponseBody*/
+	@RequestMapping(method=RequestMethod.POST)
+	@ResponseBody
+	@RequiresRoles("admin")
+	public Message post(@RequestBody InputUnit inputUnit){
+		message.setSuccess(unitService.create(inputUnit));
+		return message;
+	}
+	//@RequestMapping(value="/delete")
+	@RequestMapping(value="/{id}",method=RequestMethod.DELETE)
+	@ResponseBody
+	public Boolean delete(@PathVariable("id") int id){
+		return unitService.deleteById(id);
+	}
+	//修改的方法
+	@RequestMapping(method=RequestMethod.PUT)
+	@ResponseBody
+	@RequiresRoles("admin")
+	public Message put(@RequestBody InputUnitPut inputUnitput){
+		message.setSuccess(unitService.update(inputUnitput));
+		return message;
+	}
+}

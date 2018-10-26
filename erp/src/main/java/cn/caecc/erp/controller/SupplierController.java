@@ -1,0 +1,166 @@
+package cn.caecc.erp.controller;
+
+import java.io.ByteArrayInputStream;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.github.pagehelper.PageInfo;
+
+import cn.caecc.erp.modules.dao.ex.dto.SupplierExDto;
+import cn.caecc.erp.modules.dao.mybatis.entity.Supplier;
+import cn.caecc.erp.modules.service.SupplierService;
+import cn.caecc.erp.support.constant.Contants;
+import cn.caecc.erp.support.message.Message;
+@Controller
+@RequestMapping("/api/supplier")
+public class SupplierController {
+
+	@Autowired
+	private SupplierService supplierService;
+	
+	@ResponseBody
+	@RequiresPermissions(Contants.SUPPLIER_SELECT_PERMISSION)
+	@RequestMapping(value = "/list",method = RequestMethod.GET)
+	public Message getList(int pageNo, int pageSize, Integer isQualified, String name, String code) {
+		Message message = new Message();
+		message.setSuccess(false);
+		PageInfo<SupplierExDto> pageInfo = supplierService.getList(pageNo, pageSize, isQualified, name, code);
+		if (pageInfo != null) {
+			message.setObj(pageInfo);
+			message.setSuccess(true);
+		}else {
+			message.setMsg("未查询到相关数据");
+		}
+		return message;
+	}
+	
+	@ResponseBody
+	@RequestMapping(method = RequestMethod.POST)
+	@RequiresPermissions(Contants.SUPPLIER_ADD_PERMISSION)
+	public Message create(@RequestBody SupplierExDto supplier) {
+		Message message = new Message();
+		message.setSuccess(false);
+		supplier =  supplierService.create(supplier);
+		if (supplier != null) {
+			message.setObj(supplier);
+			message.setSuccess(true);
+		} else {
+			message.setMsg("未查询到相关数据");
+		}
+		return message;
+	}
+	
+	@ResponseBody
+	@RequiresPermissions(Contants.SUPPLIER_SELECT_PERMISSION)
+	@RequestMapping(value = "/detail/{id}",method = RequestMethod.GET)
+	public Message findDetail(@PathVariable("id")int id) {
+		Message message = new Message();
+		message.setSuccess(false);
+		SupplierExDto supplier = supplierService.findDetail(id);
+		if (supplier != null) {
+			message.setObj(supplier);
+			message.setSuccess(true);
+		}else {
+			message.setMsg("未查询到相关数据");
+		}
+		return message;
+	}
+	
+	@ResponseBody
+	@RequestMapping(method = RequestMethod.PUT)
+	@RequiresPermissions(Contants.SUPPLIER_UPDATE_PERMISSION)
+	public Message update(@RequestBody SupplierExDto supplier) {
+		Message message = new Message();
+		message.setSuccess(false);
+		supplier = supplierService.update(supplier);
+		if (supplier != null) {
+			message.setObj(supplier);
+			message.setSuccess(true);
+		} else {
+			message.setMsg("未查询到相关数据");
+		}
+		return message;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/isqualified",method = RequestMethod.PUT)
+	@RequiresPermissions(Contants.SUPPLIER_UPDATE_PERMISSION)
+	public Message updateIsQualified(@RequestBody Supplier supplier) {
+		Message message = new Message();
+		message.setSuccess(false);
+		supplier = supplierService.updateIsQualified(supplier);
+		if (supplier != null) {
+			message.setObj(supplier);
+			message.setSuccess(true);
+		}else {
+			message.setMsg("未查询到相关数据");
+		}
+		return message;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/{id}",method = RequestMethod.DELETE)
+	@RequiresPermissions(Contants.SUPPLIER_DEL_PERMISSION)
+	public Message deleteById(@PathVariable("id")int id) {
+		Message message = new Message();
+		message.setSuccess(false);
+		String msg = "该部门已产生过相关信息，不能删除";
+		try {
+			int ret = supplierService.deleteById(id);
+			if (ret > 0) {
+				message.setSuccess(true);
+			} else {
+				message.setMsg("删除失败");
+			}
+		} catch (Exception ex) {
+			message.setMsg(msg);
+		}
+		return message;		
+	}
+	@RequestMapping(value = "/export")
+	@RequiresPermissions(Contants.SUPPLIER_SELECT_PERMISSION)
+	public ResponseEntity<byte[]> export(HttpServletRequest request) {
+		ResponseEntity<byte[]> entity = null;
+		try {
+			ByteArrayInputStream is = supplierService.exportSuppliers();
+			byte[] body = new byte[is.available()];
+			is.read(body);
+			HttpHeaders headers = new HttpHeaders();           
+			headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+            headers.add("Content-Disposition", "attachment;filename=Suppliers.xls");
+			HttpStatus statusCode = HttpStatus.OK;
+			entity = new ResponseEntity<byte[]>(body, headers, statusCode);
+			is.close();
+		} catch (Exception ex) {
+
+		}
+		return entity;
+
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/oss/business-license-path", method = RequestMethod.GET)
+	public Message generateBusinessLicenseOssKey(Integer supplierId, String name) {
+		Message message = new Message();
+		message.setSuccess(true);
+		String path = supplierService.generateBusinessLicenseOssKey(supplierId, name);
+		message.setObj(path);
+		return message;
+	}
+
+	
+	
+}

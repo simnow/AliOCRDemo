@@ -1,0 +1,229 @@
+package cn.caecc.erp.controller;
+
+import java.util.Date;
+import java.util.Map;
+
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import com.github.pagehelper.PageInfo;
+import cn.caecc.erp.modules.dao.mybatis.entity.DispatchActivitiApply;
+import cn.caecc.erp.modules.service.DispatchActivitiApplyService;
+import cn.caecc.erp.support.constant.Contants;
+import cn.caecc.erp.support.message.Message;
+import cn.caecc.erp.support.workflow.entity.AttachmentEntity;
+import cn.caecc.erp.support.workflow.entity.ProcessInstanceApplyEntity;
+import cn.caecc.erp.support.workflow.service.WorkflowService;
+
+@Controller
+@RequestMapping(value="/api/dispatch-activiti-apply")
+public class DispatchActivitiApplyController extends BaseController{
+	
+	@Autowired
+	private DispatchActivitiApplyService disApplyService;
+	@Autowired
+	private WorkflowService workflowService;
+	
+	/** 
+	* FunName:addDisApply
+	* Description : 添加申请
+	* @param：DispatchActivitiApply
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-07-02
+	*/ 
+	@RequestMapping(method=RequestMethod.POST)
+	@ResponseBody
+	@RequiresPermissions(Contants.DISPATCH_ADD_PERMISSION)
+	public  Message  addDisApply(@RequestBody DispatchActivitiApply dispatchActivitiApply){
+		
+		Message message = new Message();
+		message.setSuccess(false);
+		dispatchActivitiApply = disApplyService.addDispatchApply(dispatchActivitiApply);
+		if (dispatchActivitiApply != null) {
+			message.setObj(dispatchActivitiApply);
+			message.setSuccess(true);
+		}else {
+			message.setMsg("未查询到相关数据");
+		}
+		return message;
+	}
+	/** 
+	* FunName:deleteDisApply
+	* Description : 添加申请
+	* @param：id
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-07-02
+	*/ 
+	@RequestMapping(method=RequestMethod.DELETE)
+	@ResponseBody
+	@RequiresPermissions(Contants.DISPATCH_DELETE_PERMISSION)
+	public  Message  deleteDisApply(int id){
+		
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			int ret = disApplyService.deleteDispatchApply(id);
+			if (ret > 0) {
+				message.setSuccess(true);
+			} else {
+				message.setMsg("删除失败");
+			}
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;			
+		
+	}
+	/** 
+	* FunName:updateDisApply
+	* Description : 修改申请
+	* @param：DispatchActivitiApply
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-07-02
+	*/ 
+	@RequestMapping(method=RequestMethod.PUT)
+	@ResponseBody
+	@RequiresPermissions(Contants.DISPATCH_UPDATE_PERMISSION)
+	public  Message  updateDisApply(@RequestBody DispatchActivitiApply dispatchActivitiApply){		
+		Message message = new Message();
+		message.setSuccess(false);
+		dispatchActivitiApply = disApplyService.updateDispatchApply(dispatchActivitiApply);
+		if (dispatchActivitiApply != null) {
+			message.setObj(dispatchActivitiApply);
+			message.setSuccess(true);
+		}else {
+			message.setMsg("未查询到相关数据");
+		}
+		return message;
+		
+	}
+	
+	/** 
+	* FunName:getDisApplyById
+	* Description : 修改申请
+	* @param：int
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-07-02
+	*/ 
+	@RequestMapping(value="/{id}",method=RequestMethod.GET)
+	@ResponseBody
+	public  Message  getDisApplyById(@PathVariable("id") int id){
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			DispatchActivitiApply  dispatchActivitiApply = disApplyService.getDisApplyById(id);
+			message.setObj(dispatchActivitiApply);
+			message.setSuccess(true);
+			
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+	/** 
+	* FunName:getDisApplyList
+	* Description : 修改申请
+	* @param：int
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-07-02
+	*/ 
+	@RequestMapping(value="/applylist",method=RequestMethod.GET)
+	@ResponseBody
+	public  Message  getDisApplyList(@RequestParam(value="state",required=true) int state
+			,@RequestParam(value="pagesize",required=true) int pagesize
+			,@RequestParam(value="pageno",required=true) int pageno,
+			@RequestParam(value="startdate",required=false) @DateTimeFormat(pattern="yyyy-MM-dd") Date startdate,
+			@RequestParam(value="enddate",required=false) @DateTimeFormat(pattern="yyyy-MM-dd") Date enddate
+			){
+		
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			PageInfo<DispatchActivitiApply> dispatchActivitiApplyList = disApplyService.getDisApplyList(state,pagesize,pageno,startdate,enddate);
+			message.setObj(dispatchActivitiApplyList);
+			message.setSuccess(true);
+			
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;		
+	}
+	/** 
+	* FunName:getAcApplyPageList
+	* Description : 获取列表
+	* @param：
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-06-21
+	*/ 
+	@RequestMapping(value="/startprocess",method=RequestMethod.POST)
+	@ResponseBody
+	@RequiresPermissions(Contants.DISPATCH_PROCESS_START_PERMISSION)
+	public  Message  startAcApply(@RequestBody ProcessInstanceApplyEntity processInstanceApplyEntity) {
+		String processDefinitionKey = processInstanceApplyEntity.getProcessDefinitionKey();
+		String bussinessKey = processInstanceApplyEntity.getBussinessKey();
+		Map<String, Object> variables = processInstanceApplyEntity.getVariables();
+		
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			int ret = disApplyService.startDispatchActivitiApply(processDefinitionKey, bussinessKey, variables);
+			if (ret > 0) {
+				message.setSuccess(true);
+			} else {
+				message.setMsg("开启流程失败");
+			}
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;		
+	}
+	/** 
+	* FunName:getDisApplyById
+	* Description : 通过code查流程是否存在
+	* @param：int
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-07-02
+	*/ 
+	@RequestMapping(value="/code/{code}",method=RequestMethod.GET)
+	@ResponseBody
+	@RequiresPermissions(Contants.DISPATCH_SELECT_PERMISSION)
+	public  Message  getDisApplyByCode(@PathVariable("code") String code){
+		Message message=new Message();
+		message.setObj(disApplyService.getDispatchByCode(code));
+		return message;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/{id}/attachment", method = RequestMethod.GET)
+	public Message queryLastAttachmenti(@PathVariable("id") int id) {
+
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			DispatchActivitiApply  dispatchActivitiApply = disApplyService.getDisApplyById(id);
+			String processInstanceId = dispatchActivitiApply.getProcessinstanceid();
+			AttachmentEntity attachmentEntity = workflowService.queryLastAttachmentiByProcessInstanceId(processInstanceId);
+			message.setObj(attachmentEntity);
+			message.setSuccess(true);
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+			message.setErrorCode(Contants.ErrorCodeEnum.Unknow);
+		}
+
+		return message;
+	}
+}

@@ -1,0 +1,159 @@
+package cn.caecc.erp.controller;
+
+import java.util.Map;
+
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import com.github.pagehelper.PageInfo;
+import cn.caecc.erp.modules.dao.ex.dto.SealActivitiApplyDto;
+import cn.caecc.erp.modules.dao.mybatis.entity.SealActivitiApply;
+import cn.caecc.erp.modules.service.SealActivitiApplyService;
+import cn.caecc.erp.support.constant.Contants;
+import cn.caecc.erp.support.message.Message;
+import cn.caecc.erp.support.workflow.entity.ProcessInstanceApplyEntity;
+
+@Controller
+@RequestMapping(value="api/seal-activiti-apply")
+public class SealAtivitiApplyController  {
+	
+	@Autowired
+	private SealActivitiApplyService  saService;
+	
+	
+	/** 
+	* FunName:addSealApply
+	* Description : 添加用印申请
+	* @param：SealActivitiApply 
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-06-13
+	*/ 
+	@RequestMapping(method=RequestMethod.POST)
+	@ResponseBody
+	@RequiresPermissions(Contants.SEAL_ADD_PERMISSION)
+	public Message  addSealApply(@RequestBody SealActivitiApply sealActivitiApply){
+		Message message = new Message();
+		message.setSuccess(false);
+		sealActivitiApply =  saService.addSealApply(sealActivitiApply);
+		if (sealActivitiApply != null) {
+			message.setObj(sealActivitiApply);
+			message.setSuccess(true);
+		} else {
+			message.setMsg("未查询到相关数据");
+		}
+		return message;
+	}
+	
+	/** 
+	* FunName:updateSealApply
+	* Description : 修改
+	* @param：SealActivitiApply 
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-06-28
+	*/ 
+	@RequestMapping(method=RequestMethod.PUT)
+	@ResponseBody
+	@RequiresPermissions(Contants.SEAL_UPDATE_PERMISSION)
+	public Message  updateSealApply(@RequestBody SealActivitiApply sealActivitiApply){
+		Message message = new Message();
+		message.setSuccess(false);
+		sealActivitiApply = saService.updateSealApply(sealActivitiApply);
+		if (sealActivitiApply != null) {
+			message.setObj(sealActivitiApply);
+			message.setSuccess(true);
+		} else {
+			message.setMsg("未查询到相关数据");
+		}
+		return message;
+	}
+	/** 
+	* FunName:startSealApply
+	* Description : 开始流程
+	* @param：SealActivitiApply 
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-06-13
+	*/ 
+	@RequestMapping(value="/startprocess",method=RequestMethod.POST)
+	@ResponseBody
+	@RequiresPermissions(Contants.SEAL_PROCESS_START_PERMISSION)
+	public Message  startSealApply(@RequestBody ProcessInstanceApplyEntity processInstanceApplyEntity){
+		String processDefinitionKey = processInstanceApplyEntity.getProcessDefinitionKey();
+		String bussinessKey = processInstanceApplyEntity.getBussinessKey();
+		Map<String, Object> variables = processInstanceApplyEntity.getVariables();
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			int ret = saService.startSealApply(processDefinitionKey,bussinessKey,variables);
+			if (ret > 0) {
+				message.setSuccess(true);
+			} else {
+				message.setMsg("开启流程失败");
+			}
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;
+	}
+
+	/** 
+	* FunName: getSaPageList
+	* Description : 获取列表
+	* @param： 
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-06-28
+	*/ 
+	@RequestMapping(value="/applylist",method=RequestMethod.GET)
+	@ResponseBody
+	@RequiresPermissions(Contants.SEAL_SELECT_PERMISSION)
+	public Message  getSaPageList(@RequestParam(value="state",required=true) int state
+			,@RequestParam(value="pagesize",required=true) int pagesize
+			,@RequestParam(value="pageno",required=true) int pageno){
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			PageInfo<SealActivitiApply> sealActivitiApplyList =  saService.getSealApplyList(state,pagesize,pageno);
+			message.setObj(sealActivitiApplyList);
+			message.setSuccess(true);
+			
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;		
+	}
+	/** 
+	* FunName: getSealApplyById
+	* Description : 获取详情
+	* @param： 
+	* @return Message
+	* @Author:shh
+	* @Create Date: 2018-06-28
+	*/ 
+	@RequestMapping(value="/{id}",method=RequestMethod.GET)
+	@ResponseBody
+	@RequiresPermissions(Contants.SEAL_SELECT_PERMISSION)
+	public Message   getSealApplyById(@PathVariable("id") int id){
+		Message message = new Message();
+		message.setSuccess(false);
+		try {
+			SealActivitiApplyDto sealActivitiApplyDto = saService.getSealApplyById(id);
+			message.setObj(sealActivitiApplyDto);
+			message.setSuccess(true);
+			
+		} catch (Exception ex) {
+			message.setMsg(ex.getMessage());
+		}
+		return message;	
+	}
+
+
+}

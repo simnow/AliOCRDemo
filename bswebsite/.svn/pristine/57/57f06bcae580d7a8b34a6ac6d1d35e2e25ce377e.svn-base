@@ -1,0 +1,410 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+      <title></title>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+      <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+      <meta name="apple-mobile-web-app-capable" content="yes"/>
+      <script src="resources/scripts/jquery-1.7.1.min.js"></script>
+      <script src="resources/scripts/jquery-ui-1.8.10.custom.min.js"></script>
+    <style>
+        .header {
+            width:1960px;
+            height:272px;
+        }
+       
+    </style>
+     <style>
+        .main-nav {
+          margin:0;
+          padding:0;
+          width: 100%;
+          height: 39px;
+          background: inherit;
+          background-color: rgba(18, 106, 204, 1);
+        }
+        .main-nav .main-nav-list {
+          margin: 0;
+          padding: 0;
+          margin-left:380px;
+          height: 39px;
+        }
+        .main-nav .main-nav-list li {
+          position: relative;
+          width:172px;
+          display: inline-block;
+          height: 41px;
+          line-height:41px;
+          text-align: center;
+          vertical-align: top;
+          color:#fff;
+          margin:0;
+          padding:0;
+          cursor: pointer;
+        }
+        .main-nav ul li p {
+          width:172px;
+          height: 39px;
+          line-height:39px;
+          text-align: center;
+          color:#fff;
+          background-color: rgba(18, 106, 204, 1);
+          margin:0;
+          padding:0;
+        }
+        .main-nav .sub-nav-list {
+          position: absolute;
+          width:172px;
+          top:39px;
+          /* left:-40px; */
+          display:none;
+          z-index: 9999999999;
+          
+        }
+        .main-nav .sub-nav-list li {
+          position: static;
+          display: block;
+          height: 39px;
+          line-height:39px;
+          
+        }
+        .main-nav .sub-nav-list li p {
+          width:172px;
+          height: 39px;
+          line-height:39px;
+          text-align: center;
+          background: rgba(18, 106, 204, 1);
+          font-family: '微软雅黑 Regular', '微软雅黑';
+          font-weight: 400;
+          font-style: normal;
+          font-size: 12px;
+          color: #FFFFFF;
+          margin: 0px;
+        }
+        .grey-bar {
+          width: 100%;
+          height: 33px;
+          background-color: rgba(242, 242, 242, 1);
+          position: relative;
+        }
+        .grey-bar .make-index {
+          position: absolute;
+          /* left: 1364px; */
+          left: 1426px;
+          top: 10px;
+          width: 60px;
+          height: 27px;
+          font-family: '微软雅黑 Regular', '微软雅黑';
+          font-weight: 400;
+          font-style: normal;
+          font-size: 12px;
+          color: #999999;
+          text-align: center;
+          cursor: pointer;
+        }
+        .grey-bar .collection {
+          position: absolute;
+          /* left: 1426px; */
+          left: 1503px;
+          top: 10px;
+          width: 60px;
+          height: 27px;
+          font-family: '微软雅黑 Regular', '微软雅黑';
+          font-weight: 400;
+          font-style: normal;
+          font-size: 12px;
+          color: #999999;
+          text-align: center;
+          cursor: pointer;
+        }
+        .grey-bar .tag {
+          position: absolute;
+          left: 1503px;
+          top: 10px;
+          width: 60px;
+          height: 27px;
+          font-family: '微软雅黑 Regular', '微软雅黑';
+          font-weight: 400;
+          font-style: normal;
+          font-size: 12px;
+          color: #999999;
+        }
+        .main-title {
+          position: relative;
+          width:100%;
+          height:200px;
+        }
+        .main-title .color-img {
+          position: absolute;
+          left: 398px;
+          top: 73px;
+          width: 56px;
+          height: 56px;
+        }
+        .main-title .grey-img {
+          position: absolute;
+          left: 466px;
+          top: 72px;
+          width: 57px;
+          height: 57px;
+        }
+        .main-title .chinese-title {
+          position: absolute;
+          left: 518px;
+          top: 74px;
+          width: 479px;
+          height: 36px;
+          font-family: '文泉驿等宽微米黑 Bold', '文泉驿等宽微米黑';
+          font-weight: 700;
+          font-style: normal;
+          font-size: 28px;
+          color: #126ACC;
+          text-align: center;
+        }
+        .main-title .english-title {
+          position:absolute;
+          left:525px;
+          top:115px;
+          width:467px;
+          height:35px;
+          background:inherit;
+          background-color:rgba(255, 255, 255, 0);
+          border:none;
+          border-radius:0px;
+          -moz-box-shadow:none;
+          -webkit-box-shadow:none;
+          box-shadow:none;
+          font-family:'Nirmala UI Negreta', 'Nirmala UI';
+          font-weight:700;
+          font-style:normal;
+          font-size:11px;
+          color:#126ACC;
+          text-align:center;
+        }
+        .main-title  .input-box {
+          position: absolute;
+          left: 1360px;
+          top: 95px;
+          width: 202px;
+          height: 36px;
+          background-color: rgba(255, 255, 255, 1);
+          border: none;
+          border-radius: 5px;
+          -moz-box-shadow: 3px 3px 5px rgba(204, 204, 204, 0.647058823529412);
+          -webkit-box-shadow: 3px 3px 5px rgba(204, 204, 204, 0.647058823529412);
+          box-shadow: 3px 3px 5px rgba(204, 204, 204, 0.647058823529412);
+        }
+        .main-title  .input-box input {
+          position: absolute;
+          left: 10px;
+          top: 0px;
+          width: 172px;
+          height: 34px;
+          font-family: '微软雅黑 Regular', '微软雅黑';
+          font-weight: 400;
+          font-style: normal;
+          font-size: 10px;
+          text-decoration: none;
+          color: #1F4DA3;
+          text-align: left;
+          border-color: transparent;
+          outline-style: none;
+          padding: 1px 0px 1px 0px;
+        }
+        .main-title .input-box div {
+          position: absolute;
+          left: 170px;
+          top: 10px;
+          width: 16px;
+          height: 16px;
+          cursor: pointer;
+        }
+        .main-title .input-box div img {
+          width: 16px;
+          height: 16px;
+        }
+      </style>
+  </head>
+  <body>
+     <div class="header">
+      <div class="grey-bar">
+        <div class="make-index">设为首页</div>
+        <div class="collection">收藏本站</div>
+        <!-- <div class="tag">EN/中文</div> -->
+      </div>
+      <div class="main-title">
+        <img class="color-img" src="images/index/u392.png">
+        <img class="grey-img" src="images/index/u386.png">
+        <div class="chinese-title">中国航天工程科技发展战略研究所</div>
+        <div class="english-title">China Academy of Strategy on Aerospace Engineering Science and Technology</div>
+        <div class="input-box">
+          <input type="text" placeholder="请输入关键字搜索" class="searches">
+          <div class="btn"><img src="images/index/u394.png"></div>
+        </div>
+      </div>
+      <div class="main-nav">
+        <ul class="main-nav-list">
+          <li class="nav-lists">
+            <p >首页</p>
+            <ul class="sub-nav-list">
+            </ul>
+          </li>
+          <li class="nav-lists">
+            <p>关于我们</p>
+            <ul class="sub-nav-list">
+              <li><p>战略院简介</p></li>
+              <li><p>组织架构</p></li>
+              <li><p>战略院大事记</p></li>
+            </ul>
+          </li>
+          <li class="nav-lists">
+            <p>资源优势</p>
+            <ul class="sub-nav-list">
+              <li><p>专家库</p></li>
+              <li><p>合作单位</p></li>
+              <li><p>技术优势</p></li>
+            </ul>
+          </li>
+          <li class="nav-lists">
+            <p>核心业务</p>
+            <ul class="sub-nav-list">
+              <li><p>咨询研究</p></li>
+              <li><p>智慧服务</p></li>
+              <li><p>知识服务</p></li>
+              <li><p>集成创意</p></li>
+            </ul>
+          </li>
+          <li class="nav-lists">
+            <p>动态资讯</p>
+            <ul class="sub-nav-list">
+              <li><p>社会热点</p></li>
+              <li><p>战略院动态</p></li>
+              <li><p>通知公告</p></li>
+              <li><p>科普知识</p></li>
+            </ul>
+          </li>
+          <li class="nav-lists">
+            <p>院士咨询</p>
+            <ul class="sub-nav-list">
+            </ul>
+          </li>
+          <li class="nav-lists">
+            <p>加入我们</p>
+            <ul class="sub-nav-list">
+              <li><p>联系我们</p></li>
+              <li><p>商务洽谈</p></li>
+            </ul>
+          </li>
+        </ul>
+       
+      </div>
+     
+  </div>
+  </body>
+  <script>
+
+  	$(function(){
+        var testUrl = window.location;
+        var path = decodeURI(window.location);
+        if (path.indexOf("新闻列表") != '-1') {
+          var urls = window.location.search;
+          var loc =  decodeURI(urls.substring(urls.lastIndexOf('=')+1, urls.length));
+          console.log('222222', loc);
+          $(".input-box .searches").val(loc);
+        }
+        $(".main-nav-list li p").on('click',function() {
+          var url = $(this).text();
+          if (url == '首页') {
+            url = 'index';
+          } else if (url == '咨询研究') {
+            url = '战略咨询';
+          } else if (url == '关于我们') {
+            url = '战略院简介';
+          } else if (url == '资源优势') {
+            url = '专家库';
+          } else if (url == '核心业务') {
+            url = '战略咨询';
+          } else if (url == '动态资讯') {
+            url = '社会热点';
+          } else if (url == '加入我们') {
+            url = '联系我们';
+          } 
+          window.location.href = url +'.html';
+        });
+        if (1960-$('.body').width() > 0 && 1960-$('.body').width() > 658) {
+          $(".header").css('width', 1660 +'px');
+        } 
+        // else {
+        //   $('.header').css('width',document.body.scrollWidth+'px');
+        // }
+        // } else if (1960-$('.body').width() > 0 && 1960-$('.body').width() < 658) {
+        //   $('.header').css('left', -(persent*(1960-$('.body').width()))+'px');
+        //   $('.grey-bar').css('left', -(persent*(1960-$('.body').width()))+'px');
+        //   $('.main-title').css('left', -(persent*(1960-$('.body').width()))+'px');
+        //   $('.main-nav').css('left', -(persent*(1960-$('.body').width()))+'px');
+        // }  else if (1960-$('.body').width() < 0 ) {
+        //   $('.header').css('width', 1960 + (1960-$('.body').width())*2 + 'px');
+        //   $('.grey-bar').css('width', 1960 + (1960-$('.body').width())*2 + 'px');
+        //   $('.main-title').css('width', 1960 + (1960-$('.body').width())*2 + 'px');
+        //   $('.main-nav').css('width', 1960 + (1960-$('.body').width())*2 + 'px');
+        // }
+       
+        $(".main-nav-list li p").hover(function(){
+          $(this).css("background-color","#fff");
+          $(this).css("color","rgba(18, 106, 204, 1)");
+        },function(){
+          $(this).css("background-color","rgba(18, 106, 204, 1)");
+          $(this).css("color","#fff");
+        });
+        $(".nav-lists").hover(function(){
+          $(this).find('ul').show();
+        },function(){
+          $(this).find('ul').hide();
+        });
+        $(".make-index").on('click', function() {
+          show_index(window.location);
+        });
+        $(".collection").on('click', function() {
+          show_Favorite(window.location, document.title);
+        });
+        $(".input-box .btn").on('click', function() {
+          if (path.indexOf("新闻列表") != '-1') {
+            if ($(".input-box .searches").val().length <= 0) {
+              window.location.href = encodeURI( "新闻列表.html");
+            } else {
+              window.location.href = encodeURI( "新闻列表.html?search=" + $(".input-box .searches").val());
+            }
+          } else {
+            if ($(".input-box .searches").val().length <= 0) {
+              return;
+            }
+            window.location.href = encodeURI( "新闻列表.html?search=" + $(".input-box .searches").val());
+          }
+        
+        });
+    });
+
+    function show_index(url) {      
+      if (document.all) { 
+        document.body.style.behavior = 'url(#default#homepage)';        
+        document.body.setHomePage(url);         
+      } else {
+        alert("您好,您的浏览器不支持自动设置页面为首页功能,请您手动在浏览器里设置该页面为首页!");       
+      }   
+    } 
+
+    //加入收藏  
+    function show_Favorite(sURL, sTitle) {     
+      sURL = encodeURI(sURL);  
+      try { 
+        window.external.addFavorite(sURL, sTitle);
+      }catch (e) {         
+        try {
+          window.sidebar.addPanel(sTitle, sURL, ""); 
+        }catch (e) {
+          alert("加入收藏失败,请使用Ctrl+D进行添加,或手动在浏览器里进行设置.");
+        }        
+      }    
+	  } 
+  </script>
+</html>

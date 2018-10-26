@@ -1,0 +1,221 @@
+package com.partymasses.modules.service.impl;
+
+
+import java.util.List;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.subject.Subject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.partymasses.modules.dao.ex.mapper.UserExMapper;
+import com.partymasses.modules.dao.mybatis.entity.User;
+import com.partymasses.modules.dao.mybatis.entity.UserExample;
+import com.partymasses.modules.dao.mybatis.entity.UserExample.Criteria;
+import com.partymasses.modules.dao.mybatis.mapper.UserMapper;
+import com.partymasses.modules.service.UserService;
+import com.partymasses.support.constant.Contants;
+import com.partymasses.support.exception.CommonException;
+import com.partymasses.support.message.Message;
+import com.partymasses.support.util.AesUtil;
+import com.partymasses.support.util.DateUtil;
+
+@Service
+public class UserServiceImpl implements UserService{
+
+	@Autowired
+	private UserMapper userMapper;
+	@Autowired
+	private UserExMapper userExMapper;
+
+	@Override
+	public User getUserInfo(int id) {
+		return userMapper.selectByPrimaryKey(id);
+	}
+
+	@Override
+	public User getUserByNumber(String mobile) {
+		UserExample example=new UserExample();
+		Criteria criteria=example.createCriteria();
+		criteria.andMobileEqualTo(mobile);
+		List<User> userllist=userMapper.selectByExample(example);
+		if(userllist==null||userllist.size()==0){
+			return null;
+		}
+		return userllist.get(0);
+	}
+
+	/**
+	 * 用户登陆
+	 */
+	@Override
+	public Message userLogin(String mobile, String password) {
+		Message message=new Message();
+		message.setSuccess(false);
+		
+		//判断用户是否存在
+		User user=getUserByNumber(mobile);
+		if(user==null){
+			message.setMsg("不存在该用户");
+			return message;
+		}
+		//判断密码是否正确
+		if(!password.equals(user.getPassword())){
+			message.setMsg("密码错误");
+			return message;
+		}
+		//正确后，shiro管理
+		 try{
+			 UsernamePasswordToken token = new UsernamePasswordToken(mobile,password);  
+			 Subject currentUser = SecurityUtils.getSubject();  
+			 if (!currentUser.isAuthenticated()){
+			    //使用shiro来验证  
+			    token.setRememberMe(true);  
+			    currentUser.login(token); 
+			    //放用户信息
+			    message.setObj(user);
+			 } 
+		}catch(Exception ex){
+		    throw new CommonException(ex.getMessage());
+		}
+		 message.setSuccess(true);
+		return message;
+	}
+
+	@Override
+	public Message delById(int id) {
+		Message message=new Message();
+		int result=userMapper.deleteByPrimaryKey(id);
+		if(result>0){
+			return message;
+		}
+		message.setSuccess(false);
+		message.setMsg("删除失败");
+		return message;
+	}
+	/**
+	 * 注意所属单位
+	 */
+	@Override
+	public Message delByIdAndUnit(int id, User user) {
+		Message message=new Message();
+		int result=0;
+		//判断如果是超级管理员可以直接删除
+		if(Contants.SUPERADMIN.equals(user.getRoletype())){
+			result=userMapper.deleteByPrimaryKey(id);
+		}else if(Contants.ADMIN.equals(user.getRoletype())){
+			UserExample example=new UserExample();
+			Criteria criteria=example.createCriteria();
+			criteria.andUnitidEqualTo(user.getUnitid());
+			criteria.andIdEqualTo(id);
+			result=userMapper.deleteByExample(example);
+		}
+		if(result>0){
+			return message;
+		}
+		message.setSuccess(false);
+		message.setMsg("删除失败");
+		return message;
+	}
+
+	/**
+	 * 完善个人信息
+	 */
+	@Override
+	public Message updateUserById(User user) {
+		Message message=new Message();
+		user.setUpdatetime(DateUtil.getcurrentDateTime());
+		if(userMapper.updateByPrimaryKeySelective(user)>0){
+			message.setMsg("更新成功");
+		}else{
+			message.setSuccess(false);
+			message.setMsg("更新失败");
+		}
+		return message;
+	}
+	/**
+	 * 批量添加用户
+	 */
+	@Override
+	public Message insertUserList(List<User> userList) throws Exception{
+		Message message=new Message();
+		int result=userExMapper.addUsers(userList);
+		if(result>0){
+			message.setSuccess(true);
+		}else{
+			message.setSuccess(false);
+			message.setMsg("插入失败");
+		}
+		return message;
+	}
+	
+	/**
+	 * 修改密码
+	 */
+	@Override
+	public Message updatePassWord(String oldPw,String newPwd){
+		Message message=new Message();
+		if(oldPw.equals(newPwd)){
+			message.setSuccess(false);
+			message.setMsg("两次输入的密码一致");
+			return message;
+		}
+		//首先判断密码是不是和原来的一样
+		User userInfo=(User) SecurityUtils.getSubject().getSession().getAttribute(Contants.LOGINUSER);
+		oldPw = AesUtil.encrypt(oldPw);
+		if(!oldPw.equals(userInfo.getPassword())){
+			message.setSuccess(false);
+			message.setMsg("您的原始密码输入有误");
+			return message;
+		}
+		//然后添加新手机号，执行更新
+		userInfo.setPassword(oldPw);
+		userInfo.setUpdatetime(DateUtil.getcurrentDateTime());
+		if(userMapper.updateByPrimaryKeySelective(userInfo)>0){
+			message.setMsg("更新成功");
+		}else{
+			message.setSuccess(false);
+			message.setMsg("更新失败");
+		}
+		return message;
+	}
+
+	@Override
+	public Message insertUser(User user) {
+		Message message=new Message();
+		user.setCreatetime(DateUtil.getcurrentDateTime());
+		user.setPassword(AesUtil.encrypt("123456"));
+		int userId=userMapper.insert(user);
+		if(userId>0){
+			message.setMsg("存储成功");
+			message.setObj(userId);
+		}else{
+			message.setMsg("存储失败");
+			message.setSuccess(false);
+		}
+		return message;
+	}
+
+	@Override
+	public List<User> getListUserIdByUnitId(int unitId) {
+		//如果传的值是0，就是查询所有，否则按照unitId进行查询
+		if(unitId==0){
+			return userExMapper.selectAll();
+		}else{
+			return userExMapper.selectAllByUnitId(unitId);
+		}
+	}
+
+	@Override
+	public Boolean isExitMobile(String mobile){
+		UserExample example=new UserExample();
+		Criteria criteria=example.createCriteria();
+		criteria.andMobileEqualTo(mobile);
+		List<User> result=userMapper.selectByExample(example);
+		if(result==null||result.size()<=0){
+			return false;
+		}else{
+			return true; //存在
+		}
+	}
+}

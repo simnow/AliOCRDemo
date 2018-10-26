@@ -1,0 +1,132 @@
+/**
+ * 
+ */
+package cn.caecc.erp.config;
+
+import java.util.Properties;
+
+import javax.sql.DataSource;
+
+import org.apache.ibatis.plugin.Interceptor;
+import org.mybatis.spring.SqlSessionFactoryBean;
+import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
+import com.github.pagehelper.PageInterceptor;
+
+import cn.caecc.erp.support.constant.Contants;
+
+import org.apache.commons.dbcp2.BasicDataSource;
+
+/**
+ * @author weizhen
+ *
+ */
+@Configuration
+@PropertySource(Contants.DB_CONFIG)
+@MapperScan(basePackages = "cn.caecc.erp.modules.dao.**.mapper")
+public class MybatisConfig {
+
+	@Value("${jdbc.driver}")
+	private String driverClassName;
+
+	@Value("${jdbc.url}")
+	private String url;
+
+	@Value("${jdbc.username}")
+	private String username;
+
+	@Value("${jdbc.password}")
+	private String password;
+	
+	@Value("${jdbc.initialSize}")
+	private int initialSize;
+	
+	@Value("${jdbc.minIdle}")
+	private int minIdle;
+	
+	@Value("${jdbc.maxIdle}")
+	private int maxIdle;
+	
+	@Value("${jdbc.maxTotal}")
+	private int maxTotal;
+	
+	@Value("${jdbc.maxWaitMillis}")
+	private int maxWaitMillis;
+	
+	@Value("${jdbc.timeBetweenEvictionRunsMillis}")
+	private int timeBetweenEvictionRunsMillis;
+	
+	@Value("${jdbc.testOnBorrow}")
+	private boolean testOnBorrow;
+	
+	@Value("${jdbc.testOnReturn}")
+	private boolean testOnReturn;
+	
+	@Value("${jdbc.minEvictableIdleTimeMillis}")
+	private int minEvictableIdleTimeMillis;
+	
+	@Value("${jdbc.testWhileIdle}")
+	private boolean testWhileIdle;
+	
+	/**
+	 * 
+	 */
+	public MybatisConfig() {
+		// TODO Auto-generated constructor stub
+	}
+
+	@Bean(name = "dataSource", destroyMethod = "close")
+	public DataSource getDataSource() {
+		BasicDataSource datasource = new BasicDataSource();
+		datasource.setUrl(url);
+		datasource.setDriverClassName(driverClassName);
+		datasource.setUsername(username);
+		datasource.setPassword(password);
+		
+		datasource.setInitialSize(initialSize);
+		datasource.setMinIdle(minIdle);
+		datasource.setMaxIdle(maxIdle);
+		datasource.setMaxTotal(maxTotal);
+		datasource.setTestOnBorrow(testOnBorrow);
+		datasource.setTestOnReturn(testOnReturn);
+		datasource.setTestWhileIdle(testWhileIdle);
+		//	datasource.setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis);
+		//	datasource.setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis);
+		//	datasource.setMaxWaitMillis(maxWaitMillis);
+
+		
+	//	datasource.setValidationQuery("SELECT 1");
+	//	datasource.setTestOnBorrow(true);
+		return datasource;
+	}
+
+	@Bean
+	public static PropertySourcesPlaceholderConfigurer getPropertySourcesPlaceholderConfigurer() {
+		PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer = new PropertySourcesPlaceholderConfigurer();
+		propertySourcesPlaceholderConfigurer.setIgnoreUnresolvablePlaceholders(true);
+		return propertySourcesPlaceholderConfigurer;
+	}
+
+	@Bean(name = "sqlSessionFactory")
+	public SqlSessionFactoryBean getSqlSessionFactory() throws Exception {
+		SqlSessionFactoryBean sqlSessionFactory = new SqlSessionFactoryBean();
+		sqlSessionFactory.setDataSource(getDataSource());
+		sqlSessionFactory.setTypeAliasesPackage("cn.caecc.erp.modules.dao.**.entity");
+		ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
+		sqlSessionFactory.setMapperLocations(
+				resourcePatternResolver.getResources("classpath:cn/caecc/erp/modules/dao/**/sqlMap/**.xml"));
+		Properties properties = new Properties();
+		properties.setProperty("helperDialect", "mysql");
+		Interceptor interceptor = new PageInterceptor();
+		interceptor.setProperties(properties);
+		sqlSessionFactory.setPlugins(new Interceptor[] { interceptor });
+		return sqlSessionFactory;
+	}
+
+}

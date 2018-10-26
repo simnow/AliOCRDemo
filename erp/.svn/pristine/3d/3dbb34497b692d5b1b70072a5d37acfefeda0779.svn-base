@@ -1,0 +1,141 @@
+package cn.caecc.erp.modules.service.serviceImpl;
+
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+
+import cn.caecc.erp.modules.dao.ex.mapper.WellPowerExMapper;
+import cn.caecc.erp.modules.dao.mybatis.entity.WellPower;
+import cn.caecc.erp.modules.dao.mybatis.entity.WellPowerExample;
+import cn.caecc.erp.modules.dao.mybatis.entity.WellPowerExample.Criteria;
+import cn.caecc.erp.modules.dao.mybatis.mapper.WellPowerMapper;
+import cn.caecc.erp.modules.service.WellPowerService;
+import cn.caecc.erp.support.message.Message;
+import cn.caecc.erp.support.util.DateUtil;
+@Service
+public class WellPowerServiceImpl implements WellPowerService {
+
+	@Autowired
+	private WellPowerMapper wellPowerMapper;
+	@Autowired
+	private WellPowerExMapper wellPowerExMapper;
+	
+	@Override
+	public boolean insertWellPower(WellPower wellPower) {
+		wellPower.setCreatetime(DateUtil.getcurrentDateTime());
+		if(wellPowerExMapper.insertWellPower(wellPower)>0){
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean deleteWellPower(int id) {
+		if(wellPowerMapper.deleteByPrimaryKey(id)>0){
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public WellPower getWellPowerById(int id) {
+		return wellPowerMapper.selectByPrimaryKey(id);
+	}
+
+	@Override
+	public Message listWellPower(String startDate, String endDate, Integer wellId, int pageNo, int pageSize) {
+		PageHelper.startPage(pageNo, pageSize, "CreateTime desc");
+		WellPowerExample example=new WellPowerExample();
+		Criteria criteria=example.createCriteria();
+		if(StringUtils.isNotBlank(startDate)){
+			criteria.andLogdateGreaterThanOrEqualTo(DateUtil.convertStringToDate(startDate, DateUtil.YYYY_MM_DD));
+		}
+		if(StringUtils.isNotBlank(endDate)){
+			criteria.andLogdateLessThanOrEqualTo(DateUtil.convertStringToDate(endDate, DateUtil.YYYY_MM_DD));
+		}
+		if(null!=wellId){
+			criteria.andWellidEqualTo(wellId);
+		}
+		Message message=new Message();
+		List<WellPower> resultlist=wellPowerMapper.selectByExample(example);
+		if(resultlist!=null&&resultlist.size()>0){
+			PageInfo<WellPower> pageInfo=new PageInfo<>(resultlist);
+			message.setObj(pageInfo);
+		}
+		return message;
+	}
+	@Override
+	public Message listWellPowerNoPage(String startDate, String endDate, Integer wellId) {
+		WellPowerExample example=new WellPowerExample();
+		Criteria criteria=example.createCriteria();
+		if(StringUtils.isNotBlank(startDate)){
+			criteria.andLogdateGreaterThanOrEqualTo(DateUtil.convertStringToDate(startDate, DateUtil.YYYY_MM_DD));
+		}
+		if(StringUtils.isNotBlank(endDate)){
+			criteria.andLogdateLessThanOrEqualTo(DateUtil.convertStringToDate(endDate, DateUtil.YYYY_MM_DD));
+		}
+		if(null!=wellId){
+			criteria.andWellidEqualTo(wellId);
+		}
+		Message message=new Message();
+		List<WellPower> resultlist=wellPowerMapper.selectByExample(example);
+		if(resultlist!=null&&resultlist.size()>0){
+			message.setObj(resultlist);
+		}
+		return message;
+	}
+
+	@Override
+	public boolean updateWellPower(WellPower wellPower) {
+		if(wellPowerMapper.updateByPrimaryKeySelective(wellPower)>0){
+			return true;
+		}
+		return false;
+	}
+	
+	@Override
+	public WellPower getOneDay(Date date,int wellId) {
+		WellPowerExample example=new WellPowerExample();
+		Criteria criteria=example.createCriteria();
+		criteria.andLogdateEqualTo(date);
+		criteria.andWellidEqualTo(wellId);
+		List<WellPower> list=wellPowerMapper.selectByExample(example);
+		if(list!=null&&list.size()>0){
+			return list.get(0);
+		}
+		return null;
+	}
+	
+	@Override
+	public WellPower getGreaterThanOrEqualToLogDate(Date logday,int wellId) {
+		WellPowerExample example=new WellPowerExample();
+		Criteria criteria=example.createCriteria();
+		criteria.andLogdateGreaterThanOrEqualTo(logday);
+		criteria.andWellidEqualTo(wellId);
+		example.setOrderByClause("LogDate asc");
+		List<WellPower> list=wellPowerMapper.selectByExample(example);
+		if(list!=null&&list.size()>0){
+			return list.get(0);
+		}
+		return null;
+	}
+
+	@Override
+	public List<WellPower> getAllWellPowerByWellId(int wellId) {
+		WellPowerExample example=new WellPowerExample();
+		Criteria criteria=example.createCriteria();
+		criteria.andWellidEqualTo(wellId);
+		List<WellPower> list=wellPowerMapper.selectByExample(example);
+		if(list!=null&&list.size()>0){
+			return list;
+		}
+		return null;
+	}
+
+}

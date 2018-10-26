@@ -1,0 +1,961 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <title>学术委员会</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <link href="resources/css/jquery-ui-themes.css" type="text/css" rel="stylesheet"/>
+    <link href="resources/css/axure_rp_page.css" type="text/css" rel="stylesheet"/>
+    <link href="data/styles.css" type="text/css" rel="stylesheet"/>
+    <link href="files/组织架构/styles.css" type="text/css" rel="stylesheet"/>
+    <script src="resources/scripts/jquery-1.7.1.min.js"></script>
+    <script src="resources/scripts/jquery-ui-1.8.10.custom.min.js"></script>
+    <script src="resources/scripts/axure/axQuery.js"></script>
+    <script src="resources/scripts/axure/globals.js"></script>
+    <script src="resources/scripts/axutils.js"></script>
+    <script src="resources/scripts/axure/annotation.js"></script>
+    <script src="resources/scripts/axure/axQuery.std.js"></script>
+    <script src="resources/scripts/axure/doc.js"></script>
+    <script src="data/document.js"></script>
+    <script src="resources/scripts/messagecenter.js"></script>
+    <script src="resources/scripts/axure/events.js"></script>
+    <script src="resources/scripts/axure/recording.js"></script>
+    <script src="resources/scripts/axure/action.js"></script>
+    <script src="resources/scripts/axure/expr.js"></script>
+    <script src="resources/scripts/axure/geometry.js"></script>
+    <script src="resources/scripts/axure/flyout.js"></script>
+    <script src="resources/scripts/axure/ie.js"></script>
+    <script src="resources/scripts/axure/model.js"></script>
+    <script src="resources/scripts/axure/repeater.js"></script>
+    <script src="resources/scripts/axure/sto.js"></script>
+    <script src="resources/scripts/axure/utils.temp.js"></script>
+    <script src="resources/scripts/axure/variables.js"></script>
+    <script src="resources/scripts/axure/drag.js"></script>
+    <script src="resources/scripts/axure/move.js"></script>
+    <script src="resources/scripts/axure/visibility.js"></script>
+    <script src="resources/scripts/axure/style.js"></script>
+    <script src="resources/scripts/axure/adaptive.js"></script>
+    <script src="resources/scripts/axure/tree.js"></script>
+    <script src="resources/scripts/axure/init.temp.js"></script>
+    <script src="files/组织架构/data.js"></script>
+    <script src="resources/scripts/axure/legacy.js"></script>
+    <script src="resources/scripts/axure/viewer.js"></script>
+    <script src="resources/scripts/axure/math.js"></script>
+    <script type="text/javascript">
+      $axure.utils.getTransparentGifPath = function() { return 'resources/images/transparent.gif'; };
+      $axure.utils.getOtherPath = function() { return 'resources/Other.html'; };
+      $axure.utils.getReloadPath = function() { return 'resources/reload.html'; };
+    </script>
+     <style>
+       #base {
+            position: relative;
+            margin-top: -207px;
+        }
+        .inport-footer {
+            position: absolute;
+            top:2216px;
+            left: 0px;
+        }
+        #nav-box {
+          position: absolute;
+          left: 379px;
+          top: 431px;
+          width: 220px;
+          height: 300px;
+          background: #fff;
+          opacity:1;
+          margin: 0;
+          padding: 0;
+        }
+        #nav-box li {
+             width: 220px;
+          
+          background: inherit;
+          background-color: rgba(242, 242, 242, 1);
+          border: none;
+          border-radius: 0px;
+          margin-bottom: 4px;
+          list-style:none;
+        }
+        #nav-box li p{
+          display:inline-block;
+          margin-left: 40px;
+          height: 46px;
+          line-height:46px;
+           font-family: '微软雅黑 Bold', '微软雅黑';
+         font-weight: 700;
+         font-style: normal;
+         font-size: 16px;
+         color:  #126ACC;
+         vertical-align: middle;
+         width:100px;
+        }
+        #nav-box li div {
+          display:inline-block;
+          margin-left: 40px;
+          width: 13px;
+          height: 15px;
+          vertical-align: middle;
+              font-family: 'Arial Normal', 'Arial';
+           font-weight: 400;
+           font-style: normal;
+           font-size: 13px;
+           color: #333333;
+           text-align: center;
+           line-height: normal;
+        }
+        #nav-box li div img {
+          width:100%;
+        }
+        #sub-nav-box li {
+          width: 220px;
+          
+          background: inherit;
+          background-color: rgba(242, 242, 242, 1);
+          border: none;
+          border-radius: 0px;
+          margin-bottom: 4px;
+          list-style:none;
+        }
+        #nav-box li a{
+          text-decoration:none;
+        }
+      
+        #nav-box .sub-nav {
+          display:none;
+        }
+        #nav-box li.nav div {
+          transform:rotate(90deg);
+        }
+        #nav-box .sub-nav.nav-list {
+          display: block;
+        }
+        #nav-box .sub-nav.nav-list p{
+          display:inline-block;
+          margin-left: 40px;
+          height: 46px;
+          line-height:46px;
+          font-family: '微软雅黑 Bold', '微软雅黑';
+         font-weight: 400;
+         font-style: normal;
+         font-size: 16px;
+         color: #666666;
+         vertical-align: middle;
+        }
+      
+        #nav-box .sub-nav.nav-list .activited p {
+          color: #126ACC;
+        }
+        #nav-box li ul{
+             width: 220px;
+          background: inherit;
+          background-color: rgba(242, 242, 242, 1);
+          border: none;
+          border-radius: 0px;
+          margin-bottom: 4px;
+          list-style:none;
+          margin:0;
+          padding:0;
+          padding-top:4px;
+          background:#fff;
+         
+        }
+        
+  
+         #content-box {
+        background:#fff;
+        position: absolute;
+        left:  628px;
+        top: 380px;
+        width: 950px;
+        font-family: '微软雅黑 Bold', '微软雅黑';
+        font-weight: 700;
+        font-style: normal;
+        font-size: 18px;
+        height:1500px;
+      }
+      #content-box  ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      #content-box li{
+        width: 937px;
+        font-family: '微软雅黑 Bold', '微软雅黑';
+        font-weight: 700;
+        font-style: normal;
+        font-size: 18px;
+        margin-bottom:55px;
+      }
+      #content-box li .title {
+        height: 40px;
+        width: 950px;
+        border-bottom: 1px rgba(18, 106, 204, 1) solid;
+      }
+      #content-box li .title .bar{
+        width: 95px;
+        height: 5px;
+        margin-top:11px;
+        background-color: rgba(18, 106, 204, 1);
+      }
+      #content-box li .content {
+        width: 100%;
+        margin-top:30px;
+        font-family: '微软雅黑 Regular', '微软雅黑';
+        font-weight: 400;
+        font-size: 16px;
+        word-wrap: break-word;
+        line-height: 28px;
+      }
+      #content-box li .content .content-img {
+        width: 655px;
+        height: 333px;
+        margin-top:30px;
+        margin-left: 128px;
+      }
+      #content-box li .content .content-img img{
+        width: 655px;
+        height: 333px;
+      }
+      #content-box li .content .munber-title{
+        width: 951px;
+        height: 33px;
+        background: inherit;
+        background-color: rgba(242, 242, 242, 1);
+        margin-top:20px;
+        padding-left: 10px;
+        color:rgba(18, 106, 204, 1);
+        font-weight: 500;
+      }
+      #content-box li .content .content-people{
+        width: 950px;
+        margin-top:20px;
+        /* text-align: center; */
+      }
+      #content-box li .content .content-people li{
+        width:140px;
+        height: 210px;
+        text-align: center;
+        margin-bottom:15px;
+        display: inline-block;
+      }
+      #content-box li .content .content-people li.leader {
+        width: 950px;
+      }
+      #content-box li .content .content-people li.first {
+        margin-left:50px;
+      }
+      #content-box li .content .content-people li.second {
+        width: 200px;
+        display: inline-block;
+      }
+      #content-box li .content .content-people li.second-second {
+        margin-left:75px;
+      }
+      #content-box li .content .content-people li.second-first {
+        margin-left:170px;
+      }
+      /* #content-box li .content .content-people li.toleft {
+        padding-left:-100px;
+      } */
+      #content-box li .content .content-people li.second-last {
+        margin-right:80px;
+      }
+      #content-box li .content .content-people li img{
+        width: 121px;
+        height: 165px;
+      }
+      #content-box li .content .content-people li p{
+        font-family: '微软雅黑 Regular', '微软雅黑';
+        font-weight: 400;
+        font-style: normal;
+        text-align: center;
+        line-height: 20px;
+        font-size: 14px;
+      }
+      #second-page {
+        display: none;
+      }
+      #third-page {
+        display: none;
+      }
+      #page {
+        width: 950px;
+        height:22px;
+        position: absolute;
+        left:  628px;
+        top: 2170px;
+        text-align: center;
+      }
+      #page span {
+        display: inline-block;
+        margin-right:10px;
+      }
+      #page span.first-page{
+         color:rgba(18, 106, 204, 1);
+      }
+      #page span.tofirst, #page span.tosecond, #page span.next, #page span.pre, #page span.tothird{
+        cursor: pointer;
+      }
+        
+    
+    </style>
+  </head>
+  <body>
+    <div class="inport-header"></div>
+    <div id="base" class="">	
+
+      <!-- Unnamed (组合) -->
+      <div id="u732" class="ax_default">
+
+        <!-- Unnamed (矩形) -->
+        <div id="u733" class="ax_default box_2">
+          <img id="u733_img" class="img " src="images/组织架构/u733.png"/>
+          <!-- Unnamed () -->
+          <div id="u734" class="text" style="display: none; visibility: hidden">
+            <p><span></span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (组合) -->
+        <div id="u735" class="ax_default">
+
+          <!-- Unnamed (矩形) -->
+          <div id="u736" class="ax_default box_2">
+            <img id="u736_img" class="img " src="images/组织架构/u733.png"/>
+            <!-- Unnamed () -->
+            <div id="u737" class="text" style="display: none; visibility: hidden">
+              <p><span></span></p>
+            </div>
+          </div>
+
+          <!-- Unnamed (矩形) -->
+          <div id="u738" class="ax_default box_2">
+            <img id="u738_img" class="img " src="images/组织架构/u733.png"/>
+            <!-- Unnamed () -->
+            <div id="u739" class="text" style="display: none; visibility: hidden">
+              <p><span></span></p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Unnamed (图片) -->
+      <div id="u812" class="ax_default image">
+        <img id="u812_img" class="img " src="images/战略院简介/u567.jpg"/>
+        <!-- Unnamed () -->
+        <div id="u813" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (组合) -->
+      <div id="u940" class="ax_default">
+
+        <!-- Unnamed (组合) -->
+        <div id="u941" class="ax_default">
+
+          <!-- Unnamed (矩形) -->
+          <div id="u942" class="ax_default label">
+            <div id="u942_div" class=""></div>
+            <!-- Unnamed () -->
+            <div id="u943" class="text" style="visibility: visible;">
+              <p><span>当前位置＞关于我们＞组织架构</span></p>
+            </div>
+          </div>
+
+          <!-- Unnamed (形状) -->
+          <div id="u944" class="ax_default icon">
+            <img id="u944_img" class="img " src="images/战略院简介/u699.png"/>
+            <!-- Unnamed () -->
+            <div id="u945" class="text" style="display: none; visibility: hidden">
+              <p><span></span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u946" class="ax_default box_2">
+        <div id="u946_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u947" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u948" class="ax_default box_2">
+        <div id="u948_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u949" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u950" class="ax_default box_2">
+        <div id="u950_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u951" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u952" class="ax_default _一级标题">
+        <div id="u952_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u953" class="text" style="visibility: visible;">
+          <p><span>关于我们</span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u954" class="ax_default _一级标题">
+        <div id="u954_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u955" class="text" style="visibility: visible;">
+          <p><span>战略院简介</span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u956" class="ax_default _一级标题">
+        <div id="u956_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u957" class="text" style="visibility: visible;">
+          <p><span>组织架构</span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (组合) -->
+      <div id="u958" class="ax_default">
+
+        <!-- Unnamed (菱形) -->
+        <div id="u959" class="ax_default box_2">
+          <img id="u959_img" class="img " src="images/战略院简介/u714.png"/>
+          <!-- Unnamed () -->
+          <div id="u960" class="text" style="display: none; visibility: hidden">
+            <p><span></span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (菱形) -->
+        <div id="u961" class="ax_default box_2">
+          <img id="u961_img" class="img " src="images/战略院简介/u716.png"/>
+          <!-- Unnamed () -->
+          <div id="u962" class="text" style="display: none; visibility: hidden">
+            <p><span></span></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Unnamed (组合) -->
+      <div id="u963" class="ax_default">
+
+        <!-- Unnamed (菱形) -->
+        <div id="u964" class="ax_default box_2">
+          <img id="u964_img" class="img " src="images/战略院简介/u719.png"/>
+          <!-- Unnamed () -->
+          <div id="u965" class="text" style="display: none; visibility: hidden">
+            <p><span></span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (菱形) -->
+        <div id="u966" class="ax_default box_2">
+          <img id="u966_img" class="img " src="images/战略院简介/u721.png"/>
+          <!-- Unnamed () -->
+          <div id="u967" class="text" style="display: none; visibility: hidden">
+            <p><span></span></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u968" class="ax_default box_2">
+        <div id="u968_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u969" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u970" class="ax_default box_2">
+        <div id="u970_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u971" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u972" class="ax_default box_2">
+        <div id="u972_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u973" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u974" class="ax_default _一级标题">
+        <div id="u974_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u975" class="text" style="visibility: visible;">
+          <p><span>学术委员会</span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u976" class="ax_default _一级标题">
+        <div id="u976_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u977" class="text" style="visibility: visible;">
+          <p><span>理事会</span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u978" class="ax_default _一级标题">
+        <div id="u978_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u979" class="text" style="visibility: visible;">
+          <p><span>院务委员会</span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u980" class="ax_default label">
+        <div id="u980_div" class=""></div>
+        <!-- Unnamed () -->
+        <div id="u981" class="text" style="display: none; visibility: hidden">
+          <p><span></span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (组合)-->
+      <div id="u990" class="ax_default">
+
+        <!-- Unnamed (菱形) -->
+        <div id="u993" class="ax_default box_2">
+          <img id="u993_img" class="img " src="images/战略院简介/u716.png"/>
+          <!-- Unnamed () -->
+          <div id="u994" class="text" style="display: none; visibility: hidden">
+            <p><span></span></p>
+          </div>
+        </div>
+      </div>
+
+      <ul id="nav-box">
+          <li class="navs" style ="background: rgba(18, 106, 204, 1)">
+            <p  style ="color: #fff">关于我们</p> <div></div>
+            
+          </li>
+          <li class="sub-nav">
+            
+          </li>
+          <li class="nav1" >
+            <p>战略院简介</p><div>></div>
+            
+          </li>
+          <li class="sub-nav" >
+            <!-- <ul>
+              <li><p>院士</p></li>
+              <li><p>专家</p></li>
+            </ul> -->
+          </li>
+          <li class="nav">
+            <p>组织架构</p><div>></div>
+            
+          </li>
+          <li class="sub-nav nav-list">
+            <ul>
+                <li class="activited"><p>学术委员会</p></li>
+                <li><p><a href="理事会.html">理事会</a></p></li>
+                <li><p><a href="院务委员会.html">院务委员会</a></p></li>
+                <li><p><a href="综合办公室.html">综合办公室</a></p></li>
+            </ul>
+          </li>
+          <li class="nav3">
+            <p>战略院大事记</p><div>></div>
+            
+          </li>
+          <li class="sub-nav">
+            <ul>
+              <li><p>2011</p></li>
+              <li><p>2015</p></li>
+              <li><p>2016</p></li>
+            </ul>
+          </li>
+          
+        </ul>
+  
+        <!--内容框-->
+        <div id="content-box">
+          <ul>
+            <li id="council">
+                <div class="title">
+                  <p>学术委员会</p>
+                  <p class="bar"></p>
+                </div>
+                <div class="content">
+                    <div class="content-text">学术委员会是航天战略院的咨询研究指导机构，把握、策划和规划咨询研究方向和重点，对航天战略院的科技发展战略、重大科技决策、科技成果推荐和国际合作等重大问题提出意见和建议，开展技术、工程和经济社会发展相关领域的研究，形成中国航天工程科技发展战略等咨询研究报告。</div>
+                    <div class="content-img">
+                      <img src="images/组织架构/u784.png">
+                    </div>
+                    <div class="munber-title">领导成员</div>
+                    <ul class="content-people">
+                      <li class="leader">
+                        <img src="images/photos/wangliheng.png">
+                        <p>王礼恒 主任</p>
+                      </li>
+                      <li class="second second-second">
+                        <img src="images/photos/dushanyi.png">
+                        <p>杜善义 副主任</p>
+                      </li>
+                      <li class="second">
+                        <img src="images/photos/luanenjie.png">
+                        <p>栾恩杰 副主任</p>
+                      </li>
+                      <li class="second">
+                        <img src="images/photos/yangbaohua.png">
+                        <p>杨保华 副主任</p>
+                      </li>
+                      <li class="second">
+                        <img src="images/photos/wangkunsheng.jpg">
+                        <p>王崑声 秘书长</p>
+                      </li>
+                  </ul>
+                  <div class="munber-title">学术委员会成员</div>
+                  <ul class="content-people" id="first-page">
+                      <li class="first">
+                        <img src="images/photos/yubenshui.png">
+                        <p>于本水 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/wangzicai.png">
+                        <p>王子才 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/wangyongzhi.png">
+                        <p>王永志 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/wangxiji.png">
+                        <p>王希季 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/baoweimin.png">
+                        <p>包为民 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/longlehao.png">
+                        <p>龙乐豪 学术委员</p>
+                      </li>
+                      <li class="first">
+                        <img src="images/photos/fengxianguang.jpg">
+                        <p>冯先光 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/shenxuhui.jpg">
+                        <p>申旭辉 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/yepeijian.png">
+                        <p>叶培建 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/liuyongcai.png">
+                        <p>刘永才 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/liuzhusheng.png">
+                        <p>刘竹生 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/renzhiwu.jpg">
+                        <p>任志武 学术委员</p>
+                      </li>
+                      <li class="first">
+                        <img src="images/photos/liujingnan.png">
+                        <p>刘经南 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/liubaoyong.png">
+                        <p>刘宝镛 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/xujianmin.png">
+                        <p>许健民 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/sunjiadong.png">
+                        <p>孙家栋 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/xingqiuhen.png">
+                        <p>邢球痕 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/zhusenyuan.png">
+                        <p>朱森元 学术委员</p>
+                      </li>
+                    </ul>
+                    <ul class="content-people" id="second-page">
+                      <li class="first">
+                        <img src="images/photos/sunjingliang.png">
+                        <p>孙敬良 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/luyuanjiu.png">
+                        <p>陆元九 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/zhanglitong.png">
+                        <p>张立同 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/libohu.png">
+                        <p>李伯虎 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/wuhongxin.png">
+                        <p>吴宏鑫 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/liming.jpg">
+                        <p>李明 学术委员</p>
+                      </li>
+                    
+                      <li class="first">
+                        <img src="images/photos/chendingchang.png">
+                        <p>陈定昌 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/zhangguitian.png">
+                        <p>张贵田 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/shenrongjun.png">
+                        <p>沈荣骏 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/zoujing.png">
+                        <p>邹竞 学术委员</p>
+                      </li>
+                      <li >
+                        <img src="images/photos/minguirong.png">
+                        <p>闵桂荣 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/yumenglun.png">
+                        <p>余梦伦 学术委员</p>
+                      </li>
+                      <li class="first">
+                        <img src="images/photos/shenxubang.png">
+                        <p>沈绪榜 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/hexingui.png">
+                        <p>何新贵 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/lideren.png">
+                        <p>李德仁 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/zhanglvqian.png">
+                        <p>张履谦 学术委员</p>
+                      </li>
+                      <li >
+                        <img src="images/photos/zhouyu.png">
+                        <p>周玉 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/fanbenyao.png">
+                        <p>范本尧 学术委员</p>
+                      </li>
+                    </ul>
+                    <ul class="content-people" id="third-page">
+                      <li class="first">
+                        <img src="images/photos/mengzhizhong.png">
+                        <p>孟执中 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/linzhongqin.png">
+                        <p>林忠钦 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/zhongshan.png">
+                        <p>钟山 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/jiangjingshan.png">
+                        <p>姜景山 学术委员</p>
+                      </li>
+                      <li >
+                        <img src="images/photos/gaoping.jpg">
+                        <p>高平 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/guxingfa.jpg">
+                        <p>顾行发 学术委员</p>
+                      </li>
+                      <li class="first">
+                        <img src="images/photos/guojianning.jpg">
+                        <p>郭建宁 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/qifaren.png">
+                        <p>戚发轫 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/liagnjincai.png">
+                        <p>梁晋才 学术委员</p>
+                      </li>
+                      <li >
+                        <img src="images/photos/huangruisong.png">
+                        <p>黄瑞松 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/zengguangshang.jpg">
+                        <p>曾广商 学术委员</p>
+                      </li>
+                      <li >
+                        <img src="images/photos/pengsuping.png">
+                        <p>彭苏萍 学术委员</p>
+                      </li>
+                    
+                      <li class="first">
+                        <img src="images/photos/hanjiecai.png">
+                        <p>韩杰才 学术委员</p>
+                      </li>
+                      <li >
+                        <img src="images/photos/dongchaohua.jpg">
+                        <p>董超华 学术委员</p>
+                      </li>
+                      <li>
+                        <img src="images/photos/zenglan.jpg">
+                        <p>曾澜 学术委员</p>
+                      </li>
+                    </ul>
+                </div>
+              </li>
+          </ul>
+        </div>
+        <div id="page">
+          <span>共3页</span>
+          <span class="showpage">第1页</span>
+          <span class="pre">上一页</span>
+          <span class="tofirst first-page">1</span>
+          <span class="tosecond second-page">2</span>
+          <span class="tothird third-page">3</span>
+          <span class="next">下一页</span>
+        </div>
+        <div class="inport-footer"></div>
+        </div>
+  </body>
+  <script src="resources/scripts/load.js"></script>
+  <script>
+  //	上来先展开
+  $('#nav-box .nav1').click(function(){
+	  //转换页面
+	  window.location.href='战略院简介.html';
+  });
+ $('#nav-box .nav3').click(function(){
+	  //转换页面
+	  window.location.href='战略院大事记.html';
+  });
+
+  $('#nav-box .nav').click(function(){
+	  //转换页面
+	  window.location.href='组织架构.html';
+  });
+
+    //分页
+    var page = 1;
+    $(".pre").click(function(){
+      if(page == 3) {
+        $("#third-page").hide();
+        $("#second-page").show();
+        $("#first-page").hide();
+        $(".showpage").text('第2页');
+        $(".first-page").css('color', '#000');
+        $(".second-page").css('color', "rgba(18, 106, 204, 1)");
+        $(".third-page").css('color', "#000");
+        page -- ;
+      } else if(page == 2) {
+        $("#third-page").hide();
+        $("#second-page").hide();
+        $("#first-page").show();
+        $(".showpage").text('第1页');
+        $(".first-page").css('color', 'rgba(18, 106, 204, 1)');
+        $(".second-page").css('color', "#000");
+        $(".third-page").css('color', "#000");
+        page -- ;
+      } else {
+        return;
+      }
+    });
+    $(".next").click(function(){
+      if(page == 2) {
+        $("#third-page").show();
+        $("#second-page").hide();
+        $("#first-page").hide();
+        $(".showpage").text('第3页');
+        $(".first-page").css('color', '#000');
+        $(".second-page").css('color', "#000");
+        $(".third-page").css('color', "rgba(18, 106, 204, 1)");
+        page ++;
+      } else if(page == 1) {
+        $("#third-page").hide();
+        $("#second-page").show();
+        $("#first-page").hide();
+        $(".showpage").text('第2页');
+        $(".first-page").css('color', '#000');
+        $(".second-page").css('color', "rgba(18, 106, 204, 1)");
+        $(".third-page").css('color', "#000");
+        page ++ ;
+      } else {
+        return;
+      }
+    });
+
+    $(".tofirst").click(function() {
+      $("#second-page").hide();
+      $("#first-page").show();
+      $("#third-page").hide();
+      $(".showpage").text('第1页');
+      $(".first-page").css('color', 'rgba(18, 106, 204, 1)');
+      $(".second-page").css('color', "#000");
+      $(".third-page").css('color', "#000");
+      page = 1;
+    });
+    $(".tosecond").click(function() {
+      $("#second-page").show();
+      $("#first-page").hide();
+      $("#third-page").hide();
+      $(".showpage").text('第2页');
+      $(".second-page").css('color', 'rgba(18, 106, 204, 1)');
+      $(".first-page").css('color', "#000");
+      $(".third-page").css('color', "#000");
+      page = 2;
+    });
+    $(".tothird").click(function() {
+      $("#first-page").hide();
+      $("#second-page").hide();
+      $("#third-page").show();
+      $(".showpage").text('第3页');
+      $(".second-page").css('color', '#000');
+      $(".first-page").css('color', "#000");
+      $(".third-page").css('color', "rgba(18, 106, 204, 1)");
+      page = 3;
+    });
+   
+  </script>
+</html>

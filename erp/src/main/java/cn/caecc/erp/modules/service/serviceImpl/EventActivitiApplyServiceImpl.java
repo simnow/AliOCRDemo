@@ -1,0 +1,163 @@
+package cn.caecc.erp.modules.service.serviceImpl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import cn.caecc.erp.modules.dao.ex.dto.EventActivitiApplyDto;
+import cn.caecc.erp.modules.dao.ex.mapper.EventActivitiApplyExMapper;
+import cn.caecc.erp.modules.dao.mybatis.entity.EventActivitiApply;
+import cn.caecc.erp.modules.dao.mybatis.mapper.EventActivitiApplyMapper;
+import cn.caecc.erp.modules.service.EventActivitiApplyService;
+import cn.caecc.erp.support.constant.Contants;
+import cn.caecc.erp.support.exception.CommonException;
+import cn.caecc.erp.support.util.DateUtil;
+import cn.caecc.erp.support.workflow.service.WorkflowService;
+
+@Service
+public class EventActivitiApplyServiceImpl implements EventActivitiApplyService {
+	@Autowired
+	private EventActivitiApplyMapper eApplyMapper;
+	@Autowired
+	private WorkflowService workflowService;
+	@Autowired
+	private EventActivitiApplyExMapper eExApplyMapper;
+
+	@Override
+	public EventActivitiApply addEventActivitiApply(EventActivitiApply eventActivitiApply) {
+		// TODO Auto-generated method stub/
+		Integer loginUserId = (Integer) SecurityUtils.getSubject().getSession().getAttribute(Contants.LOGINUSERID);
+		// 判断是否登录
+		if (loginUserId == null) {
+			throw new CommonException("未查到登录信息,请重新登录");
+		}
+		// 判断传入参数
+		if (eventActivitiApply.getUid() == null || StringUtils.isBlank(eventActivitiApply.getEventdescription())) {
+			throw new CommonException("参数异常");
+
+		}
+		// 判断是保存还是修改
+		if (eventActivitiApply.getId() == null) {
+			// 设置创建人
+			eventActivitiApply.setCreateuserid(loginUserId);
+			eventActivitiApply.setCreatetime(DateUtil.getcurrentDateTime());
+
+			eApplyMapper.insertSelective(eventActivitiApply);
+
+		}
+		// 不存在进行修改操作
+		else {
+			// 查询数据库记录
+			EventActivitiApply exists = eApplyMapper.selectByPrimaryKey(eventActivitiApply.getId());
+			// 判断是否已开始流程
+			if (StringUtils.isBlank(exists.getProcessinstanceid())) {
+
+				eApplyMapper.updateByPrimaryKeySelective(eventActivitiApply);
+
+			} else {
+				throw new CommonException("流程中，不能进行修改操作");
+
+			}
+
+		}
+
+		return eventActivitiApply;
+
+	}
+
+	@Override
+	public int deleteEventActivitiApply(int id) {
+		// TODO Auto-generated method stub
+
+		EventActivitiApply cardActivitiApply = eApplyMapper.selectByPrimaryKey(id);
+		if (StringUtils.isBlank(cardActivitiApply.getProcessinstanceid())) {
+			return eApplyMapper.deleteByPrimaryKey(id);
+		} else {
+			throw new CommonException("存在流程信息，无法删除");
+
+		}
+
+	}
+
+	@Override
+	public PageInfo<EventActivitiApply> getEventApplyPageList(int state,int pagesize,int pageno,int uid) {
+		// TODO Auto-generated method stub
+		// 设置为当前用户
+		Map<String,Object> params=new  HashMap<String,Object>();
+		params.put("state",state);
+		params.put("uid",uid);
+		PageHelper.startPage(pageno,pagesize);
+		List<EventActivitiApply> resultList = eExApplyMapper.getEventApplyList(params);
+		PageInfo<EventActivitiApply> pageInfo = new PageInfo<>(resultList);
+
+		return pageInfo;
+	}
+
+	@Override
+	public int startEventActivitiApply(String processDefinitionKey, String bussinessKey,
+			Map<String, Object> variables) throws Exception {
+		// TODO Auto-generated method stub
+
+		// 判断参数是否存在
+		if (StringUtils.isBlank(bussinessKey) || StringUtils.isBlank(processDefinitionKey)) {
+
+			throw new CommonException("参数异常");
+
+		}
+
+		// 开启流程
+		String processInstanceId = workflowService.startProcess(processDefinitionKey, bussinessKey, variables);
+		// 判断流程开启成功
+		if (StringUtils.isBlank(processInstanceId)) {
+			throw new CommonException("流程开启失败");
+
+		}
+		// 获取业务表信息
+		EventActivitiApply eventActivitiApply = eApplyMapper.selectByPrimaryKey(Integer.parseInt(bussinessKey));
+		eventActivitiApply.setProcessinstanceid(processInstanceId);
+		// 更新
+		return eApplyMapper.updateByPrimaryKey(eventActivitiApply);
+
+	}
+
+	@Override
+	public EventActivitiApplyDto getEventApplyByid(int id) {
+		// TODO Auto-generated method stub
+		return eExApplyMapper.getEventApplyById(id);
+
+	}
+
+	@Override
+	public EventActivitiApply updateEventApply(EventActivitiApply eventActivitiApply) {
+		// TODO Auto-generated method stub
+		if (eventActivitiApply.getId() == null || eventActivitiApply.getUid() == null
+				|| StringUtils.isBlank(eventActivitiApply.getEventdescription())) {
+			throw new CommonException("参数异常");
+
+		}
+
+		eApplyMapper.updateByPrimaryKeySelective(eventActivitiApply);
+
+		return eventActivitiApply;
+	}
+
+	@Override
+	public void setSuccess(int id) {
+		// TODO Auto-generated method stub
+		EventActivitiApply eventActivitiApply = eApplyMapper.selectByPrimaryKey(id);
+		if (eventActivitiApply == null) {
+			throw new CommonException("未找到相关业务记录");
+		}
+		if (eventActivitiApply.getIssuccess() == 1) {
+			throw new CommonException("相关流程已结束");
+		}
+		eventActivitiApply.setIssuccess(1);
+		eApplyMapper.updateByPrimaryKey(eventActivitiApply);
+	}
+
+}

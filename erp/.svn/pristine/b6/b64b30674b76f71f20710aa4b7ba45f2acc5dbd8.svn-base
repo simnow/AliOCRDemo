@@ -1,0 +1,38 @@
+/**
+ * 
+ */
+package cn.caecc.erp.config;
+
+import java.util.concurrent.ThreadPoolExecutor;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
+/**
+ * @author weizhen
+ *
+ */
+@Configuration
+public class ThreadConfig {
+
+	/**
+	 * 
+	 */
+	public ThreadConfig() {
+		// TODO Auto-generated constructor stub
+	}
+
+	@Bean(name = "taskExecutor")
+	public ThreadPoolTaskExecutor getTaskExecutor() {
+		ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
+		taskExecutor.setCorePoolSize(50);
+		taskExecutor.setKeepAliveSeconds(200);
+		taskExecutor.setMaxPoolSize(100);
+		taskExecutor.setQueueCapacity(200);
+		ThreadPoolExecutor.CallerRunsPolicy callerRunsPolicy = new ThreadPoolExecutor.CallerRunsPolicy();
+		taskExecutor.setRejectedExecutionHandler(callerRunsPolicy);
+		return taskExecutor;
+	}
+
+}

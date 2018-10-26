@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <script src="bs/resources/scripts/jquery-1.7.1.min.js"></script>
+        <title>统计</title>
+        <style>
+            html {
+                font-size: 14px;
+            }
+            .mainDiv {
+                text-align: center;
+                <!--width: 320px;-->
+            }
+            h2 {
+                color: #8f9ec8;
+            }
+            tr {
+                height: 3rem;
+            }
+            select {
+                height: 1.95rem;
+                border-color: #4059b0;
+                border: 1px solid #b6b6c8;
+                width: 11rem;
+                border-radius: 0.2rem;
+            }
+            .tableElem {
+                font-size: 1.1rem;
+            }
+            input {
+                height: 1.95rem;
+                border-color: #4059b0;
+                border: 1px solid #b6b6c8;
+                width: 11rem;
+                border-radius: 0.2rem;
+            }
+            .firstTd {
+                width: 6rem;
+                color: #5d5151;
+                text-align: left;
+/*                font-weight: bold;*/
+            }
+            table {
+                margin-left: 2.4rem;
+            }
+            label {
+                font-size: 1.1rem;
+                color: #595757;
+                line-height: 3rem;
+                float: left;
+                padding-left: 3.7rem;
+            }
+            button {
+                float: left;
+                border: 1px solid #b7b2b2;
+                color: #4a4949;
+                border-radius: 0.2rem;
+                height: 2.2rem;
+                width: 5rem;
+                font-size: 1.1rem;
+            }
+            .secondTabletd {
+                width: 5rem;
+            }
+            .testtable {
+                color: #5d5151;
+                font-size: 1.1rem;
+                text-align: center;
+                margin-left: 1.5rem;
+            }
+            .bold {
+                font-weight: bold;
+            }
+            a {
+                color: #6b6565;
+                font-size: 1.1rem;
+            }
+        </style>
+    </head>
+<body>
+    <div class="mainDiv">
+        <h2>报销统计录入</h2><a href="javascript:dodelete(0);">清空</a> <a href="javascript:getExcel();">导出数据</a>
+        
+        <table class="tableElem">
+            <tr>
+                <td class="firstTd">报销人:</td>
+                <td><input id="pername" name="pername" /></td>
+            </tr>
+            <tr>
+                <td class="firstTd">日 期:</td>
+                <td><input id="date" name="date" /></td>
+            </tr>
+            <tr>
+                <td class="firstTd">项目名称:</td>
+                <td><input id="ktname" name="ktname" /></td>
+            </tr>
+            <tr>
+                <td class="firstTd">事由:</td>
+                <td><input id="shiyou" name="shiyou" /></td>
+            </tr>
+            <tr>
+                <td class="firstTd">开支内容:</td>
+                <td><input id="neirong" name="neirong" /></td>
+            </tr>
+            <tr>
+                <td class="firstTd">开支金额:</td>
+                <td><input id="money" name="money" /></td>
+            </tr>
+            <tr>
+                <td class="firstTd">渠道:</td>
+                <td>
+	                <select id="source" name="source">
+					  <option value="研究所管理费">研究所管理费</option>
+					  <option value ="项目经费">项目经费</option>
+					  <option value ="部门管理费">部门管理费</option>
+					</select>
+                </td>
+            </tr>
+            <tr>
+                <td class="firstTd">项目合同号</td>
+                <td><input id="hetonghao" name="hetonghao" /></td>
+            </tr>
+            <tr>
+                <td class="firstTd">网报课题号</td>
+                <td><input id="ketihao" name="ketihao" /></td>
+            </tr>
+            <tr>
+                <td class="firstTd">还借款方式:</td>
+                <td>
+                	<select id="sourcemethod" name="sourcemethod">
+					  <option value="">无</option>
+					  <option value="现金">现金</option>
+					  <option value ="支票">支票</option>
+					  <option value ="电汇">电汇</option>
+					  <option value ="入卡">入卡</option>
+					</select>
+				</td>
+            </tr>
+            <tr style="display:none" id="tr2">
+            	<td class="firstTd">金额(元):</td>
+                <td><input id="tomoney" name="tomoney" /></td>
+            </tr>
+            <tr style="display:none" id="tr1">
+            	<td class="firstTd">应退还:</td>
+                <td><input id="backmoney" name="backmoney" /></td>
+            </tr>
+            <tr style="display:none" id="tr3">
+            	<td class="firstTd">应补领:</td>
+                <td><input id="buzhumoney" name="buzhumoney" /></td>
+            </tr>
+            <tr>
+                <td class="firstTd">备注</td>
+                <td><input id="beizhu" name="beizhu" onblur="dosubmit();" /></td>
+            </tr>
+            <!-- <tr>
+                <td class="firstTd">:</td>
+                <td><input id="money" name="money" onblur="dosubmit();" ></td>
+            </tr> -->
+            <!-- <tr>
+                <td class="firstTd">目前总金额</td>
+                <td><p id="summoney"/></td>
+            </tr> -->
+        </table>
+        <table class="testtable"></table>
+    </div>
+    
+</body>
+<script type="text/javascript">
+
+$('#sourcemethod').click(function(){
+	$('#tr2').show();
+	$('#tr1').show();
+	$('#tr3').show();
+	if($("#sourcemethod").val()==''){
+		$('#tr2').hide();
+		$('#tr1').hide();
+		$('#tr3').hide();
+	}
+})
+	
+doselectAll();
+function dosubmit(){
+	var pername=$("#pername").val();
+	var ktname=$("#ktname").val();
+	var date=$("#date").val();
+	var shiyou=$("#shiyou").val();
+	var neirong=$("#neirong").val();
+	var source=$("#source").val();
+	var hetonghao=$("#hetonghao").val();
+	var money=$("#money").val();
+	var ketihao=$("#ketihao").val();
+	var sourcemethod=$("#sourcemethod").val();
+	var tomoney=$("#tomoney").val();
+	var backmoney=$("#backmoney").val();
+	var buzhumoney=$("#buzhumoney").val();
+	var beizhu=$("#beizhu").val();
+    		jQuery.ajax({
+                url: '/bswebsite/bx/dosubmit',   
+                type: 'get',
+                dataType: 'JSON',
+                data: {'pername':pername,'ktname':ktname,'date':date,'shiyou':shiyou,'neirong':neirong,
+                	'source':source,'hetonghao':hetonghao,'money':money,'ketihao':ketihao,
+                	'sourcemethod':sourcemethod,'tomoney':tomoney,'backmoney':backmoney,'buzhumoney':buzhumoney,'beizhu':beizhu},
+                success:function(data){
+                    if(data.success){
+                    	//查询列表
+                    	doselectAll();
+                    	//清空
+                    	$("#pername").val("");
+                    	$("#ktname").val("");
+                    	$("#date").val("");
+                    	$("#shiyou").val("");
+                    	$("#neirong").val("");
+                    	$("#source").val("");
+                    	$("#hetonghao").val("");
+                    	$("#money").val("");
+                    	$("#ketihao").val("");
+                    	$("#beizhu").val("");
+                    	$("#sourcemethod").val("");
+                    	$("#tomoney").val("");
+                    	$("#buzhumoney").val("");
+                    	$("#backmoney").val("");
+                    }
+                    else
+                    {
+                    	alert(data.msg);
+                    	$("#pername").val("");
+                    	$("#ktname").val("");
+                    	$("#date").val("");
+                    	$("#shiyou").val("");
+                    	$("#neirong").val("");
+                    	$("#source").val("");
+                    	$("#hetonghao").val("");
+                    	$("#money").val("");
+                    	$("#ketihao").val("");
+                    	$("#beizhu").val("");
+                    	$("#sourcemethod").val("");
+                    	$("#tomoney").val("");
+                    	$("#backmoney").val("");
+                    	$("#buzhumoney").val("");
+                    }
+                }    
+            });
+}
+
+function dodelete(id){
+	jQuery.ajax({
+        url: '/bswebsite/bx/delete',   
+        type: 'get',
+        dataType: 'JSON',
+        data: {'id':id},
+        success:function(data){
+            if(data.success){
+            	doselectAll();
+            	$("#pername").val("");
+            	$("#ktname").val("");
+            	$("#date").val("");
+            	$("#shiyou").val("");
+            	$("#neirong").val("");
+            	$("#source").val("");
+            	$("#hetonghao").val("");
+            	$("#money").val("");
+            	$("#ketihao").val("");
+            	$("#beizhu").val("");
+            	$("#sourcemethod").val("");
+            	$("#tomoney").val("");
+            	$("#backmoney").val("");
+            	$("#buzhumoney").val("");
+            }
+            else
+            {
+            	alert(data.msg)
+            }
+        }    
+    });
+}
+function doselectAll(){
+	//清空table数据
+	//$(".testtable tr:not(:first)").empty();
+	$(".testtable").html("");
+	$("#pername").val("");
+	$("#ktname").val("");
+	$("#date").val("");
+	$("#shiyou").val("");
+	$("#neirong").val("");
+	$("#source").val("");
+	$("#hetonghao").val("");
+	$("#money").val("");
+	$("#ketihao").val("");
+	$("#beizhu").val("");
+	$("#sourcemethod").val("");
+	$("#tomoney").val("");
+	$("#backmoney").val("");
+	$("#buzhumoney").val("");
+    var tableLabel ="<tr><td>报销人</td><td>课题名称</td><td>日       期</td><td>事由</td><td>开支内容</td><td>经费渠道</td><td>合   同   号</td><td>报销金额</td><td>网报课题号</td><td>还借款方式</td><td>还借款金额</td><td>应退还</td><td>应补领</td><td>备注</td><td>操作</td></tr>";
+    $('.testtable').append(tableLabel);
+	//查询所有
+	jQuery.ajax({
+        url: '/bswebsite/bx/SelectAll',   
+        type: 'get',
+        dataType: 'JSON',
+        success:function(data){
+            if(data.success){
+            	var item;
+            	//$("#summoney").text(data.attributes.summoney)
+            	 $.each(data.obj,function(i,result){  
+                     item = "<tr><td class='secondTabletd'>"+result['pername']+
+                     "</td><td class='secondTabletd'>"+result['ktname']+
+                     "</td><td class='secondTabletd'>"+result['date']+
+                     "</td><td class='secondTabletd'>"+result['shiyou']+
+                     "</td><td class='secondTabletd'>"+result['neirong']+
+                     "</td><td class='secondTabletd'>"+result['source']+
+                     "</td><td class='secondTabletd'>"+result['hetonghao']+
+                     "</td><td class='secondTabletd'>"+result['money']+
+                     "</td><td class='secondTabletd'>"+result['ketihao']+
+                     "</td><td class='secondTabletd'>"+result['sourcemethod']+
+                     "</td><td class='secondTabletd'>"+result['tomoney']+
+                     "</td><td class='secondTabletd'>"+result['backmoney']+
+                     "</td><td class='secondTabletd'>"+result['buzhumoney']+
+                     "</td><td class='secondTabletd'>"+result['beizhu']+
+                     "</td><td class='secondTabletd'>"+"<a href='javascript:dodelete("+result['id']+")'>删除"+
+                     "</td></tr>";  
+                     $('.testtable').append(item);  
+                 });  
+            }
+            else
+            {
+            	alert(data.msg)
+            }
+        }    
+    });
+}
+function getExcel(){
+	var baseUrl = getBaseUrl();
+	jQuery.ajax({
+        url: baseUrl+'/bx/getExcel',   
+        type: 'get',
+        dataType: 'JSON',
+        success:function(data){
+            if(data.success){
+            	window.location.href = baseUrl+data.obj
+            }
+            else
+            {
+            	alert(data.msg)
+            }
+        }    
+    });
+}
+/*获取文件根目录*/
+function getBaseUrl(){
+	var localURL = window.location.href;
+	var array = localURL.split("/");
+	var baseURL = "";
+	var baseArr = [];
+	for(var i=0;i<array.length;i++)
+	  {
+	    baseArr.push(array[i]);
+	    if(array[i] == "bswebsite")
+		    {
+		    	break;
+		    }
+	   }
+	   baseURL = baseArr.join("/");
+	   return baseURL;
+}   
+
+</script>
+</html>
